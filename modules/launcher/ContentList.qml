@@ -1,11 +1,15 @@
 pragma ComponentBehavior: Bound
 
-import QtQuick
-import Caelestia.Config
+import "items"
 import qs.components
 import qs.components.controls
 import qs.services
+import Caelestia.Config
 import qs.utils
+import Quickshell
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 Item {
     id: root
@@ -20,6 +24,9 @@ Item {
 
     readonly property bool showWallpapers: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `)
     readonly property var currentList: showWallpapers ? wallpaperList.item : appList.item // Can be either ListView or PathView, so can't type properly
+    readonly property string activeMode: showWallpapers ? "wallpapers" : (appList.item?.state ?? "apps")
+    
+    readonly property bool showClipPreview: activeMode === "clip" && Boolean(currentList?.currentItem?.modelData)
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
@@ -32,8 +39,9 @@ Item {
             name: "apps"
 
             PropertyChanges {
-                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth
-                root.implicitHeight: Math.min(root.maxHeight, appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight)
+                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth + (showClipPreview ? 300 + root.Tokens.spacing.lg : 0)
+                root.implicitHeight: Math.max(appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight, showClipPreview ? 400 : 0)
+
                 appList.active: true
             }
 
@@ -73,16 +81,33 @@ Item {
         }
     }
 
-    Loader {
-        id: appList
-
-        active: false
-
+    Row {
+        id: mainRow
         anchors.fill: parent
+        spacing: Tokens.spacing.large
 
-        sourceComponent: AppList {
-            search: root.search
-            visibilities: root.visibilities
+        Loader {
+            id: appList
+
+            active: false
+            asynchronous: true
+
+            height: parent.height
+            width: root.Tokens.sizes.launcher.itemWidth
+
+            sourceComponent: AppList {
+                search: root.search
+                visibilities: root.visibilities
+            }
+        }
+
+        ClipPreview {
+            id: clipPreview
+            visible: root.showClipPreview
+            modelData: root.currentList?.currentItem?.modelData
+            list: appList.item
+            height: parent.height
+            width: 300
         }
     }
 

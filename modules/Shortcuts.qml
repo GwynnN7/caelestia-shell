@@ -160,24 +160,21 @@ Scope {
         target: "clipboard"
 
         function open(): void {
-            const visibilities = Visibilities.getForActive()
-            visibilities.clipboardRequested = true
-            visibilities.launcher = true
+            Visibilities.clipboardRequested = true;
+            Visibilities.getForActive().launcher = true;
         }
 
         function close(): void {
-            const visibilities = Visibilities.getForActive()
-            visibilities.launcher = false
+            Visibilities.getForActive().launcher = false;
         }
 
         function toggle(): void {
-            const visibilities = Visibilities.getForActive()
+            const visibilities = Visibilities.getForActive();
             if (visibilities.launcher) {
-                visibilities.launcher = false
+                visibilities.launcher = false;
             } else {
-                visibilities.clipboardRequested = true
-                visibilities.launcher = true
-                console.log("Toggling clipboard from IPC");
+                Visibilities.clipboardRequested = true;
+                visibilities.launcher = true;
             }
         }
     }

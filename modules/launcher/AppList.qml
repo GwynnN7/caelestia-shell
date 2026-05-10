@@ -37,12 +37,16 @@ StyledListView {
     ListModel { id: clipboardModel }
 
     property var _clipFilteredValues: {
-        const query = _debouncedText.slice(`${GlobalConfig.launcher.actionPrefix}clip `.length).toLowerCase();
+        const query = search.text.slice(`${GlobalConfig.launcher.actionPrefix}clip `.length).toLowerCase();
         let result = [];
         for (let i = 0; i < clipboardModel.count; i++) {
             const item = clipboardModel.get(i);
             if (query === "" || item.entryText.toLowerCase().includes(query)) {
-                result.push({ entryId: item.entryId, entryText: item.entryText, isImage: item.isImage });
+                result.push({ 
+                    entryId: String(item.entryId), 
+                    entryText: String(item.entryText), 
+                    isImage: Boolean(item.isImage) 
+                });
             }
         }
         return result;
@@ -59,22 +63,32 @@ StyledListView {
                     if (!line) continue;
                     const parts = line.split("\t");
                     clipboardModel.append({
-                        entryId: parts[0],
-                        entryText: parts.slice(1).join("\t"),
-                        isImage: line.includes("[[ binary data")
+                        entryId: String(parts[0]),
+                        entryText: String(parts.slice(1).join("\t")),
+                        isImage: Boolean(line.includes("[[ binary data"))
                     });
                 }
             }
         }
     }
 
+    Process {
+        id: cliphistDeleteProc
+        property string exactLine: ""
+        command: ["sh", "-c", "echo -E '" + exactLine.replace(/'/g, "'\\''") + "' | cliphist delete"]
+    }
+
     function refreshClipboard(): void { cliphistProc.running = true; }
 
     function removeClipEntry(entryId: string): void {
-        
         for (let i = 0; i < clipboardModel.count; i++) {
-            if (clipboardModel.get(i).entryId === entryId) {
+            const item = clipboardModel.get(i);
+            if (item.entryId == entryId) {
+                // Delete from DB, Remove from UI, Force Refresh
+                cliphistDeleteProc.exactLine = item.entryId + "\t" + item.entryText;
+                cliphistDeleteProc.running = true;
                 clipboardModel.remove(i);
+                model.values = root._clipFilteredValues;
                 break;
             }
         }
@@ -87,7 +101,11 @@ StyledListView {
 
     spacing: Tokens.spacing.small
     orientation: Qt.Vertical
-    implicitHeight: (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(GlobalConfig.launcher.maxShown, count) - spacing
+    implicitHeight: {
+        if (state === "emoji")
+            return Math.min(Tokens.sizes.launcher.maxShown * Tokens.sizes.launcher.itemHeight, 400);
+        return (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(GlobalConfig.launcher.maxShown, count) - spacing;
+    }
 
     preferredHighlightBegin: 0
     preferredHighlightEnd: height
@@ -114,7 +132,7 @@ StyledListView {
         const text = search.text;
         const prefix = GlobalConfig.launcher.actionPrefix;
         if (text.startsWith(prefix)) {
-            for (const action of ["calc", "scheme", "variant", "clip"])
+            for (const action of ["calc", "scheme", "variant", "clip", "emoji"])
                 if (text.startsWith(`${prefix}${action} `))
                     return action;
 
@@ -178,6 +196,14 @@ StyledListView {
             PropertyChanges {
                 model.values: root._clipFilteredValues
                 root.delegate: clipItem
+            }
+        },
+         State {
+            name: "emoji"
+
+            PropertyChanges {
+                model.values: [0]
+                root.delegate: emojiItem
             }
         }
     ]
@@ -332,6 +358,15 @@ StyledListView {
 
         ClipItem {
             list: root
+        }
+    }
+
+     Component {
+        id: emojiItem
+
+        EmojiList {
+            search: root.search
+            visibilities: root.visibilities
         }
     }
 }

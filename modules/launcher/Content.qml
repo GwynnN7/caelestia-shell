@@ -93,6 +93,8 @@ Item {
                             currentItem.onClicked();
                         else if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}clip `))
                             currentItem.onClicked();
+                        else if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}emoji `))
+                             currentItem.currentItem?.onClicked();
                         else
                             currentItem.modelData.onClicked(list.currentList);
                     } else {
@@ -102,8 +104,30 @@ Item {
                 }
             }
 
-            Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
-            Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
+            Keys.onUpPressed: {
+                if (list.activeMode === "emoji")
+                    list.currentList.currentItem?.moveUp();
+                else
+                    list.currentList?.decrementCurrentIndex();
+            }
+            Keys.onDownPressed: {
+                if (list.activeMode === "emoji")
+                    list.currentList.currentItem?.moveDown();
+                else
+                    list.currentList?.incrementCurrentIndex();
+            }
+            Keys.onLeftPressed: {
+                if (list.activeMode === "emoji")
+                    list.currentList.currentItem?.moveLeft();
+                else
+                    event.accepted = false;
+            }
+            Keys.onRightPressed: {
+                if (list.activeMode === "emoji")
+                    list.currentList.currentItem?.moveRight();
+                else
+                    event.accepted = false;
+            }
 
             Keys.onEscapePressed: root.visibilities.launcher = false
 
@@ -111,37 +135,85 @@ Item {
                 if (!GlobalConfig.launcher.vimKeybinds)
                     return;
 
+                if (!search.focus)
+                    return;
+
+                if (list.activeMode === "emoji") {
+                    if (event.key === Qt.Key_PageUp) {
+                        list.currentList.currentItem?.prevCategory();
+                        event.accepted = true;
+                        return;
+                    } else if (event.key === Qt.Key_PageDown) {
+                        list.currentList.currentItem?.nextCategory();
+                        event.accepted = true;
+                        return;
+                    }
+                }
+
                 if (event.modifiers & Qt.ControlModifier) {
                     if (event.key === Qt.Key_J || event.key === Qt.Key_N) {
-                        list.currentList?.incrementCurrentIndex();
+                        if (list.activeMode === "emoji")
+                            list.currentList.currentItem?.incrementCurrentIndex();
+                        else
+                            list.currentList?.incrementCurrentIndex();
                         event.accepted = true;
                     } else if (event.key === Qt.Key_K || event.key === Qt.Key_P) {
-                        list.currentList?.decrementCurrentIndex();
+                        if (list.activeMode === "emoji")
+                            list.currentList.currentItem?.decrementCurrentIndex();
+                        else
+                            list.currentList?.decrementCurrentIndex();
                         event.accepted = true;
                     }
                 } else if (event.key === Qt.Key_Tab) {
-                    list.currentList?.incrementCurrentIndex();
+                    if (list.activeMode === "emoji")
+                        list.currentList.currentItem?.incrementCurrentIndex();
+                    else
+                        list.currentList?.incrementCurrentIndex();
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                    list.currentList?.decrementCurrentIndex();
+                    if (list.activeMode === "emoji")
+                        list.currentList.currentItem?.decrementCurrentIndex();
+                    else
+                        list.currentList?.decrementCurrentIndex();
                     event.accepted = true;
                 }
             }
 
-            Component.onCompleted: forceActiveFocus()
+            Component.onCompleted: {
+                forceActiveFocus();
+                
+                if (Visibilities.clipboardRequested) {
+                    search.text = GlobalConfig.launcher.actionPrefix + "clip ";
+                    Visibilities.clipboardRequested = false;
+                }
+            }
 
             Connections {
+                target: Visibilities
+                function onClipboardRequestedChanged(): void {
+                    if (Visibilities.clipboardRequested) {
+                        search.text = GlobalConfig.launcher.actionPrefix + "clip ";
+                        Visibilities.clipboardRequested = false;
+                    }
+                }
+            }
+
+            Connections {
+                target: root.visibilities
+
                 function onLauncherChanged(): void {
-                    if (!root.visibilities.launcher)
+                    if (!root.visibilities.launcher) {
                         search.text = "";
+                        const current = list.currentList;
+                        if (current)
+                            current.currentIndex = 0;
+                    }
                 }
 
                 function onSessionChanged(): void {
                     if (!root.visibilities.session)
                         search.forceActiveFocus();
                 }
-
-                target: root.visibilities
             }
         }
 
