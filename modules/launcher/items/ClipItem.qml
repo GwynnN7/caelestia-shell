@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Caelestia
 import Caelestia.Config
 import qs.components
@@ -14,12 +15,23 @@ Item {
 
     readonly property string entryId: modelData?.entryId ?? ""
     readonly property string entryText: modelData?.entryText ?? ""
+    readonly property string entryLine: modelData?.entryLine ?? ""
     readonly property bool isImageEntry: modelData?.isImage ?? false
 
     readonly property string displayText: isImageEntry ? "image" : entryText
 
+    readonly property string imagePath: "/tmp/cliphist-launcher-" + root.entryId + ".png"
+
+    function shellQuote(value: string): string {
+        return "'" + value.replace(/'/g, "'\\''") + "'";
+    }
+
+    function decodeCommand(): string {
+        return "printf '%s\\n' " + root.shellQuote(root.entryLine) + " | cliphist decode";
+    }
+
     function onClicked(): void {
-        Quickshell.execDetached(["sh", "-c", "cliphist decode '" + root.entryId + "' | wl-copy"]);
+        Quickshell.execDetached(["sh", "-c", root.decodeCommand() + " | wl-copy"]);
         root.list.visibilities.launcher = false;
     }
 
@@ -54,28 +66,29 @@ Item {
             color: Colours.tPalette.m3surfaceContainerLow
 
             property bool imageReady: false
-            property string imagePath: "/tmp/cliphist-launcher-" + root.entryId + ".png"
 
-            Component.onCompleted: {
-                if (root.isImageEntry && root.entryId) {
-                    Quickshell.execDetached([
-                        "sh", "-c",
-                        "cliphist decode " + root.entryId + " > " + imagePath
-                    ]);
-                    imageLoadTimer.start();
+            Process {
+                id: imageDecodeProc
+                command: ["sh", "-c", root.decodeCommand() + " > " + root.shellQuote(root.imagePath)]
+
+                onExited: exitCode => { // qmllint disable signal-handler-parameters
+                    imageContainer.imageReady = true;
+                    if (exitCode !== 0)
+                        previewImage.source = "";
                 }
             }
 
-            Timer {
-                id: imageLoadTimer
-                interval: 200
-                onTriggered: imageContainer.imageReady = true
+            Component.onCompleted: {
+                if (root.isImageEntry && root.entryId) {
+                    imageContainer.imageReady = false;
+                    imageDecodeProc.running = true;
+                }
             }
 
             Image {
                 id: previewImage
                 anchors.centerIn: parent
-                source: imageContainer.imageReady ? "file://" + imageContainer.imagePath : ""
+                source: imageContainer.imageReady ? Qt.resolvedUrl(root.imagePath) : ""
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
                 cache: false
@@ -176,7 +189,7 @@ Item {
                     function onClicked(): void {
                         Quickshell.execDetached([
                             "sh", "-c",
-                            "cliphist decode '" + root.entryId + "' | wl-copy"
+                            root.decodeCommand() + " | wl-copy"
                         ]);
                         copyFeedback.opacity = 1;
                         copyFeedbackTimer.start();
@@ -233,7 +246,6 @@ Item {
                     color: Colours.palette.m3error
 
                     function onClicked(): void {
-                        Quickshell.execDetached(["cliphist", "delete", root.entryId]);
                         root.list.removeClipEntry(root.entryId);
                     }
                 }

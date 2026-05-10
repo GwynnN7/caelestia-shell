@@ -30,7 +30,8 @@ StyledListView {
                 result.push({ 
                     entryId: String(item.entryId), 
                     entryText: String(item.entryText), 
-                    isImage: Boolean(item.isImage) 
+                    isImage: Boolean(item.isImage),
+                    entryLine: String(item.entryLine)
                 });
             }
         }
@@ -50,6 +51,7 @@ StyledListView {
                     clipboardModel.append({
                         entryId: String(parts[0]),
                         entryText: String(parts.slice(1).join("\t")),
+                        entryLine: String(line),
                         isImage: Boolean(line.includes("[[ binary data"))
                     });
                 }
@@ -60,7 +62,7 @@ StyledListView {
     Process {
         id: cliphistDeleteProc
         property string exactLine: ""
-        command: ["sh", "-c", "echo -E '" + exactLine.replace(/'/g, "'\\''") + "' | cliphist delete"]
+        command: ["sh", "-c", "printf '%s\\n' '" + exactLine.replace(/'/g, "'\\''") + "' | cliphist delete"]
     }
 
     function refreshClipboard(): void { cliphistProc.running = true; }
@@ -71,7 +73,7 @@ StyledListView {
             
             if (item.entryId == entryId) {
                 // 1. Delete from the actual cliphist system database
-                cliphistDeleteProc.exactLine = item.entryId + "\t" + item.entryText;
+                cliphistDeleteProc.exactLine = String(item.entryLine);
                 cliphistDeleteProc.running = true;
 
                 // 2. Remove from local UI model
