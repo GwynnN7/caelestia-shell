@@ -27,26 +27,34 @@ StyledRect {
 
     property string _decodingId: ""
     property bool imageReady: false
-    readonly property string imagePath: root.entryId !== "" ? "/tmp/cliphist-launcher-preview-" + root.entryId + ".png" : ""
+    property string decodedText: "" 
+
+    readonly property string imagePath: "/tmp/cliphist-preview.png"
 
     onEntryIdChanged: {
         imageReady = false;
         decoder.running = false;
+        decodedText = ""; 
         _decodingId = "";
-        if (isImage && entryId !== "") {
+        
+        if (entryId !== "") {
             decodeDebounce.restart();
         }
     }
 
     Timer {
         id: decodeDebounce
-        interval: 100 // Debounce to prevent rapid decoding during navigation
+        interval: 100 
         onTriggered: {
-            if (root.entryId !== "" && root.isImage) {
+            if (root.entryId !== "") {
                 root._decodingId = root.entryId;
-                // Escape single quotes for shell safety
                 const escapedId = root.entryId.replace(/'/g, "'\\''");
-                decoder.command = ["sh", "-c", "cliphist decode '" + escapedId + "' > '" + root.imagePath + "'"];
+                
+                if (root.isImage) {
+                    decoder.command = ["sh", "-c", "printf '%s' '" + escapedId + "' | cliphist decode > " + root.imagePath];
+                } else {
+                    decoder.command = ["sh", "-c", "printf '%s' '" + escapedId + "' | cliphist decode"];
+                }
                 decoder.running = true;
             }
         }
@@ -55,11 +63,19 @@ StyledRect {
     Io.Process {
         id: decoder
         
+        stdout: Io.StdioCollector {
+            onStreamFinished: {
+                if (!root.isImage && root.entryId === root._decodingId && root.entryId !== "") {
+                    root.decodedText = (this.text || "").trim();
+                }
+            }
+        }
+
         onExited: (exitCode) => {
-            // Only set ready if the process was for the current item and successful
             if (exitCode === 0 && root.entryId === root._decodingId && root.entryId !== "") {
-                // Short sync delay to ensure the OS has finished writing the file
-                syncTimer.restart();
+                if (root.isImage) {
+                    syncTimer.restart();
+                } 
             }
         }
     }
@@ -75,7 +91,6 @@ StyledRect {
         anchors.margins: Tokens.padding.large
         spacing: Tokens.spacing.normal
 
-        // Header
         RowLayout {
             Layout.fillWidth: true
             spacing: Tokens.spacing.normal
@@ -95,7 +110,6 @@ StyledRect {
             }
         }
 
-        // Content
         StyledRect {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -108,19 +122,11 @@ StyledRect {
                 visible: root.isImage
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.normal
-                // Only load when ready and path matches current ID to avoid stale/missing file errors
-                source: (root.imageReady && root.entryId === root._decodingId && root.imagePath !== "") ? "file://" + root.imagePath : ""
+                source: (root.imageReady && root.entryId === root._decodingId) ? "file://" + root.imagePath + "?t=" + Date.now() : ""
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
                 cache: false
                 smooth: true
-
-                onStatusChanged: {
-                    if (status === Image.Error && root.imageReady) {
-                        // If it fails even when we thought it was ready, reset and maybe retry later
-                        console.warn("Failed to load image: " + source);
-                    }
-                }
             }
 
             // Text Preview
@@ -133,12 +139,19 @@ StyledRect {
 
                 StyledText {
                     id: previewText
-                    width: parent.width - Tokens.padding.normal * 2
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.topMargin: Tokens.padding.normal
-                    text: root.entryText
-                    wrapMode: Text.Wrap
+                    anchors.margins: Tokens.padding.normal
+                    
+                    bottomPadding: Tokens.padding.large * 2 
+                    
+                    text: root.decodedText !== "" ? root.decodedText : root.entryText
+                    
+                    wrapMode: Text.Wrap 
+                    elide: Text.ElideNone           
+                    maximumLineCount: 99999         
+                    
                     font.pointSize: Tokens.font.size.normal
                     color: Colours.palette.m3onSurfaceVariant
                 }

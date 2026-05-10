@@ -39,8 +39,10 @@ Item {
             name: "apps"
 
             PropertyChanges {
-                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth + (showClipPreview ? 300 + root.Tokens.spacing.lg : 0)
-                root.implicitHeight: Math.max(appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight, showClipPreview ? 400 : 0)
+                // Reduced from 450 to 350 to make the preview narrower
+                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth + (showClipPreview ? 350 + root.Tokens.spacing.large : 0)
+                // Reduced from 500 to 450 to make the launcher slightly shorter vertically
+                root.implicitHeight: Math.max(appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight, showClipPreview ? 450 : 0)
 
                 appList.active: true
             }
@@ -81,7 +83,7 @@ Item {
         }
     }
 
-    Row {
+    RowLayout {
         id: mainRow
         anchors.fill: parent
         spacing: Tokens.spacing.large
@@ -92,9 +94,9 @@ Item {
             active: false
             asynchronous: true
 
-            height: parent.height
-            width: root.Tokens.sizes.launcher.itemWidth
-
+            Layout.fillHeight: true
+            // Increased from 0.6 to 0.75 to make the list larger/wider
+            Layout.preferredWidth: root.showClipPreview ? root.Tokens.sizes.launcher.itemWidth * 0.75 : root.Tokens.sizes.launcher.itemWidth
             sourceComponent: AppList {
                 search: root.search
                 visibilities: root.visibilities
@@ -106,8 +108,8 @@ Item {
             visible: root.showClipPreview
             modelData: root.currentList?.currentItem?.modelData
             list: appList.item
-            height: parent.height
-            width: 300
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
     }
 
