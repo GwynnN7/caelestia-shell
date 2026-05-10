@@ -534,6 +534,14 @@ For example, to disable the bar on DP-1:
                 "dangerous": false
             },
             {
+                "name": "Clipboard",
+                "icon": "content_paste",
+                "description": "Clipboard history",
+                "command": ["autocomplete", "clip"],
+                "enabled": true,
+                "dangerous": false
+            },
+            {
                 "name": "Transparency",
                 "icon": "opacity",
                 "description": "Change shell transparency",

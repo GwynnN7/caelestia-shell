@@ -91,6 +91,8 @@ Item {
                     } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
                         if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
                             currentItem.onClicked();
+                        else if (text.startsWith(`${Config.launcher.actionPrefix}clip `))
+                            currentItem.onClicked();
                         else
                             currentItem.modelData.onClicked(list.currentList);
                     } else {
@@ -130,8 +132,17 @@ Item {
 
             Connections {
                 function onLauncherChanged(): void {
-                    if (!root.visibilities.launcher)
+                    if (root.visibilities.launcher) {
+                        if (root.visibilities.clipboardRequested) {
+                            search.text = Config.launcher.actionPrefix + "clip ";
+                            root.visibilities.clipboardRequested = false;
+                        }
+                    } else {
                         search.text = "";
+                        const current = list.currentList;
+                        if (current)
+                            current.currentIndex = 0;
+                    }
                 }
 
                 function onSessionChanged(): void {

@@ -156,6 +156,31 @@ Scope {
         target: "toaster"
     }
 
+    IpcHandler {
+        target: "clipboard"
+
+        function open(): void {
+            const visibilities = Visibilities.getForActive()
+            visibilities.clipboardRequested = true
+            visibilities.launcher = true
+        }
+
+        function close(): void {
+            const visibilities = Visibilities.getForActive()
+            visibilities.launcher = false
+        }
+
+        function toggle(): void {
+            const visibilities = Visibilities.getForActive()
+            if (visibilities.launcher) {
+                visibilities.launcher = false
+            } else {
+                visibilities.clipboardRequested = true
+                visibilities.launcher = true
+            }
+        }
+    }
+
     LoggingCategory {
         id: lc
 
