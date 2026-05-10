@@ -177,6 +177,7 @@ Scope {
             } else {
                 visibilities.clipboardRequested = true
                 visibilities.launcher = true
+                console.log("Toggling clipboard from IPC");
             }
         }
     }

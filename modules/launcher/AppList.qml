@@ -17,22 +17,32 @@ StyledListView {
     required property StyledTextField search
     required property DrawerVisibilities visibilities
 
-    // Clipboard data
+    property string _debouncedText: search.text
+    Timer {
+        id: _searchDebounce
+        interval: 120
+        onTriggered: root._debouncedText = root.search.text
+    }
+    Connections {
+        target: root.search
+        function onTextChanged(): void {
+            // Immediate update for short strings (mode detection), debounce for actual search
+            if (root.search.text.length <= 1)
+                root._debouncedText = root.search.text;
+            else
+                _searchDebounce.restart();
+        }
+    }
+
     ListModel { id: clipboardModel }
 
     property var _clipFilteredValues: {
-        const query = search.text.slice(`${GlobalConfig.launcher.actionPrefix}clip `.length).toLowerCase();
+        const query = _debouncedText.slice(`${GlobalConfig.launcher.actionPrefix}clip `.length).toLowerCase();
         let result = [];
         for (let i = 0; i < clipboardModel.count; i++) {
             const item = clipboardModel.get(i);
             if (query === "" || item.entryText.toLowerCase().includes(query)) {
-                // Force strict typing so ScriptModel exposes them perfectly to ClipItem.qml
-                result.push({ 
-                    entryId: String(item.entryId), 
-                    entryText: String(item.entryText), 
-                    isImage: Boolean(item.isImage),
-                    entryLine: String(item.entryLine)
-                });
+                result.push({ entryId: item.entryId, entryText: item.entryText, isImage: item.isImage });
             }
         }
         return result;
@@ -49,38 +59,22 @@ StyledListView {
                     if (!line) continue;
                     const parts = line.split("\t");
                     clipboardModel.append({
-                        entryId: String(parts[0]),
-                        entryText: String(parts.slice(1).join("\t")),
-                        entryLine: String(line),
-                        isImage: Boolean(line.includes("[[ binary data"))
+                        entryId: parts[0],
+                        entryText: parts.slice(1).join("\t"),
+                        isImage: line.includes("[[ binary data")
                     });
                 }
             }
         }
     }
 
-    Process {
-        id: cliphistDeleteProc
-        property string exactLine: ""
-        command: ["sh", "-c", "printf '%s\\n' '" + exactLine.replace(/'/g, "'\\''") + "' | cliphist delete"]
-    }
-
     function refreshClipboard(): void { cliphistProc.running = true; }
 
     function removeClipEntry(entryId: string): void {
+        
         for (let i = 0; i < clipboardModel.count; i++) {
-            const item = clipboardModel.get(i);
-            
-            if (item.entryId == entryId) {
-                // 1. Delete from the actual cliphist system database
-                cliphistDeleteProc.exactLine = String(item.entryLine);
-                cliphistDeleteProc.running = true;
-
-                // 2. Remove from local UI model
+            if (clipboardModel.get(i).entryId === entryId) {
                 clipboardModel.remove(i);
-                
-                // 3. Force the ScriptModel to instantly refresh the UI
-                model.values = root._clipFilteredValues;
                 break;
             }
         }
@@ -93,7 +87,7 @@ StyledListView {
 
     spacing: Tokens.spacing.small
     orientation: Qt.Vertical
-    implicitHeight: (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(Config.launcher.maxShown, count) - spacing
+    implicitHeight: (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(GlobalConfig.launcher.maxShown, count) - spacing
 
     preferredHighlightBegin: 0
     preferredHighlightEnd: height

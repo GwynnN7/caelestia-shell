@@ -235,7 +235,6 @@ StyledWindow {
 
     DrawerVisibilities {
         id: visibilities
-
         Component.onCompleted: Visibilities.load(root.screen, this)
     }
 

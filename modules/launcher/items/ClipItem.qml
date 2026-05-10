@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -15,26 +17,27 @@ Item {
 
     readonly property string entryId: modelData?.entryId ?? ""
     readonly property string entryText: modelData?.entryText ?? ""
-    readonly property string entryLine: modelData?.entryLine ?? ""
     readonly property bool isImageEntry: modelData?.isImage ?? false
 
     readonly property string displayText: isImageEntry ? "image" : entryText
 
-    readonly property string imagePath: "/tmp/cliphist-launcher-" + root.entryId + ".png"
-
-    function shellQuote(value: string): string {
-        return "'" + value.replace(/'/g, "'\\''") + "'";
-    }
-
-    function decodeCommand(): string {
-        return "printf '%s\\n' " + root.shellQuote(root.entryLine) + " | cliphist decode";
+    function copyAndPasteClip(): void {
+        root.list.visibilities.launcher = false;
+        Quickshell.execDetached(["sh", "-c", "sleep 0.3 && cliphist decode '" + root.entryId + "' | wl-copy && wl-paste | wtype -"]);
     }
 
     function onClicked(): void {
-        Quickshell.execDetached(["sh", "-c", root.decodeCommand() + " | wl-copy"]);
-        root.list.visibilities.launcher = false;
+        copyAndPasteClip();
     }
 
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            root.list.visibilities.launcher = false;
+            copyAndPasteClip();
+            event.accepted = true;
+        }
+    }
+   
     implicitHeight: isImageEntry ? Tokens.sizes.launcher.itemHeight + 120 : Tokens.sizes.launcher.itemHeight
 
     anchors.left: parent?.left
@@ -43,20 +46,19 @@ Item {
     StateLayer {
         radius: Tokens.rounding.small
 
-        function onClicked(): void {
+        onClicked: {
             root.onClicked();
         }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.leftMargin: Tokens.padding.lg
-        anchors.rightMargin: Tokens.padding.lg
-        anchors.topMargin: Tokens.padding.sm
-        anchors.bottomMargin: Tokens.padding.sm
+        anchors.leftMargin: Tokens.padding.larger
+        anchors.rightMargin: Tokens.padding.larger
+        anchors.topMargin: Tokens.padding.small
+        anchors.bottomMargin: Tokens.padding.small
         spacing: Tokens.spacing.small
 
-        /* IMAGE PREVIEW */
         StyledClippingRect {
             id: imageContainer
             visible: root.isImageEntry
@@ -66,34 +68,33 @@ Item {
             color: Colours.tPalette.m3surfaceContainerLow
 
             property bool imageReady: false
-
-            Process {
-                id: imageDecodeProc
-                command: ["sh", "-c", root.decodeCommand() + " > " + root.shellQuote(root.imagePath)]
-
-                onExited: exitCode => { // qmllint disable signal-handler-parameters
-                    imageContainer.imageReady = true;
-                    if (exitCode !== 0)
-                        previewImage.source = "";
-                }
-            }
+            property string imagePath: "/tmp/cliphist-launcher-" + root.entryId + ".png"
 
             Component.onCompleted: {
                 if (root.isImageEntry && root.entryId) {
-                    imageContainer.imageReady = false;
-                    imageDecodeProc.running = true;
+                    Quickshell.execDetached([
+                        "sh", "-c",
+                        "cliphist decode " + root.entryId + " > " + imagePath
+                    ]);
+                    imageLoadTimer.start();
                 }
+            }
+
+            Timer {
+                id: imageLoadTimer
+                interval: 200
+                onTriggered: imageContainer.imageReady = true
             }
 
             Image {
                 id: previewImage
                 anchors.centerIn: parent
-                source: imageContainer.imageReady ? Qt.resolvedUrl(root.imagePath) : ""
+                source: imageContainer.imageReady ? "file://" + imageContainer.imagePath : ""
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
                 cache: false
-                width: parent.width - Tokens.padding.md * 2
-                height: parent.height - Tokens.padding.md * 2
+                width: parent.width - Tokens.padding.normal * 2
+                height: parent.height - Tokens.padding.normal * 2
                 smooth: true
 
                 onStatusChanged: {
@@ -186,10 +187,10 @@ Item {
                     radius: parent.radius
                     color: Colours.palette.m3primary
 
-                    function onClicked(): void {
+                    onClicked: {
                         Quickshell.execDetached([
                             "sh", "-c",
-                            root.decodeCommand() + " | wl-copy"
+                            "cliphist decode '" + root.entryId + "' | wl-copy && wl-paste"
                         ]);
                         copyFeedback.opacity = 1;
                         copyFeedbackTimer.start();
@@ -245,7 +246,9 @@ Item {
                     radius: parent.radius
                     color: Colours.palette.m3error
 
-                    function onClicked(): void {
+                    onClicked: {
+                        Quickshell.execDetached(["cliphist", "delete", root.entryId]);
+                        console.log("Deleted clip entry with ID:", root.entryId);
                         root.list.removeClipEntry(root.entryId);
                     }
                 }

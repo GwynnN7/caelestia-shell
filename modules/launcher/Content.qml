@@ -70,14 +70,6 @@ Item {
         StyledTextField {
             id: search
 
-            function openClipboardSearch(): void {
-                if (!root.visibilities.clipboardRequested)
-                    return;
-
-                search.text = GlobalConfig.launcher.actionPrefix + "clip ";
-                root.visibilities.clipboardRequested = false;
-            }
-
             anchors.left: searchIcon.right
             anchors.right: clearIcon.left
             anchors.leftMargin: Tokens.spacing.small
@@ -140,19 +132,8 @@ Item {
 
             Connections {
                 function onLauncherChanged(): void {
-                    if (root.visibilities.launcher) {
-                        search.openClipboardSearch();
-                    } else {
+                    if (!root.visibilities.launcher)
                         search.text = "";
-                        const current = list.currentList;
-                        if (current)
-                            current.currentIndex = 0;
-                    }
-                }
-
-                function onClipboardRequestedChanged(): void {
-                    if (root.visibilities.launcher)
-                        search.openClipboardSearch();
                 }
 
                 function onSessionChanged(): void {
