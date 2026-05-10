@@ -21,12 +21,17 @@ StyledListView {
     ListModel { id: clipboardModel }
 
     property var _clipFilteredValues: {
-        const query = _debouncedText.slice(`${Config.launcher.actionPrefix}clip `.length).toLowerCase();
+        const query = search.text.slice(`${GlobalConfig.launcher.actionPrefix}clip `.length).toLowerCase();
         let result = [];
         for (let i = 0; i < clipboardModel.count; i++) {
             const item = clipboardModel.get(i);
             if (query === "" || item.entryText.toLowerCase().includes(query)) {
-                result.push({ entryId: item.entryId, entryText: item.entryText, isImage: item.isImage });
+                // Force strict typing so ScriptModel exposes them perfectly to ClipItem.qml
+                result.push({ 
+                    entryId: String(item.entryId), 
+                    entryText: String(item.entryText), 
+                    isImage: Boolean(item.isImage) 
+                });
             }
         }
         return result;
@@ -43,21 +48,37 @@ StyledListView {
                     if (!line) continue;
                     const parts = line.split("\t");
                     clipboardModel.append({
-                        entryId: parts[0],
-                        entryText: parts.slice(1).join("\t"),
-                        isImage: line.includes("[[ binary data")
+                        entryId: String(parts[0]),
+                        entryText: String(parts.slice(1).join("\t")),
+                        isImage: Boolean(line.includes("[[ binary data"))
                     });
                 }
             }
         }
     }
 
+    Process {
+        id: cliphistDeleteProc
+        property string exactLine: ""
+        command: ["sh", "-c", "echo -E '" + exactLine.replace(/'/g, "'\\''") + "' | cliphist delete"]
+    }
+
     function refreshClipboard(): void { cliphistProc.running = true; }
 
     function removeClipEntry(entryId: string): void {
         for (let i = 0; i < clipboardModel.count; i++) {
-            if (clipboardModel.get(i).entryId === entryId) {
+            const item = clipboardModel.get(i);
+            
+            if (item.entryId == entryId) {
+                // 1. Delete from the actual cliphist system database
+                cliphistDeleteProc.exactLine = item.entryId + "\t" + item.entryText;
+                cliphistDeleteProc.running = true;
+
+                // 2. Remove from local UI model
                 clipboardModel.remove(i);
+                
+                // 3. Force the ScriptModel to instantly refresh the UI
+                model.values = root._clipFilteredValues;
                 break;
             }
         }
@@ -65,7 +86,6 @@ StyledListView {
 
     model: ScriptModel {
         id: model
-
         onValuesChanged: root.currentIndex = 0
     }
 
