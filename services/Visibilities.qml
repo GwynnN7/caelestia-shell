@@ -8,6 +8,7 @@ Singleton {
     property var screens: new Map()
     property var bars: new Map()
     property bool clipboardRequested: false
+    property bool emojiRequested: false
 
     function load(screen: ShellScreen, visibilities: DrawerVisibilities): void {
         screens.set(Hypr.monitorFor(screen), visibilities);

@@ -179,6 +179,29 @@ Scope {
         }
     }
 
+    IpcHandler {
+        target: "emoji"
+
+        function open(): void {
+            Visibilities.emojiRequested = true;
+            Visibilities.getForActive().launcher = true;
+        }
+
+        function close(): void {
+            Visibilities.getForActive().launcher = false;
+        }
+
+        function toggle(): void {
+            const visibilities = Visibilities.getForActive();
+            if (visibilities.launcher) {
+                visibilities.launcher = false;
+            } else {
+                Visibilities.emojiRequested = true;
+                visibilities.launcher = true;
+            }
+        }
+    }
+
     LoggingCategory {
         id: lc
 

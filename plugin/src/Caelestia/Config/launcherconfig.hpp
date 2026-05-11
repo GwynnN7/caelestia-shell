@@ -57,7 +57,7 @@ class LauncherConfig : public ConfigObject {
             }),
             vmap({
                 { u"name"_s, u"Emoji"_s },
-                { u"icon"_s, u"emoji"_s },
+                { u"icon"_s, u"mood"_s },
                 { u"description"_s, u"Pick and emoji"_s },
                 { u"command"_s, QStringList{ u"autocomplete"_s, u"emoji"_s } },
             }),

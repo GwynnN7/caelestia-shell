@@ -52,7 +52,7 @@ Item {
         } catch (e) {
             current = [];
         }
-        
+
         const index = current.findIndex(e => e.emoji === emoji.emoji);
         if (index !== -1) current.splice(index, 1);
         current.unshift(emoji);
@@ -66,12 +66,12 @@ Item {
     Io.FileView {
         id: emojiFile
         path: Paths.toLocalFile(Qt.resolvedUrl("../../assets/emoji.json"))
-        
+
         onLoaded: {
             try {
                 const data = JSON.parse(text());
                 root._allEmojis = data;
-                
+
                 const byCat = {};
                 for (const item of data) {
                     if (!byCat[item.category]) byCat[item.category] = [];
@@ -82,15 +82,15 @@ Item {
                 console.error("EmojiList: Failed to parse emoji.json:", e.message);
             }
         }
-        
+
         onLoadFailed: err => {
             console.error("EmojiList: Failed to load emoji.json:", err);
         }
     }
 
     property var _filteredEmojis: {
-        const query = root.search.text.slice(`${Config.launcher.actionPrefix}emoji `.length).toLowerCase();
-        
+        const query = root.search.text.slice(`${GlobalConfig.launcher.actionPrefix}emoji `.length).toLowerCase();
+
         if (query === "") {
             if (currentCategory === "recent") {
                 try {
@@ -100,18 +100,18 @@ Item {
             }
             return _emojisByCategory[currentCategory] || [];
         }
-        
+
         const results = _allEmojis.filter(e => 
             e.name.toLowerCase().includes(query) || 
             e.emoji.includes(query) ||
             (e.keywords && e.keywords.some(k => k.toLowerCase().includes(query)))
         );
-        
+
         return results.filter((v, i, a) => a.findIndex(t => (t.emoji === v.emoji)) === i);
     }
 
-    implicitWidth: Config.launcher.sizes.itemWidth
-    implicitHeight: Config.launcher.maxShown * Config.launcher.sizes.itemHeight
+    implicitWidth: Tokens.sizes.launcher.itemWidth
+    implicitHeight: Tokens.sizes.launcher.maxShown * Tokens.sizes.launcher.itemHeight
 
     ColumnLayout {
         id: contentColumn
@@ -125,12 +125,12 @@ Item {
             Layout.preferredHeight: 64
             color: Colours.tPalette.m3surfaceContainerLow
             radius: Tokens.rounding.small
-            visible: root.search.text.startsWith(`${Config.launcher.actionPrefix}emoji `) && root.search.text.length <= `${Config.launcher.actionPrefix}emoji `.length
+            visible: root.search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}emoji `) && root.search.text.length <= `${GlobalConfig.launcher.actionPrefix}emoji `.length
 
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.small
-                spacing: Tokens.spacing.xs
+                spacing: Tokens.spacing.large
 
                 Repeater {
                     model: root.categoryData
@@ -167,7 +167,7 @@ Item {
                             anchors.verticalCenterOffset: catBtn.active ? -2 : 0
                             text: modelData.icon ?? ""
                             color: catBtn.active ? Colours.palette.m3primary : (catBtn.hovered ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant)
-                            font.pointSize: Tokens.font.size.titleMedium
+                            font.pointSize: Tokens.font.size.normal
                             
                             Behavior on color { CAnim {} }
                             Behavior on anchors.verticalCenterOffset { Anim { duration: Tokens.anim.durations.small } }
@@ -209,7 +209,7 @@ Item {
                 anchors.leftMargin: Tokens.padding.normal
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Search Results")
-                font.pointSize: Tokens.font.size.labelLarge
+                font.pointSize: Tokens.font.size.large
                 font.weight: 600
                 color: Colours.palette.m3primary
             }
@@ -271,7 +271,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: modelData?.emoji ?? ""
-                        font.pointSize: Tokens.font.size.headlineLarge
+                        font.pointSize: Tokens.font.size.large
                         color: Colours.palette.m3onSurface
                         renderType: Text.QtRendering
                     }
@@ -303,7 +303,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("No emojis found")
                         color: Colours.palette.m3onSurfaceVariant
-                        font.pointSize: Tokens.font.size.bodyMedium
+                        font.pointSize: Tokens.font.size.normal
                     }
                 }
             }

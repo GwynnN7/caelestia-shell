@@ -186,6 +186,10 @@ Item {
                     search.text = GlobalConfig.launcher.actionPrefix + "clip ";
                     Visibilities.clipboardRequested = false;
                 }
+                if (Visibilities.emojiRequested) {
+                    search.text = GlobalConfig.launcher.actionPrefix + "emoji ";
+                    Visibilities.emojiRequested = false;
+                }
             }
 
             Connections {
@@ -194,6 +198,10 @@ Item {
                     if (Visibilities.clipboardRequested) {
                         search.text = GlobalConfig.launcher.actionPrefix + "clip ";
                         Visibilities.clipboardRequested = false;
+                    }
+                    if (Visibilities.emojiRequested) {
+                        search.text = GlobalConfig.launcher.actionPrefix + "emoji ";
+                        Visibilities.emojiRequested = false;
                     }
                 }
             }
