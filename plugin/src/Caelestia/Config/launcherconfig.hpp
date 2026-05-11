@@ -31,7 +31,7 @@ class LauncherConfig : public ConfigObject {
 
     CONFIG_PROPERTY(bool, enabled, true)
     CONFIG_PROPERTY(bool, showOnHover, false)
-    CONFIG_PROPERTY(int, maxShown, 40)
+    CONFIG_PROPERTY(int, maxShown, 7)
     CONFIG_PROPERTY(int, maxWallpapers, 9)
     CONFIG_GLOBAL_PROPERTY(QString, specialPrefix, u"@"_s)
     CONFIG_GLOBAL_PROPERTY(QString, actionPrefix, u">"_s)
