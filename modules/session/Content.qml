@@ -16,12 +16,53 @@ Column {
     spacing: Tokens.spacing.large
 
     SessionButton {
+        id: shutdown
+
+        icon: Config.session.icons.shutdown
+        command: Config.session.commands.shutdown
+
+        KeyNavigation.up: bios
+        KeyNavigation.down: reboot
+    }
+
+    SessionButton {
+        id: reboot
+
+        icon: Config.session.icons.reboot
+        command: Config.session.commands.reboot
+
+        KeyNavigation.up: shutdown
+        KeyNavigation.down: suspend
+    }
+
+
+    SessionButton {
+        id: suspend
+
+        icon: Config.session.icons.suspend
+        command: Config.session.commands.suspend
+
+        KeyNavigation.up: reboot
+        KeyNavigation.down: logout
+    }
+
+    Image {
+        width: Tokens.sizes.session.button
+        height: Tokens.sizes.session.button
+        sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
+
+        source: Paths.absolutePath(Config.paths.sessionGif)
+        fillMode: Image.PreserveAspectCrop
+    }
+
+    SessionButton {
         id: logout
 
         icon: Config.session.icons.logout
         command: Config.session.commands.logout
 
-        KeyNavigation.down: shutdown
+        KeyNavigation.up: suspend
+        KeyNavigation.down: windows
 
         Component.onCompleted: forceActiveFocus()
 
@@ -33,47 +74,26 @@ Column {
 
             target: root.visibilities
         }
-    }
+    }    
 
     SessionButton {
-        id: shutdown
+        id: windows
 
-        icon: Config.session.icons.shutdown
-        command: Config.session.commands.shutdown
+        icon: Config.session.icons.windows
+        command: Config.session.commands.windows
 
         KeyNavigation.up: logout
-        KeyNavigation.down: hibernate
-    }
-
-    AnimatedImage {
-        width: Tokens.sizes.session.button
-        height: Tokens.sizes.session.button
-        sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
-
-        playing: visible
-        asynchronous: true
-        speed: Config.general.sessionGifSpeed
-        source: Paths.absolutePath(Config.paths.sessionGif)
-        fillMode: AnimatedImage.PreserveAspectFit
+        KeyNavigation.down: bios
     }
 
     SessionButton {
-        id: hibernate
+        id: bios
 
-        icon: Config.session.icons.hibernate
-        command: Config.session.commands.hibernate
+        icon: Config.session.icons.bios
+        command: Config.session.commands.bios
 
-        KeyNavigation.up: shutdown
-        KeyNavigation.down: reboot
-    }
-
-    SessionButton {
-        id: reboot
-
-        icon: Config.session.icons.reboot
-        command: Config.session.commands.reboot
-
-        KeyNavigation.up: hibernate
+        KeyNavigation.up: windows
+        KeyNavigation.down: shutdown
     }
 
     component SessionButton: StyledRect {

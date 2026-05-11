@@ -132,9 +132,6 @@ Item {
             Keys.onEscapePressed: root.visibilities.launcher = false
 
             Keys.onPressed: event => {
-                if (!GlobalConfig.launcher.vimKeybinds)
-                    return;
-
                 if (!search.focus)
                     return;
 
@@ -149,6 +146,9 @@ Item {
                         return;
                     }
                 }
+
+                if (!GlobalConfig.launcher.vimKeybinds)
+                    return;
 
                 if (event.modifiers & Qt.ControlModifier) {
                     if (event.key === Qt.Key_J || event.key === Qt.Key_N) {

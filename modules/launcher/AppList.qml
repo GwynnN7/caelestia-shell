@@ -103,7 +103,7 @@ StyledListView {
     orientation: Qt.Vertical
     implicitHeight: {
         if (state === "emoji")
-            return Math.min(Tokens.sizes.launcher.maxShown * Tokens.sizes.launcher.itemHeight, 400);
+            return Math.min(GlobalConfig.launcher.maxShown * Tokens.sizes.launcher.itemHeight, 600);
         return (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(GlobalConfig.launcher.maxShown, count) - spacing;
     }
 

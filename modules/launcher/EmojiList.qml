@@ -111,7 +111,8 @@ Item {
     }
 
     implicitWidth: Tokens.sizes.launcher.itemWidth
-    implicitHeight: Tokens.sizes.launcher.maxShown * Tokens.sizes.launcher.itemHeight
+    implicitHeight: Math.min(GlobalConfig.launcher.maxShown * Tokens.sizes.launcher.itemHeight, 600)
+
 
     ColumnLayout {
         id: contentColumn
@@ -143,6 +144,10 @@ Item {
                         required property int index
                         readonly property bool active: root.currentCategory === modelData.id
                         readonly property bool hovered: catStateLayer.containsMouse
+
+                        ToolTip.text: modelData.name ?? ""
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 200
 
                         // Background highlight on hover
                         StyledRect {
@@ -182,15 +187,8 @@ Item {
                             color: Colours.palette.m3primary
                             opacity: catBtn.active ? 1 : 0
 
-                            Behavior on width { Anim { duration: Tokens.anim.durations.normal; easing.bezierCurve: Tokens.anim.curves.emphasized } }
+                            Behavior on width { Anim { duration: Tokens.anim.durations.normal } }
                             Behavior on opacity { Anim { duration: Tokens.anim.durations.normal } }
-                        }
-
-
-                        Tooltip {
-                            target: catBtn
-                            text: modelData.name ?? ""
-                            visible: catBtn.hovered
                         }
                     }
                 }
@@ -227,7 +225,7 @@ Item {
                 id: grid
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.small
-                cellWidth: width / 6
+                cellWidth: width > 0 ? width / 6 : 50
                 cellHeight: cellWidth
                 model: root._filteredEmojis
                 
@@ -254,8 +252,12 @@ Item {
                     readonly property bool hovered: emojiStateLayer.containsMouse
                     readonly property bool isCurrent: grid.currentIndex === index
 
+                    ToolTip.text: modelData.name ?? ""
+                    ToolTip.visible: hovered
+                    ToolTip.delay: 200
+
                     function onClicked(): void {
-                        Quickshell.execDetached(["sh", "-c", "echo -n '" + (modelData?.emoji ?? "") + "' | wl-copy"]);
+                        Quickshell.execDetached(["sh", "-c", "echo -n '" + (modelData?.emoji ?? "") + "' | wtype -s 300 -"]);
                         if (modelData) root.addRecent(modelData);
                         root.visibilities.launcher = false;
                     }
@@ -274,12 +276,6 @@ Item {
                         font.pointSize: Tokens.font.size.large
                         color: Colours.palette.m3onSurface
                         renderType: Text.QtRendering
-                    }
-
-                    Tooltip {
-                        target: emojiItem
-                        text: modelData?.name ?? ""
-                        visible: emojiItem.hovered
                     }
                 }
 

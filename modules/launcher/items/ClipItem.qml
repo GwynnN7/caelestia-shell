@@ -23,7 +23,7 @@ Item {
 
     function copyAndPasteClip(): void {
         root.list.visibilities.launcher = false;
-        Quickshell.execDetached(["sh", "-c", "sleep 0.3 && cliphist decode '" + root.entryId + "' | wl-copy && wl-paste | wtype -"]);
+        Quickshell.execDetached(["sh", "-c", "cliphist decode '" + root.entryId + "' | wl-copy && wl-paste | wtype -s 300 -M ctrl -M shift v -m shift -m ctrl"]);
     }
 
     function onClicked(): void {

@@ -31,7 +31,7 @@ class LauncherConfig : public ConfigObject {
 
     CONFIG_PROPERTY(bool, enabled, true)
     CONFIG_PROPERTY(bool, showOnHover, false)
-    CONFIG_PROPERTY(int, maxShown, 7)
+    CONFIG_PROPERTY(int, maxShown, 40)
     CONFIG_PROPERTY(int, maxWallpapers, 9)
     CONFIG_GLOBAL_PROPERTY(QString, specialPrefix, u"@"_s)
     CONFIG_GLOBAL_PROPERTY(QString, actionPrefix, u">"_s)
@@ -86,18 +86,6 @@ class LauncherConfig : public ConfigObject {
                 { u"command"_s, QStringList{ u"caelestia"_s, u"wallpaper"_s, u"-r"_s } },
             }),
             vmap({
-                { u"name"_s, u"Light"_s },
-                { u"icon"_s, u"light_mode"_s },
-                { u"description"_s, u"Change the scheme to light mode"_s },
-                { u"command"_s, QStringList{ u"setMode"_s, u"light"_s } },
-            }),
-            vmap({
-                { u"name"_s, u"Dark"_s },
-                { u"icon"_s, u"dark_mode"_s },
-                { u"description"_s, u"Change the scheme to dark mode"_s },
-                { u"command"_s, QStringList{ u"setMode"_s, u"dark"_s } },
-            }),
-            vmap({
                 { u"name"_s, u"Shutdown"_s },
                 { u"icon"_s, u"power_settings_new"_s },
                 { u"description"_s, u"Shutdown the system"_s },
@@ -127,8 +115,8 @@ class LauncherConfig : public ConfigObject {
             vmap({
                 { u"name"_s, u"Sleep"_s },
                 { u"icon"_s, u"bedtime"_s },
-                { u"description"_s, u"Suspend then hibernate"_s },
-                { u"command"_s, QStringList{ u"systemctl"_s, u"suspend-then-hibernate"_s } },
+                { u"description"_s, u"Suspend"_s },
+                { u"command"_s, QStringList{ u"systemctl"_s, u"suspend"_s } },
             }),
             vmap({
                 { u"name"_s, u"Settings"_s },
