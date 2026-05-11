@@ -23,6 +23,17 @@ Column {
 
         KeyNavigation.up: bios
         KeyNavigation.down: reboot
+
+        Component.onCompleted: forceActiveFocus()
+
+        Connections {
+            function onLauncherChanged(): void {
+                if (!root.visibilities.launcher)
+                    logout.forceActiveFocus();
+            }
+
+            target: root.visibilities
+        }
     }
 
     SessionButton {
@@ -51,7 +62,7 @@ Column {
         height: Tokens.sizes.session.button
         sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
 
-        source: Paths.absolutePath(Config.paths.sessionGif)
+        source: Paths.absolutePath(Config.paths.cortanaPic)
         fillMode: Image.PreserveAspectCrop
     }
 
@@ -63,17 +74,6 @@ Column {
 
         KeyNavigation.up: suspend
         KeyNavigation.down: windows
-
-        Component.onCompleted: forceActiveFocus()
-
-        Connections {
-            function onLauncherChanged(): void {
-                if (!root.visibilities.launcher)
-                    logout.forceActiveFocus();
-            }
-
-            target: root.visibilities
-        }
     }    
 
     SessionButton {

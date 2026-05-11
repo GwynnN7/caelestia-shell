@@ -86,6 +86,20 @@ class LauncherConfig : public ConfigObject {
                 { u"command"_s, QStringList{ u"caelestia"_s, u"wallpaper"_s, u"-r"_s } },
             }),
             vmap({
+                { u"name"_s, u"Light"_s },
+                { u"icon"_s, u"light_mode"_s },
+                { u"description"_s, u"Change the scheme to light mode"_s },
+                { u"command"_s, QStringList{ u"setMode"_s, u"light"_s } },
+                { u"enabled"_s, false },
+            }),
+            vmap({
+                { u"name"_s, u"Dark"_s },
+                { u"icon"_s, u"dark_mode"_s },
+                { u"description"_s, u"Change the scheme to dark mode"_s },
+                { u"command"_s, QStringList{ u"setMode"_s, u"dark"_s } },
+                { u"enabled"_s, false },
+            }),
+            vmap({
                 { u"name"_s, u"Shutdown"_s },
                 { u"icon"_s, u"power_settings_new"_s },
                 { u"description"_s, u"Shutdown the system"_s },
