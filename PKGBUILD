@@ -15,7 +15,7 @@ makedepends=('git' 'cmake' 'ninja')
 
 build() {
     cd "$startdir"
-    cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr -DDISTRIBUTOR="Local Fork"
+    cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/
     cmake --build build
 }
 

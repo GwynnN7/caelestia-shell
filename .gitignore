@@ -1,4 +1,3 @@
-.SRCINFO
 .direnv
 /result
 /.qmlls.ini
@@ -6,3 +5,21 @@ build/
 .cache/
 logs
 .vscode/
+
+# CMake artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CMakeUserPresets.json
+*.o
+*.a
+*.so
+*.exe
+
+# PKGBUILD artifacts
+src/
+pkg/
+*.pkg.tar.zst
+*.pkg.tar.xz
+*.pkg.tar.gz
+.SRCINFO
