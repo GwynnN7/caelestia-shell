@@ -64,6 +64,14 @@ Column {
 
         source: Paths.absolutePath(Config.paths.cortanaPic)
         fillMode: Image.PreserveAspectCrop
+
+        StateLayer {
+            radius: width / 2
+            
+            onClicked: {
+                Quickshell.execDetached(Config.session.commands.lamp);
+            }
+        }
     }
 
     SessionButton {
