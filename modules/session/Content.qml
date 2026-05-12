@@ -68,8 +68,16 @@ Column {
         StateLayer {
             radius: width / 2
             
-            onClicked: {
-                Quickshell.execDetached(Config.session.commands.lamp);
+            onClicked: (mouse) => {
+                if (mouse.button === Qt.RightButton) {
+                    Quickshell.execDetached(Config.session.commands.generic);
+                } else if(mouse.button === Qt.MiddleButton) {
+                    Quickshell.execDetached(Config.session.commands.automode);
+                }
+                else {
+                    Quickshell.execDetached(Config.session.commands.lamp);
+                }
+                mouse.accepted = true;
             }
         }
     }

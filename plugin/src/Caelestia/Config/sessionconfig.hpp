@@ -36,6 +36,8 @@ class SessionCommands : public ConfigObject {
     CONFIG_PROPERTY(QStringList, reboot, { u"systemctl"_s, u"reboot"_s })
     CONFIG_PROPERTY(QStringList, windows, { u"systemctl"_s, u"reboot"_s })
     CONFIG_PROPERTY(QStringList, lamp, { u"cortana"_s, u"api"_s, u"-act"_s, u"toggle"_s, u"devices/lamp"_s })
+    CONFIG_PROPERTY(QStringList, generic, { u"cortana"_s, u"api"_s, u"-act"_s, u"toggle"_s, u"devices/generic"_s })
+    CONFIG_PROPERTY(QStringList, automode, { u"cortana"_s, u"api"_s, u"-val"_s, u"0"_s, u"devices/automaticmode"_s })
     CONFIG_PROPERTY(QStringList, bios, { u"systemctl"_s, u"reboot"_s, u"--firmware-setup"_s })
 
 public:

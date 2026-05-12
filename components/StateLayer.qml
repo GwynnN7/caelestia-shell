@@ -56,6 +56,7 @@ MouseArea {
     cursorShape: disabled ? undefined : Qt.PointingHandCursor
     hoverEnabled: true
 
+	acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
     onPressed: e => press(e.x, e.y)
 
     onPressedChanged: {
