@@ -660,7 +660,7 @@ For example, to disable the bar on DP-1:
     "paths": {
         "mediaGif": "root:/assets/bongocat.gif",
         "sessionGif": "root:/assets/kurukuru.gif",
-        "cortana": "root:/assets/cortana.png",
+        "cortanaPic": "root:/assets/cortana.png",
         "noNotifsPic": "root:/assets/dino.png",
         "lockNoNotifsPic": "root:/assets/dino.png",
         "wallpaperDir": "~/Pictures/Wallpapers",
