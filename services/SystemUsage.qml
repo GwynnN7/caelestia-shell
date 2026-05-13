@@ -261,7 +261,7 @@ Singleton {
     Process {
         id: gpuUsage
 
-        command: root.gpuType === "GENERIC" ? ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent"] : root.gpuType === "NVIDIA" ? ["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu", "--format=csv,noheader,nounits"] : ["echo"]
+        command: root.gpuType === "GENERIC" ? ["sh", "-c", "gpu-load -q 2>/dev/null || cat /sys/class/drm/card*/device/gpu_busy_percent"] : root.gpuType === "NVIDIA" ? ["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu", "--format=csv,noheader,nounits"] : ["echo"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.gpuType === "GENERIC") {
