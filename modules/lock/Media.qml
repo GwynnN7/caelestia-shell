@@ -3,8 +3,10 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Caelestia.Components
 import Caelestia.Config
 import qs.components
+import qs.components.controls
 import qs.components.effects
 import qs.services
 
@@ -29,7 +31,7 @@ Item {
         }
 
         layer.enabled: true
-        layer.effect: OpacityMask {
+        layer.effect: Mask {
             maskSource: mask
         }
 
@@ -72,15 +74,14 @@ Item {
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: Tokens.padding.large
+        anchors.margins: Tokens.padding.medium
 
         StyledText {
-            Layout.topMargin: Tokens.padding.large
-            Layout.bottomMargin: Tokens.spacing.larger
+            Layout.topMargin: Tokens.padding.medium
+            Layout.bottomMargin: Tokens.spacing.large
             text: qsTr("Now playing")
             color: Colours.palette.m3onSurfaceVariant
-            font.family: Tokens.font.family.mono
-            font.weight: 500
+            font: Tokens.font.label.builders.medium.weight(Font.DemiBold).vaxis("slnt", -4).build()
         }
 
         StyledText {
@@ -89,9 +90,7 @@ Item {
             text: Players.active?.trackArtist ?? qsTr("No media")
             color: Colours.palette.m3primary
             horizontalAlignment: Text.AlignHCenter
-            font.pointSize: Tokens.font.size.large
-            font.family: Tokens.font.family.mono
-            font.weight: 600
+            font: Tokens.font.body.builders.large.weight(Font.DemiBold).build()
             elide: Text.ElideRight
         }
 
@@ -100,102 +99,43 @@ Item {
             animate: true
             text: Players.active?.trackTitle ?? qsTr("No media")
             horizontalAlignment: Text.AlignHCenter
-            font.pointSize: Tokens.font.size.larger
-            font.family: Tokens.font.family.mono
+            font: Tokens.font.title.medium
             elide: Text.ElideRight
         }
 
-        RowLayout {
+        ButtonRow {
             Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: Tokens.spacing.large * 1.2
-            Layout.bottomMargin: Tokens.padding.large
+            Layout.topMargin: Tokens.spacing.medium
+            Layout.bottomMargin: Tokens.padding.extraLarge
 
-            spacing: Tokens.spacing.large
+            spacing: Tokens.spacing.extraSmall
 
-            PlayerControl {
+            IconButton {
+                type: IconButton.Tonal
                 icon: "skip_previous"
-                onClicked: {
-                    if (Players.active?.canGoPrevious)
-                        Players.active.previous();
-                }
+                isRound: true
+                shapeMorph: true
+                disabled: !Players.active?.canGoPrevious
+                onClicked: Players.active?.previous()
             }
 
-            PlayerControl {
-                animate: true
-                icon: active ? "pause" : "play_arrow"
-                colour: "Primary"
-                level: active ? 2 : 1
-                active: Players.active?.isPlaying ?? false
-                onClicked: {
-                    if (Players.active?.canTogglePlaying)
-                        Players.active.togglePlaying();
-                }
+            IconButton {
+                icon: Players.active?.isPlaying ? "pause" : "play_arrow"
+                isRound: true
+                shapeMorph: true
+                checked: Players.active?.isPlaying ?? false
+                disabled: !Players.active?.canTogglePlaying
+                onClicked: Players.active?.togglePlaying()
+                implicitWidth: implicitHeight + Tokens.padding.large * 2
             }
 
-            PlayerControl {
+            IconButton {
+                type: IconButton.Tonal
                 icon: "skip_next"
-                onClicked: {
-                    if (Players.active?.canGoNext)
-                        Players.active.next();
-                }
-            }
-        }
-    }
-
-    component PlayerControl: StyledRect {
-        id: control
-
-        property alias animate: controlIcon.animate
-        property alias icon: controlIcon.text
-        property bool active
-        property string colour: "Secondary"
-        property int level: 1
-
-        signal clicked
-
-        Layout.preferredWidth: implicitWidth + (controlState.pressed ? Tokens.padding.normal * 2 : active ? Tokens.padding.small * 2 : 0)
-        implicitWidth: controlIcon.implicitWidth + Tokens.padding.large * 2
-        implicitHeight: controlIcon.implicitHeight + Tokens.padding.normal * 2
-
-        color: active ? Colours.palette[`m3${colour.toLowerCase()}`] : Colours.palette[`m3${colour.toLowerCase()}Container`]
-        radius: active || controlState.pressed ? Tokens.rounding.normal : Math.min(implicitWidth, implicitHeight) / 2 * Math.min(1, Tokens.rounding.scale)
-
-        Elevation {
-            anchors.fill: parent
-            radius: parent.radius
-            z: -1
-            level: controlState.containsMouse && !controlState.pressed ? control.level + 1 : control.level
-        }
-
-        StateLayer {
-            id: controlState
-
-            color: control.active ? Colours.palette[`m3on${control.colour}`] : Colours.palette[`m3on${control.colour}Container`]
-            onClicked: control.clicked()
-        }
-
-        MaterialIcon {
-            id: controlIcon
-
-            anchors.centerIn: parent
-            color: control.active ? Colours.palette[`m3on${control.colour}`] : Colours.palette[`m3on${control.colour}Container`]
-            font.pointSize: Tokens.font.size.large
-            fill: control.active ? 1 : 0
-
-            Behavior on fill {
-                Anim {}
-            }
-        }
-
-        Behavior on Layout.preferredWidth {
-            Anim {
-                type: Anim.FastSpatial
-            }
-        }
-
-        Behavior on radius {
-            Anim {
-                type: Anim.FastSpatial
+                isRound: true
+                shapeMorph: true
+                disabled: !Players.active?.canGoNext
+                onClicked: Players.active?.next()
             }
         }
     }

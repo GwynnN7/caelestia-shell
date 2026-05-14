@@ -65,8 +65,7 @@ ScrollBar {
             }
         }
     }
-
-    implicitWidth: flickable ? Tokens.padding.large : 6
+    implicitWidth: Tokens.padding.extraSmall
 
     contentItem: StyledRect {
         anchors.left: parent ? parent.left : undefined
@@ -99,14 +98,32 @@ ScrollBar {
         }
 
         Behavior on opacity {
-            Anim {}
+            Anim {
+                type: Anim.DefaultEffects
+            }
         }
     }
 
+    // Sync nonAnimPosition with flickable when not animating
     Connections {
-        enabled: root.flickable !== null
-        target: root.flickable
+        function onContentYChanged() {
+            if (!root.animating && !fullMouse.pressed) {
+                root._updatingFromFlickable = true;
+                const contentHeight = root.flickable.contentHeight;
+                const height = root.flickable.height;
+                if (contentHeight > height) {
+                    root.nonAnimPosition = Math.max(0, Math.min(1, root.flickable.contentY / (contentHeight - height)));
+                } else {
+                    root.nonAnimPosition = 0;
+                }
+                root._updatingFromFlickable = false;
+            }
+        }
 
+        target: root.flickable
+    }
+
+    Connections {
         function onMovingChanged(): void {
             if (root.flickable.moving)
                 root.shouldBeActive = true;

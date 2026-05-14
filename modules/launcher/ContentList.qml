@@ -70,7 +70,7 @@ Item {
                 property: "opacity"
                 from: 1
                 to: 0
-                type: Anim.StandardSmall
+                type: Anim.DefaultEffects
             }
             PropertyAction {}
             Anim {
@@ -78,7 +78,7 @@ Item {
                 property: "opacity"
                 from: 0
                 to: 1
-                type: Anim.StandardSmall
+                type: Anim.DefaultEffects
             }
         }
     }
@@ -137,7 +137,7 @@ Item {
         opacity: root.currentList?.count === 0 ? 1 : 0
         scale: root.currentList?.count === 0 ? 1 : 0.5
 
-        spacing: Tokens.spacing.normal
+        spacing: Tokens.spacing.medium
         padding: Tokens.padding.large
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -146,7 +146,7 @@ Item {
         MaterialIcon {
             text: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
             color: Colours.palette.m3onSurfaceVariant
-            font.pointSize: Tokens.font.size.extraLarge
+            fontStyle: Tokens.font.icon.extraLarge
 
             anchors.verticalCenter: parent.verticalCenter
         }
@@ -157,19 +157,20 @@ Item {
             StyledText {
                 text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No results")
                 color: Colours.palette.m3onSurfaceVariant
-                font.pointSize: Tokens.font.size.larger
-                font.weight: 500
+                font: Tokens.font.body.builders.large.weight(Font.Medium).build()
             }
 
             StyledText {
                 text: root.state === "wallpapers" && Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else")
                 color: Colours.palette.m3onSurfaceVariant
-                font.pointSize: Tokens.font.size.normal
+                font: Tokens.font.body.medium
             }
         }
 
         Behavior on opacity {
-            Anim {}
+            Anim {
+                type: Anim.DefaultEffects
+            }
         }
 
         Behavior on scale {
@@ -180,18 +181,12 @@ Item {
     Behavior on implicitWidth {
         enabled: root.visibilities.launcher
 
-        Anim {
-            duration: Tokens.anim.durations.large
-            easing: Tokens.anim.emphasizedDecel
-        }
+        Anim {}
     }
 
     Behavior on implicitHeight {
         enabled: root.visibilities.launcher
 
-        Anim {
-            duration: Tokens.anim.durations.large
-            easing: Tokens.anim.emphasizedDecel
-        }
+        Anim {}
     }
 }

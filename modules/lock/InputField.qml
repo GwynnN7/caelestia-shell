@@ -49,13 +49,14 @@ Item {
 
         animate: true
         color: root.pam.passwd.active ? Colours.palette.m3secondary : Colours.palette.m3outline
-        font.pointSize: Tokens.font.size.normal
-        font.family: Tokens.font.family.mono
+        font: Tokens.font.mono.medium
 
         opacity: root.buffer ? 0 : 1
 
         Behavior on opacity {
-            Anim {}
+            Anim {
+                type: Anim.DefaultEffects
+            }
         }
     }
 
@@ -74,10 +75,10 @@ Item {
         anchors.horizontalCenterOffset: implicitWidth > root.width ? -(implicitWidth - root.width) / 2 : 0
 
         implicitWidth: fullWidth
-        implicitHeight: Tokens.font.size.normal
+        implicitHeight: Tokens.font.body.medium.pointSize
 
         orientation: Qt.Horizontal
-        spacing: Tokens.spacing.small / 2
+        spacing: Tokens.spacing.extraSmall
         interactive: false
 
         model: ScriptModel {
@@ -91,7 +92,7 @@ Item {
             implicitHeight: charList.implicitHeight
 
             color: Colours.palette.m3onSurface
-            radius: Tokens.rounding.small / 2
+            radius: Tokens.rounding.medium / 2
 
             opacity: 0
             scale: 0
@@ -111,6 +112,7 @@ Item {
                 }
                 ParallelAnimation {
                     Anim {
+                        type: Anim.DefaultEffects
                         target: ch
                         property: "opacity"
                         to: 0
@@ -129,7 +131,9 @@ Item {
             }
 
             Behavior on opacity {
-                Anim {}
+                Anim {
+                    type: Anim.DefaultEffects
+                }
             }
 
             Behavior on scale {

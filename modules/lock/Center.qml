@@ -20,7 +20,7 @@ ColumnLayout {
     Layout.fillWidth: false
     Layout.fillHeight: true
 
-    spacing: Tokens.spacing.large * 2
+    spacing: Tokens.spacing.largeIncreased * 2
 
     RowLayout {
         Layout.alignment: Qt.AlignHCenter
@@ -30,27 +30,21 @@ ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
             text: Time.hourStr
             color: Colours.palette.m3secondary
-            font.pointSize: Math.floor(Tokens.font.size.extraLarge * 3 * root.centerScale)
-            font.family: Tokens.font.family.clock
-            font.bold: true
+            font: Tokens.font.clock.size(Math.floor(28 * 3 * root.centerScale)).weight(Font.Bold).build()
         }
 
         StyledText {
             Layout.alignment: Qt.AlignVCenter
             text: ":"
             color: Colours.palette.m3primary
-            font.pointSize: Math.floor(Tokens.font.size.extraLarge * 3 * root.centerScale)
-            font.family: Tokens.font.family.clock
-            font.bold: true
+            font: Tokens.font.clock.size(Math.floor(28 * 3 * root.centerScale)).weight(Font.Bold).build()
         }
 
         StyledText {
             Layout.alignment: Qt.AlignVCenter
             text: Time.minuteStr
             color: Colours.palette.m3secondary
-            font.pointSize: Math.floor(Tokens.font.size.extraLarge * 3 * root.centerScale)
-            font.family: Tokens.font.family.clock
-            font.bold: true
+            font: Tokens.font.clock.size(Math.floor(28 * 3 * root.centerScale)).weight(Font.Bold).build()
         }
 
         Loader {
@@ -64,26 +58,22 @@ ColumnLayout {
             sourceComponent: StyledText {
                 text: Time.amPmStr
                 color: Colours.palette.m3primary
-                font.pointSize: Math.floor(Tokens.font.size.extraLarge * 2 * root.centerScale)
-                font.family: Tokens.font.family.clock
-                font.bold: true
+                font: Tokens.font.clock.size(Math.floor(28 * 2 * root.centerScale)).weight(Font.Bold).build()
             }
         }
     }
 
     StyledText {
         Layout.alignment: Qt.AlignHCenter
-        Layout.topMargin: -Tokens.padding.large * 2
+        Layout.topMargin: -Tokens.padding.extraLargeIncreased
 
         text: Time.format("dddd, d MMMM yyyy")
         color: Colours.palette.m3tertiary
-        font.pointSize: Math.floor(Tokens.font.size.extraLarge * root.centerScale)
-        font.family: Tokens.font.family.mono
-        font.bold: true
+        font: Tokens.font.mono.builders.large.size(Math.floor(28 * root.centerScale)).weight(Font.Bold).build()
     }
 
     StyledClippingRect {
-        Layout.topMargin: Tokens.spacing.large * 2
+        Layout.topMargin: Tokens.spacing.largeIncreased * 2
         Layout.alignment: Qt.AlignHCenter
 
         implicitWidth: root.centerWidth / 2
@@ -97,7 +87,7 @@ ColumnLayout {
 
             text: "person"
             color: Colours.palette.m3onSurfaceVariant
-            font.pointSize: Math.floor(root.centerWidth / 4)
+            fontStyle: Tokens.font.icon.size(Math.floor(root.centerWidth / 4)).build()
             visible: pfp.status !== Image.Ready
         }
 
@@ -113,7 +103,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
 
         implicitWidth: root.centerWidth * 0.8
-        implicitHeight: input.implicitHeight + Tokens.padding.small * 2
+        implicitHeight: input.implicitHeight + Tokens.padding.small
 
         color: Colours.tPalette.m3surfaceContainer
         radius: Tokens.rounding.full
@@ -147,12 +137,12 @@ ColumnLayout {
             id: input
 
             anchors.fill: parent
-            anchors.margins: Tokens.padding.small
-            spacing: Tokens.spacing.normal
+            anchors.margins: Tokens.padding.extraSmall
+            spacing: Tokens.spacing.medium
 
             Item {
                 implicitWidth: implicitHeight
-                implicitHeight: fprintIcon.implicitHeight + Tokens.padding.small * 2
+                implicitHeight: fprintIcon.implicitHeight + Tokens.padding.small
 
                 MaterialIcon {
                     id: fprintIcon
@@ -170,7 +160,9 @@ ColumnLayout {
                     opacity: root.lock.pam.passwd.active ? 0 : 1
 
                     Behavior on opacity {
-                        Anim {}
+                        Anim {
+                            type: Anim.DefaultEffects
+                        }
                     }
                 }
 
@@ -188,7 +180,7 @@ ColumnLayout {
 
             StyledRect {
                 implicitWidth: implicitHeight
-                implicitHeight: enterIcon.implicitHeight + Tokens.padding.small * 2
+                implicitHeight: enterIcon.implicitHeight + Tokens.padding.small
 
                 color: root.lock.pam.buffer ? Colours.palette.m3primary : Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
                 radius: Tokens.rounding.full
@@ -204,7 +196,7 @@ ColumnLayout {
                     anchors.centerIn: parent
                     text: "arrow_forward"
                     color: root.lock.pam.buffer ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
-                    font.weight: 500
+                    fontStyle: Tokens.font.icon.size(Tokens.font.icon.large.pointSize).weight(Font.Medium).build()
                 }
             }
         }
@@ -212,7 +204,7 @@ ColumnLayout {
 
     Item {
         Layout.fillWidth: true
-        Layout.topMargin: -Tokens.spacing.large
+        Layout.topMargin: -Tokens.spacing.largeIncreased
 
         implicitHeight: Math.max(message.implicitHeight, stateMessage.implicitHeight)
 
@@ -267,9 +259,8 @@ ColumnLayout {
             scale: shouldBeVisible && !message.msg ? 1 : 0.7
             opacity: shouldBeVisible && !message.msg ? 1 : 0
             color: Colours.palette.m3onSurfaceVariant
-            animateProp: "opacity"
 
-            font.family: Tokens.font.family.mono
+            font: Tokens.font.mono.small
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             lineHeight: 1.2
@@ -279,7 +270,9 @@ ColumnLayout {
             }
 
             Behavior on opacity {
-                Anim {}
+                Anim {
+                    type: Anim.DefaultEffects
+                }
             }
         }
 
@@ -324,8 +317,7 @@ ColumnLayout {
             opacity: 0
             color: Colours.palette.m3error
 
-            font.pointSize: Tokens.font.size.small
-            font.family: Tokens.font.family.mono
+            font: Tokens.font.mono.small
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
@@ -368,6 +360,7 @@ ColumnLayout {
             Anim {
                 id: appearAnim
 
+                type: Anim.DefaultEffects
                 target: message
                 properties: "scale,opacity"
                 to: 1

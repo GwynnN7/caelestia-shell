@@ -13,7 +13,7 @@ ColumnLayout {
     id: root
 
     anchors.fill: parent
-    anchors.margins: Tokens.padding.large * 2
+    anchors.margins: Tokens.padding.extraLargeIncreased
     anchors.topMargin: Tokens.padding.large
 
     spacing: Tokens.spacing.small
@@ -21,21 +21,21 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: false
-        spacing: Tokens.spacing.normal
+        spacing: Tokens.spacing.medium
 
         StyledRect {
-            implicitWidth: prompt.implicitWidth + Tokens.padding.normal * 2
-            implicitHeight: prompt.implicitHeight + Tokens.padding.normal * 2
+            implicitWidth: prompt.implicitWidth + Tokens.padding.medium * 2
+            implicitHeight: prompt.implicitHeight + Tokens.padding.medium * 2
 
             color: Colours.palette.m3primary
-            radius: Tokens.rounding.small
+            radius: Tokens.rounding.medium
 
             MonoText {
                 id: prompt
 
                 anchors.centerIn: parent
                 text: ">"
-                font.pointSize: root.width > 400 ? Tokens.font.size.larger : Tokens.font.size.normal
+                font: root.width > 400 ? Tokens.font.mono.large : Tokens.font.mono.medium
                 color: Colours.palette.m3onPrimary
             }
         }
@@ -43,7 +43,7 @@ ColumnLayout {
         MonoText {
             Layout.fillWidth: true
             text: "caelestiafetch.sh"
-            font.pointSize: root.width > 400 ? Tokens.font.size.larger : Tokens.font.size.normal
+            font: root.width > 400 ? Tokens.font.mono.large : Tokens.font.mono.medium
             elide: Text.ElideRight
         }
 
@@ -71,10 +71,10 @@ ColumnLayout {
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.topMargin: Tokens.padding.normal
-            Layout.bottomMargin: Tokens.padding.normal
+            Layout.topMargin: Tokens.padding.medium
+            Layout.bottomMargin: Tokens.padding.medium
             Layout.leftMargin: iconLoader.active ? 0 : width * 0.1
-            spacing: Tokens.spacing.normal
+            spacing: Tokens.spacing.medium
 
             WrappedLoader {
                 Layout.fillWidth: true
@@ -125,18 +125,18 @@ ColumnLayout {
         active: root.height > 180
 
         sourceComponent: RowLayout {
-            spacing: Tokens.spacing.large
+            spacing: Tokens.spacing.largeIncreased
 
             Repeater {
-                model: Math.max(0, Math.min(8, root.width / (Tokens.font.size.larger * 2 + Tokens.spacing.large)))
+                model: Math.max(0, Math.min(8, root.width / (Tokens.font.body.large.pointSize * 2 + Tokens.spacing.large)))
 
                 StyledRect {
                     required property int index
 
                     implicitWidth: implicitHeight
-                    implicitHeight: Tokens.font.size.larger * 2
+                    implicitHeight: Tokens.font.body.large.pointSize * 2
                     color: Colours.palette[`term${index}`]
-                    radius: Tokens.rounding.small
+                    radius: Tokens.rounding.medium
                 }
             }
         }
@@ -168,11 +168,11 @@ ColumnLayout {
 
     component FetchText: MonoText {
         Layout.fillWidth: true
-        font.pointSize: root.width > 400 ? Tokens.font.size.larger : Tokens.font.size.normal
+        font: root.width > 400 ? Tokens.font.mono.large : Tokens.font.mono.medium
         elide: Text.ElideRight
     }
 
     component MonoText: StyledText {
-        font.family: Tokens.font.family.mono
+        font: Tokens.font.mono.small
     }
 }
