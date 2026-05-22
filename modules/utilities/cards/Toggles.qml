@@ -19,22 +19,28 @@ StyledRect {
     required property BarPopouts.Wrapper popouts
 
     readonly property var quickToggles: {
+        const configToggles = Config.utilities.quickToggles || [];
+        const disabledIds = new Set(
+            configToggles.filter(t => t.enabled === false).map(t => t.id)
+        );
+
+        const builtIn = [
+            { id: "badapple" },
+            { id: "pauseWallpaper" }
+        ].filter(t => !disabledIds.has(t.id));
+
+        const allToggles = [...configToggles.filter(t => !disabledIds.has(t.id)), ...builtIn];
         const seenIds = new Set();
-        const allToggles = [...Config.utilities.quickToggles, { id: "badapple", enabled: true }];
 
         return allToggles.filter(item => {
-            if (!(item.enabled ?? true))
+            if (seenIds.has(item.id))
                 return false;
-
-            if (seenIds.has(item.id)) {
-                return false;
-            }
+            seenIds.add(item.id);
 
             if (item.id === "vpn") {
                 return GlobalConfig.utilities.vpn.provider.some(p => typeof p === "object" ? (p.enabled === true) : false);
             }
 
-            seenIds.add(item.id);
             return true;
         });
     }
@@ -176,6 +182,19 @@ StyledRect {
                             Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
                             const visibilities = Visibilities.getForActive();
                             visibilities.launcher = true;
+                        }
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "pauseWallpaper"
+                    delegate: Toggle {
+                        id: pauseWallpaperToggle
+                        icon: "pause"
+                        toggle: true
+                        Component.onCompleted: checked = Qt.binding(() => GlobalConfig.background.videoWallpaperPaused)
+                        onClicked: {
+                            const newVal = !GlobalConfig.background.videoWallpaperPaused;
+                            GlobalConfig.background.videoWallpaperPaused = newVal;
                         }
                     }
                 }

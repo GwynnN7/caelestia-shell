@@ -38,6 +38,46 @@ SwitchRow {
         }
     }
 
+    SwitchRow {
+        label: qsTr("Pause on all displays")
+        checked: rootPane.videoWallpaperPauseOnAllDisplays
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperPauseOnAllDisplays = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: qsTr("Pause on fullscreen")
+        checked: rootPane.videoWallpaperPauseOnFullscreen
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperPauseOnFullscreen = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: qsTr("Pause on tiled")
+        checked: rootPane.videoWallpaperPauseOnTiled
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperPauseOnTiled = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: qsTr("Mute when media playing")
+        checked: rootPane.videoWallpaperMuteOnMedia
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperMuteOnMedia = checked;
+            rootPane.saveConfig();
+        }
+    }
+
     StyledText {
         Layout.topMargin: Tokens.spacing.normal
         text: qsTr("Shimeji")

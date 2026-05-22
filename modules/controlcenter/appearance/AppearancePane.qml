@@ -55,7 +55,12 @@ Item {
     property var shimejiScreenCounts: (GlobalConfig.shimeji.screenCounts || {})
     property list<string> monitorNames: Hypr.monitorNames()
     property bool wallpaperEnabled: Config.background.wallpaperEnabled ?? true
+    property bool videoWallpaperPaused: Config.background.videoWallpaperPaused ?? false
     property bool videoWallpaperSoundEnabled: Config.background.videoWallpaperSoundEnabled ?? false
+    property bool videoWallpaperPauseOnAllDisplays: Config.background.videoWallpaperPauseOnAllDisplays ?? false
+    property bool videoWallpaperPauseOnFullscreen: Config.background.videoWallpaperPauseOnFullscreen ?? false
+    property bool videoWallpaperPauseOnTiled: Config.background.videoWallpaperPauseOnTiled ?? false
+    property bool videoWallpaperMuteOnMedia: Config.background.videoWallpaperMuteOnMedia ?? false
     property bool visualiserEnabled: Config.background.visualiser.enabled ?? false
     property bool visualiserAutoHide: Config.background.visualiser.autoHide ?? true
     property real visualiserRounding: Config.background.visualiser.rounding ?? 1
@@ -96,7 +101,12 @@ Item {
         GlobalConfig.background.desktopClock.invertColors = root.desktopClockInvertColors;
 
         GlobalConfig.background.wallpaperEnabled = root.wallpaperEnabled;
+        GlobalConfig.background.videoWallpaperPaused = root.videoWallpaperPaused;
         GlobalConfig.background.videoWallpaperSoundEnabled = root.videoWallpaperSoundEnabled;
+        GlobalConfig.background.videoWallpaperPauseOnAllDisplays = root.videoWallpaperPauseOnAllDisplays;
+        GlobalConfig.background.videoWallpaperPauseOnFullscreen = root.videoWallpaperPauseOnFullscreen;
+        GlobalConfig.background.videoWallpaperPauseOnTiled = root.videoWallpaperPauseOnTiled;
+        GlobalConfig.background.videoWallpaperMuteOnMedia = root.videoWallpaperMuteOnMedia;
 
         GlobalConfig.background.visualiser.enabled = root.visualiserEnabled;
         GlobalConfig.background.visualiser.autoHide = root.visualiserAutoHide;
