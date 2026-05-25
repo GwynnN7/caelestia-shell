@@ -29,6 +29,7 @@ This fork adds the following features on top of the official caelestia shell:
 - **Pause Video Wallpapers Toggle** - Quick toggle to pause all video wallpapers with configurable auto-pause on fullscreen/tiled windows.
 - **Background Clock** - Desktop clock with customizable positioning, scale, and shadow settings.
 - **Desktop Lyrics** - Display lyrics on the desktop with customizable positioning, scale, text alignment, colors, animations, and auto-hide when fullscreen windows are present.
+- **Bezel Mode** - Makes the shell background pitch black and fully opaque, creating a seamless look where the shell blends with display bezels.
 
 ## Global Shortcuts
 

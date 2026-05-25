@@ -127,7 +127,7 @@ StyledWindow {
 
     Item {
         anchors.fill: parent
-        opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
+        opacity: GlobalConfig.appearance.pitchBlack ? 1 : (Colours.transparency.enabled ? Colours.transparency.base : 1)
         layer.enabled: true
         layer.effect: MultiEffect {
             shadowEnabled: true
@@ -138,7 +138,7 @@ StyledWindow {
         BlobGroup {
             id: blobGroup
 
-            color: Colours.palette.m3surface
+            color: GlobalConfig.appearance.pitchBlack ? "#000000" : Colours.palette.m3surface
             smoothing: root.contentItem.Config.border.smoothing
 
             Behavior on color {

@@ -32,6 +32,7 @@ Item {
     property real roundingScale: Config.appearance.rounding.scale ?? 1
     property real spacingScale: Config.appearance.spacing.scale ?? 1
     property bool transparencyEnabled: GlobalConfig.appearance.transparency.enabled ?? false
+    property bool bezelModeEnabled: GlobalConfig.appearance.pitchBlack ?? false
     property real transparencyBase: GlobalConfig.appearance.transparency.base ?? 0.85
     property real transparencyLayers: GlobalConfig.appearance.transparency.layers ?? 0.4
     property real borderRounding: Config.border.rounding ?? 1
@@ -91,6 +92,7 @@ Item {
         GlobalConfig.appearance.spacing.scale = root.spacingScale;
 
         GlobalConfig.appearance.transparency.enabled = root.transparencyEnabled;
+        GlobalConfig.appearance.pitchBlack = root.bezelModeEnabled;
         GlobalConfig.appearance.transparency.base = root.transparencyBase;
         GlobalConfig.appearance.transparency.layers = root.transparencyLayers;
 

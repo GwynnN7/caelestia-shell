@@ -18,6 +18,15 @@ CollapsibleSection {
     title: qsTr("Border")
     showBackground: true
 
+    SwitchRow {
+        label: qsTr("Bezel mode")
+        checked: rootPane.bezelModeEnabled
+        onToggled: checked => {
+            rootPane.bezelModeEnabled = checked;
+            rootPane.saveConfig();
+        }
+    }
+
     SectionContainer {
         contentSpacing: Tokens.spacing.normal
 
