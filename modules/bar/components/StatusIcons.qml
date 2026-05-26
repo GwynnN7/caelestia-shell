@@ -32,7 +32,7 @@ StyledRect {
         anchors.right: parent.right
         anchors.bottom: isHorizontal ? undefined : parent.bottom
         anchors.bottomMargin: isHorizontal ? 0 : Tokens.padding.normal
-        anchors.top: isHorizontal ? parent.top : undefined
+        anchors.top: undefined
         anchors.topMargin: isHorizontal ? Tokens.padding.normal : 0
         anchors.leftMargin: isHorizontal ? Tokens.padding.normal : 0
         anchors.rightMargin: isHorizontal ? Tokens.padding.normal : 0
@@ -302,7 +302,7 @@ StyledRect {
     component WrappedLoader: Loader {
         required property string name
 
-        asynchronous: true
+        asynchronous: false
         Layout.alignment: isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
         visible: active
     }
