@@ -323,7 +323,7 @@ StyledWindow {
 
             fullscreen: root.hasFullscreen
 
-            Component.onCompleted: Visibilities.bars.set(root.screen, this)
+            Component.onCompleted: Visibilities.registerBar(root.screen, this)
         }
 
         states: [

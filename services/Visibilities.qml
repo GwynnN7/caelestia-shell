@@ -13,6 +13,11 @@ Singleton {
         screens.set(Hypr.monitorFor(screen), visibilities);
     }
 
+    function registerBar(screen: ShellScreen, barWrapper: var): void {
+        bars.set(screen, barWrapper);
+        bars = bars; // Trigger property change notification signal
+    }
+
     function getForActive(): DrawerVisibilities {
         return screens.get(Hypr.focusedMonitor);
     }

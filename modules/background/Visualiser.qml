@@ -60,7 +60,10 @@ Item {
 
                     anchors.fill: parent
                     anchors.margins: Config.border.thickness
-                    anchors.leftMargin: Visibilities.bars.get(root.screen).exclusiveZone + Tokens.spacing.small * Config.background.visualiser.spacing
+                    anchors.leftMargin: Config.bar.position === "left" ? ((Visibilities.bars.get(root.screen)?.exclusiveZone ?? 0) + Tokens.spacing.small * Config.background.visualiser.spacing) : Config.border.thickness
+                    anchors.rightMargin: Config.bar.position === "right" ? ((Visibilities.bars.get(root.screen)?.exclusiveZone ?? 0) + Tokens.spacing.small * Config.background.visualiser.spacing) : Config.border.thickness
+                    anchors.topMargin: Config.bar.position === "top" ? ((Visibilities.bars.get(root.screen)?.exclusiveZone ?? 0) + Tokens.spacing.small * Config.background.visualiser.spacing) : Config.border.thickness
+                    anchors.bottomMargin: Config.bar.position === "bottom" ? ((Visibilities.bars.get(root.screen)?.exclusiveZone ?? 0) + Tokens.spacing.small * Config.background.visualiser.spacing) : Config.border.thickness
 
                     values: Audio.cava.values
                     primaryColor: Qt.alpha(Colours.palette.m3primary, 0.7)
@@ -70,6 +73,15 @@ Item {
                     animationDuration: Tokens.anim.durations.normal
 
                     Behavior on anchors.leftMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.rightMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.topMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.bottomMargin {
                         Anim {}
                     }
                 }
