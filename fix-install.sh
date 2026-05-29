@@ -3,6 +3,10 @@
 # Caelestia Shell Fix & Global Installer Script
 # This script configures, builds, installs, and resolves dynamic library conflicts
 # introduced by old version leftovers.
+#
+# Usage: fix-install.sh [version]
+#   version    Optional version string (e.g., "1.0.0"). Defaults to "1.0.0"
+#              if not provided.
 
 set -euo pipefail
 
@@ -12,6 +16,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+VERSION="${1:-1.0.0}"
 
 echo -e "${BLUE}===================================================${NC}"
 echo -e "${BLUE}      Caelestia Shell Modernizer & Installer       ${NC}"
@@ -33,10 +39,20 @@ rm -rf build
 
 # 4. Configure the project with proper root prefix
 echo -e "${BLUE}[2/5] Configuring CMake with system prefix (/)...${NC}"
-cmake -B build -G Ninja \
-    -DCMAKE_INSTALL_PREFIX=/ \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+
+CMAKE_ARGS=(
+    -G Ninja
+    -DCMAKE_INSTALL_PREFIX=/
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+)
+
+if [ -n "${VERSION}" ]; then
+    CMAKE_ARGS+=(-DVERSION="${VERSION}")
+    echo -e "${YELLOW}Building version: ${VERSION}${NC}"
+fi
+
+cmake -B build "${CMAKE_ARGS[@]}"
 
 # 5. Build the project
 echo -e "${BLUE}[3/5] Compiling QML and C++ plugins...${NC}"
