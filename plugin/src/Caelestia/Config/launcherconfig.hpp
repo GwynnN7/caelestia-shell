@@ -147,6 +147,12 @@ class LauncherConfig : public ConfigObject {
                 { u"command"_s, QStringList{ u"autocomplete"_s, u"windows"_s } },
                 { u"enabled"_s, true },
             }),
+            vmap({
+                { u"name"_s, u"Keybinds"_s },
+                { u"icon"_s, u"keyboard"_s },
+                { u"description"_s, u"View all keybinds"_s },
+                { u"command"_s, QStringList{ u"autocomplete"_s, u"keybinds"_s } },
+            }),
         })
 
 public:
