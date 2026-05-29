@@ -19,7 +19,7 @@ StyledRect {
 
     property bool expanded
 
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+    property bool isHorizontal: false
 
     readonly property real nonAnimHeight: {
         if (isHorizontal)
@@ -56,8 +56,8 @@ StyledRect {
         anchors.left: isHorizontal ? parent.left : undefined
         anchors.leftMargin: isHorizontal ? root.padding : 0
 
-        columns: isHorizontal ? -1 : 1
-        rows: isHorizontal ? 1 : -1
+        columns: isHorizontal ? 999 : 1
+        rows: isHorizontal ? 1 : 999
         flow: isHorizontal ? Grid.LeftToRight : Grid.TopToBottom
 
         spacing: Tokens.spacing.small

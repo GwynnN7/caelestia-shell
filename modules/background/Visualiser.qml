@@ -12,6 +12,8 @@ import qs.services
 Item {
     id: root
 
+    Config.screen: screen.name
+
     required property ShellScreen screen
     required property Item wallpaper
 
@@ -72,8 +74,8 @@ Item {
 
                     anchors.fill: parent
                     anchors.margins: Config.border.thickness
-                    anchors.leftMargin: Config.bar.position === "left" ? (root.barExclusiveZone + root.visualiserSpacing) : root.fallbackMargin
-                    anchors.rightMargin: Config.bar.position === "right" ? root.barExclusiveZone : (root.fallbackMargin - root.visualiserSpacing)
+                    anchors.leftMargin: Config.bar.position === "left" ? (root.barExclusiveZone + Tokens.padding.large * 2) : root.fallbackMargin
+                    anchors.rightMargin: Config.bar.position === "right" ? (root.barExclusiveZone + Tokens.padding.large * 2) : (root.fallbackMargin - root.visualiserSpacing)
                     anchors.topMargin: Config.bar.position === "top" ? baseMargin : Config.border.thickness
                     anchors.bottomMargin: Config.bar.position === "bottom" ? baseMargin : Config.border.thickness
 

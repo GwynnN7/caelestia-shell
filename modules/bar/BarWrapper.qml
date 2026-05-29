@@ -83,18 +83,7 @@ Item {
     ]
 
     Component {
-        id: horizontalBar
-        Bar {
-            anchors.fill: parent
-            screen: root.screen
-            visibilities: root.visibilities
-            popouts: root.popouts // qmllint disable incompatible-type
-            fullscreen: root.fullscreen
-        }
-    }
-
-    Component {
-        id: verticalBar
+        id: barComponent
         Bar {
             anchors.fill: parent
             screen: root.screen
@@ -108,10 +97,10 @@ Item {
         id: content
 
         active: root.shouldBeVisible || root.visible
-        sourceComponent: root.isHorizontal ? horizontalBar : verticalBar
+        sourceComponent: barComponent
 
-        width: root.isHorizontal ? root.width : root.contentWidth
-        height: root.isHorizontal ? root.contentWidth : root.height
+        width: root.isHorizontal ? root.screen.width : root.contentWidth
+        height: root.isHorizontal ? root.contentWidth : root.screen.height
 
         states: [
             State {

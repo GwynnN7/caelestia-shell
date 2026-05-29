@@ -12,6 +12,7 @@ StyledWindow {
     id: root
 
     required property ShellScreen modelData
+    Config.screen: modelData.name
     property int shimejiCount: 1
 
     readonly property alias shimejiScreen: root.modelData

@@ -12,7 +12,7 @@ StyledRect {
     readonly property color colour: Colours.palette.m3tertiary
     readonly property int padding: Config.bar.clock.background ? Tokens.padding.normal : Tokens.padding.small
 
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+    property bool isHorizontal: false
 
     implicitWidth: isHorizontal ? (layout.implicitWidth + root.padding * 2) : Tokens.sizes.bar.innerWidth
     implicitHeight: isHorizontal ? Tokens.sizes.bar.innerWidth : (layout.implicitHeight + root.padding * 2)

@@ -175,21 +175,27 @@ GridLayout {
                 roleValue: "tray"
                 delegate: WrappedLoader {
                     visible: !root.fullscreen
-                    sourceComponent: Tray {}
+                    sourceComponent: Tray {
+                        isHorizontal: root.isHorizontal
+                    }
                 }
             }
             DelegateChoice {
                 roleValue: "clock"
                 delegate: WrappedLoader {
                     visible: !root.fullscreen
-                    sourceComponent: Clock {}
+                    sourceComponent: Clock {
+                        isHorizontal: root.isHorizontal
+                    }
                 }
             }
             DelegateChoice {
                 roleValue: "statusIcons"
                 delegate: WrappedLoader {
                     visible: !root.fullscreen
-                    sourceComponent: StatusIcons {}
+                    sourceComponent: StatusIcons {
+                        isHorizontal: root.isHorizontal
+                    }
                 }
             }
             DelegateChoice {

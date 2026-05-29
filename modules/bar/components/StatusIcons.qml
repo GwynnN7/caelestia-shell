@@ -16,7 +16,7 @@ StyledRect {
     property color colour: Colours.palette.m3secondary
     readonly property alias items: iconColumn
 
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+    property bool isHorizontal: false
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
