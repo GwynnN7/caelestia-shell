@@ -187,6 +187,10 @@ Item {
             AnchorChanges { target: utilities; anchors.bottom: undefined; anchors.top: parent.top }
             AnchorChanges { target: toasts; anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.right: undefined }
             AnchorChanges { target: sidebar; anchors.top: utilities.bottom; anchors.bottom: notifications.top }
+            PropertyChanges {
+                target: sidebar
+                anchors.topMargin: -4
+            }
         }
     ]
 }

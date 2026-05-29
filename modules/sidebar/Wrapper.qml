@@ -32,7 +32,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: Tokens.padding.large
-        anchors.bottomMargin: 0
+        anchors.topMargin: Config.bar.position === "bottom" ? 0 : Tokens.padding.large
+        anchors.bottomMargin: Config.bar.position === "bottom" ? Tokens.padding.large : 0
 
         active: root.shouldBeActive || root.visible
 

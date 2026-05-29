@@ -10,15 +10,17 @@ Item {
     required property Props props
     required property DrawerVisibilities visibilities
 
-    ColumnLayout {
+    GridLayout {
         id: layout
 
         anchors.fill: parent
-        spacing: Tokens.spacing.normal
+        columns: 1
+        rowSpacing: Tokens.spacing.normal
 
         StyledRect {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.row: Config.bar.position === "bottom" ? 1 : 0
 
             radius: Tokens.rounding.normal
             color: Colours.tPalette.m3surfaceContainerLow
@@ -30,7 +32,9 @@ Item {
         }
 
         StyledRect {
-            Layout.topMargin: Tokens.padding.large - layout.spacing
+            Layout.row: Config.bar.position === "bottom" ? 0 : 1
+            Layout.topMargin: Config.bar.position === "bottom" ? 0 : (Tokens.padding.large - layout.rowSpacing)
+            Layout.bottomMargin: Config.bar.position === "bottom" ? (Tokens.padding.large - layout.rowSpacing) : 0
             Layout.fillWidth: true
             implicitHeight: 1
 

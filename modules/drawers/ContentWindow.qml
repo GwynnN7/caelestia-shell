@@ -414,5 +414,6 @@ StyledWindow {
         implicitHeight: panel.height
         radius: Tokens.rounding.large
         deformScale: (deformAmount * Config.appearance.deformScale) / 10000
+        opacity: panel.opacity
     }
 }
