@@ -9,7 +9,7 @@ import qs.components.containers
 import qs.services
 
 Variants {
-    model: Screens.screens.filter(s => GlobalConfig.forScreen(s.name).background.enabled)
+    model: Screens.screens.filter(s => (GlobalConfig.forScreen(s.name)?.background?.enabled ?? GlobalConfig.instance()?.background?.enabled ?? true))
 
     StyledWindow {
         id: win
@@ -19,8 +19,8 @@ Variants {
         screen: modelData
         name: "background"
         WlrLayershell.exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.layer: contentItem.Config.background.wallpaperEnabled ? WlrLayer.Background : WlrLayer.Bottom
-        color: contentItem.Config.background.wallpaperEnabled ? "black" : "transparent"
+        WlrLayershell.layer: (contentItem.Config?.background?.wallpaperEnabled ?? true) ? WlrLayer.Background : WlrLayer.Bottom
+        color: (contentItem.Config?.background?.wallpaperEnabled ?? true) ? "black" : "transparent"
         surfaceFormat.opaque: false
 
         anchors.top: true
@@ -39,7 +39,7 @@ Variants {
                 asynchronous: true
 
                 anchors.fill: parent
-                active: Config.background.wallpaperEnabled
+                active: (Config?.background?.wallpaperEnabled ?? true)
 
                 sourceComponent: Wallpaper {
                     screen: win.modelData
@@ -60,20 +60,18 @@ Variants {
                 wallpaper: wallpaper
                 z: 2
             }
-
-            
         }
 
         Loader {
             id: clockLoader
 
             asynchronous: true
-            active: Config.background.desktopClock.enabled
+            active: (Config?.background?.desktopClock?.enabled ?? false)
 
             anchors.margins: Tokens.padding.large * 2
-            anchors.leftMargin: Tokens.padding.large * 2 + Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.smaller, Config.border.thickness)
+            anchors.leftMargin: Tokens.padding.large * 2 + Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.smaller, Config?.border?.thickness ?? 0)
 
-            state: Config.background.desktopClock.position
+            state: Config?.background?.desktopClock?.position ?? "bottom-right"
             states: [
                 State {
                     name: "top-left"
@@ -173,12 +171,12 @@ Variants {
             id: lyricsLoader
 
             asynchronous: true
-            active: Config.background.desktopLyrics.enabled
+            active: (Config?.background?.desktopLyrics?.enabled ?? false)
 
             anchors.margins: Tokens.padding.large * 2
-            anchors.leftMargin: Tokens.padding.large * 2 + Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.smaller, Config.border.thickness)
+            anchors.leftMargin: Tokens.padding.large * 2 + Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.smaller, Config?.border?.thickness ?? 0)
 
-            state: Config.background.desktopLyrics.position
+            state: (Config?.background?.desktopLyrics?.position ?? "bottom-center")
             states: [
                 State {
                     name: "top-left"

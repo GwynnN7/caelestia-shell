@@ -29,10 +29,10 @@ ShellRoot {
     }
 
     Variants {
-        model: Quickshell.screens.filter(s => GlobalConfig.shimeji.enabled && GlobalConfig.shimeji.path.length > 0 && !Strings.testRegexList(GlobalConfig.shimeji.excludedScreens, s.name))
+        model: Quickshell.screens.filter(s => (GlobalConfig.shimeji?.enabled ?? false) && (GlobalConfig.shimeji?.path?.length ?? 0) > 0 && !Strings.testRegexList(GlobalConfig.shimeji?.excludedScreens ?? [], s.name))
 
         Shimeji {
-            shimejiCount: GlobalConfig.shimeji.count ?? 1
+            shimejiCount: GlobalConfig.shimeji?.count ?? 1
         }
     }
 

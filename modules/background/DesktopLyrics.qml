@@ -17,17 +17,17 @@ Item {
     required property real absX
     required property real absY
 
-    property real lyricsScale: Config.background.desktopLyrics.scale
-    readonly property bool bgEnabled: Config.background.desktopLyrics.background.enabled
-    readonly property bool blurEnabled: bgEnabled && Config.background.desktopLyrics.background.blur && !GameMode.enabled
-    readonly property bool invertColors: Config.background.desktopLyrics.invertColors
+    readonly property real lyricsScale: (Config?.background?.desktopLyrics?.scale ?? GlobalConfig.instance()?.background?.desktopLyrics?.scale) ?? 1.0
+    readonly property bool bgEnabled: (Config?.background?.desktopLyrics?.background?.enabled ?? GlobalConfig.instance()?.background?.desktopLyrics?.background?.enabled) ?? false
+    readonly property bool blurEnabled: bgEnabled && (Config?.background?.desktopLyrics?.background?.blur ?? GlobalConfig.instance()?.background?.desktopLyrics?.background?.blur) && !GameMode.enabled
+    readonly property bool invertColors: (Config?.background?.desktopLyrics?.invertColors ?? GlobalConfig.instance()?.background?.desktopLyrics?.invertColors) ?? false
     readonly property bool useLightSet: Colours.light ? !invertColors : invertColors
     readonly property color safePrimary: useLightSet ? Colours.palette.m3primaryContainer : Colours.palette.m3primary
     readonly property color safeSecondary: useLightSet ? Colours.palette.m3secondaryContainer : Colours.palette.m3secondary
     readonly property color safeTertiary: useLightSet ? Colours.palette.m3tertiaryContainer : Colours.palette.m3tertiary
     readonly property string sansFont: GlobalConfig.appearance.font.family.sans || "Sans Serif"
-    readonly property int alignment: Config.background.desktopLyrics.alignment
-    readonly property bool autoHide: Config.background.desktopLyrics.autoHide
+    readonly property int alignment: (Config?.background?.desktopLyrics?.alignment ?? GlobalConfig.instance()?.background?.desktopLyrics?.alignment) ?? 1
+    readonly property bool autoHide: (Config?.background?.desktopLyrics?.autoHide ?? GlobalConfig.instance()?.background?.desktopLyrics?.autoHide) ?? true
     readonly property bool allWindowsFloating: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true
     readonly property bool shouldHide: autoHide && !allWindowsFloating
 
@@ -137,7 +137,7 @@ Item {
 
     implicitWidth: 350 * root.lyricsScale
     implicitHeight: 180 * root.lyricsScale
-    
+
     opacity: (root.hasLyrics && !root.shouldHide) ? 1 : 0
     visible: opacity > 0
 
@@ -151,12 +151,12 @@ Item {
         anchors.fill: parent
         // Removed clip: true from here so the shadow doesn't get cut off
 
-        layer.enabled: Config.background.desktopLyrics.shadow.enabled
+        layer.enabled: (Config?.background?.desktopLyrics?.shadow?.enabled ?? GlobalConfig.instance()?.background?.desktopLyrics?.shadow?.enabled) ?? true
         layer.effect: MultiEffect {
             shadowEnabled: true
             shadowColor: Colours.palette.m3shadow
-            shadowOpacity: Config.background.desktopLyrics.shadow.opacity
-            shadowBlur: Config.background.desktopLyrics.shadow.blur
+            shadowOpacity: (Config?.background?.desktopLyrics?.shadow?.opacity ?? GlobalConfig.instance()?.background?.desktopLyrics?.shadow?.opacity) ?? 0.7
+            shadowBlur: (Config?.background?.desktopLyrics?.shadow?.blur ?? GlobalConfig.instance()?.background?.desktopLyrics?.shadow?.blur) ?? 0.4
         }
 
         Loader {
@@ -185,7 +185,7 @@ Item {
             visible: root.bgEnabled
             anchors.fill: parent
             radius: Tokens.rounding.large * root.lyricsScale
-            opacity: Config.background.desktopLyrics.background.opacity
+            opacity: (Config?.background?.desktopLyrics?.background?.opacity ?? GlobalConfig.instance()?.background?.desktopLyrics?.background?.opacity) ?? 0.7
             color: Colours.palette.m3surface
 
             layer.enabled: root.blurEnabled
@@ -200,9 +200,9 @@ Item {
             layer.enabled: true
             layer.effect: ShaderEffect {
                 required property Item source
-                
+
                 // Tweak this value to make the fade taller or shorter
-                property real fadeMargin: 0.25 
+                property real fadeMargin: 0.25
 
                 fragmentShader: Quickshell.shellPath("assets/shaders/fade.frag.qsb")
             }
@@ -210,7 +210,7 @@ Item {
             // --- Previous Lyric ---
             Item {
                 id: prevLyricItem
-                
+
                 width: parent.width
                 height: prevLyricLabel.implicitHeight
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -228,9 +228,12 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: {
                         switch (root.alignment) {
-                            case 0: return Text.AlignLeft;
-                            case 2: return Text.AlignRight;
-                            default: return Text.AlignHCenter;
+                        case 0:
+                            return Text.AlignLeft;
+                        case 2:
+                            return Text.AlignRight;
+                        default:
+                            return Text.AlignHCenter;
                         }
                     }
                 }
@@ -278,9 +281,12 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: {
                         switch (root.alignment) {
-                            case 0: return Text.AlignLeft;
-                            case 2: return Text.AlignRight;
-                            default: return Text.AlignHCenter;
+                        case 0:
+                            return Text.AlignLeft;
+                        case 2:
+                            return Text.AlignRight;
+                        default:
+                            return Text.AlignHCenter;
                         }
                     }
 
@@ -312,9 +318,12 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: {
                         switch (root.alignment) {
-                            case 0: return Text.AlignLeft;
-                            case 2: return Text.AlignRight;
-                            default: return Text.AlignHCenter;
+                        case 0:
+                            return Text.AlignLeft;
+                        case 2:
+                            return Text.AlignRight;
+                        default:
+                            return Text.AlignHCenter;
                         }
                     }
                 }
