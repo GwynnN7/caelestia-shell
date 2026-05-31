@@ -32,6 +32,7 @@ This fork adds the following features on top of the official caelestia shell:
 - **Bezel Mode** - Makes the shell background pitch black and fully opaque, creating a seamless look where the shell blends with display bezels.
 - **Wallhaven Wallpaper Searcher** - Browse and search wallpapers from wallhaven.cc with filters, pagination, and direct download to your wallpaper folder.
 - **Premium Developer Console (Terminal Tab)** - Beautifully enhanced dashboard terminal tab with zsh/fish-style inline ghost autocomplete, Up/Down arrow-key scrollback history, dynamic path resolver (`cd`), smooth auto-scrolling, monospace whitespace preservation (Cowsay/ASCII art support), and a dedicated global toggle shortcut (`caelestia:terminal`).
+- **Workspace Material Icons** - Use Material Design icons for workspace indicators instead of unicode symbols. Active workspaces show `check_box`, inactive show `check_box_outline_blank`. Configurable via `useIcon` option and custom icons via `wsIcons`.
 
 ## Global Shortcuts
 
@@ -354,7 +355,7 @@ For example, to disable the bar on DP-1:
 >
 > - `appearance` (`anim`, `transparency`)
 > - `general` (`logo`, `apps`, `idle`, `battery`)
-> - `bar.workspaces` (`perMonitorWorkspaces`, `specialWorkspaceIcons`, `windowIcons`)
+> - `bar.workspaces` (`perMonitorWorkspaces`, `specialWorkspaceIcons`, `windowIcons`, `wsIcons`)
 > - `bar.tray` (`iconSubs`, `hiddenIcons`)
 > - `dashboard` (`mediaUpdateInterval`, `resourceUpdateInterval`)
 > - `launcher` (`specialPrefix`, `actionPrefix`, `enableDangerousActions`, `vimKeybinds`,
