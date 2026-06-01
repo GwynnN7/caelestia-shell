@@ -225,7 +225,7 @@ Singleton {
         if (name === "todo")
             return "checklist";
         if (name === "sysmon")
-            return "monitor_heart";
+            return "list_alt";
         return name[0].toUpperCase();
     }
 
@@ -245,7 +245,7 @@ Singleton {
         if (name === "todo")
             return "checklist";
         if (name === "sysmon")
-            return "monitor_heart";
+            return "list_alt";
         return name[0].toUpperCase();
     }
 

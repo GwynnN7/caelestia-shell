@@ -21,6 +21,11 @@ Singleton {
 
     property bool loaded
 
+    function clear(): void {
+        for (const notif of root.list.slice())
+            notif.close();
+    }
+
     function hasFullscreen(): bool {
         for (const monitor of Hypr.monitors.values) {
             if (monitor?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1))

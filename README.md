@@ -33,6 +33,7 @@ This fork adds the following features on top of the official caelestia shell:
 - **Wallhaven Wallpaper Searcher** - Browse and search wallpapers from wallhaven.cc with filters, pagination, and direct download to your wallpaper folder.
 - **Premium Developer Console (Terminal Tab)** - Beautifully enhanced dashboard terminal tab with zsh/fish-style inline ghost autocomplete, Up/Down arrow-key scrollback history, dynamic path resolver (`cd`), smooth auto-scrolling, monospace whitespace preservation (Cowsay/ASCII art support), and a dedicated global toggle shortcut (`caelestia:terminal`).
 - **Workspace Material Icons** - Use Material Design icons for workspace indicators instead of unicode symbols. Active workspaces show `check_circle`, inactive show `circle`. Special workspaces use `star` (scratchpad), `chat_bubble` (communication), `music_note_2` (music). Enable via `useIcon` option, with custom icons configurable per workspace via `wsIcons`.
+- **Notifications Status Icon** - Notification bell in status icons with DND support, sidebar toggle on click, and popout with DND toggle and clear all button.
 
 ## Global Shortcuts
 

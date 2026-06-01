@@ -297,6 +297,37 @@ StyledRect {
                 fill: 1
             }
         }
+
+        // Notifications icon
+        WrappedLoader {
+            name: "notifications"
+
+            sourceComponent: MaterialIcon {
+                id: notifIcon
+
+                text: {
+                    if (Notifs.dnd)
+                        return "notifications_off";
+                    if (Notifs.notClosed.length > 0)
+                        return "notifications_unread";
+                    return "notifications";
+                }
+                color: root.colour
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: mouse => {
+                        if (mouse.button === Qt.RightButton) {
+                            Notifs.dnd = !Notifs.dnd;
+                        } else {
+                            const vis = Visibilities.getForActive();
+                            vis.sidebar = !vis.sidebar;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     component WrappedLoader: Loader {

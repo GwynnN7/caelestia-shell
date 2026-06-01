@@ -106,6 +106,7 @@ class BarStatus : public ConfigObject {
     CONFIG_PROPERTY(bool, showBluetooth, true)
     CONFIG_PROPERTY(bool, showBattery, true)
     CONFIG_PROPERTY(bool, showLockStatus, true)
+    CONFIG_PROPERTY(bool, showNotifications, true)
 
 public:
     explicit BarStatus(QObject* parent = nullptr)
