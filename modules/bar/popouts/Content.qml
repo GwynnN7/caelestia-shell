@@ -11,17 +11,37 @@ Item {
     id: root
 
     required property PopoutState popouts
+    required property var sidebar
+    required property var utilities
+    readonly property bool isSidebarOpen: sidebar && sidebar.visible && (Config.bar.position === "bottom" || Config.bar.position === "top")
+
     readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
 
-    implicitWidth: (currentPopout?.implicitWidth ?? 0) + Tokens.padding.large * 2
-    implicitHeight: (currentPopout?.implicitHeight ?? 0) + Tokens.padding.large * 2
+    readonly property real naturalWidth: {
+        const itemWidth = currentPopout ? (currentPopout.implicitWidth || currentPopout.width || 0) : 0;
+        return itemWidth + Tokens.padding.large * 2;
+    }
+
+    implicitWidth: isSidebarOpen ? sidebar.width : naturalWidth
+    implicitHeight: (currentPopout?.implicitHeight ?? 0) + (isSidebarOpen ? Tokens.padding.large : Tokens.padding.large * 2)
 
     Item {
         id: content
 
         anchors.fill: parent
-        anchors.margins: Tokens.padding.large
+        anchors.leftMargin: Tokens.padding.large
+        anchors.rightMargin: Tokens.padding.large
+        anchors.topMargin: {
+            if (isSidebarOpen && Config.bar.position === "bottom")
+                return 0;
+            return Tokens.padding.large;
+        }
+        anchors.bottomMargin: {
+            if (isSidebarOpen && Config.bar.position === "top")
+                return 0;
+            return Tokens.padding.large;
+        }
 
         Popout {
             name: "activewindow"
@@ -176,7 +196,18 @@ Item {
         required property string name
         readonly property bool shouldBeActive: root.popouts.currentName === name
 
-        anchors.centerIn: parent
+        anchors.centerIn: isSidebarOpen ? undefined : parent
+        anchors.left: isSidebarOpen ? parent.left : undefined
+        anchors.right: isSidebarOpen ? parent.right : undefined
+        anchors.top: (isSidebarOpen && Config.bar.position === "top") ? parent.top : undefined
+        anchors.bottom: (isSidebarOpen && Config.bar.position === "bottom") ? parent.bottom : undefined
+
+        Binding {
+            when: popout.status === Loader.Ready && isSidebarOpen
+            target: popout.item
+            property: "width"
+            value: popout.width
+        }
 
         opacity: 0
         scale: 0.8

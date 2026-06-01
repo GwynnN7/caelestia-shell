@@ -15,6 +15,9 @@ Item {
 
     required property ShellScreen screen
     required property real offsetScale
+    required property var sidebar
+    required property var bar
+    required property var utilities
 
     readonly property alias content: content
     readonly property alias winfo: winfo
@@ -30,6 +33,7 @@ Item {
                                           content.implicitHeight
     readonly property Item current: (content.item as Content)?.current ?? null
     readonly property bool isDetached: detachedMode.length > 0
+    readonly property real popoutNaturalWidth: (content.item && content.item.naturalWidth) ? content.item.naturalWidth : 0
 
     property alias currentName: popoutState.currentName
     property alias hasCurrent: popoutState.hasCurrent
@@ -67,7 +71,7 @@ Item {
         detachedMode = "";
     }
 
-    implicitWidth: nonAnimWidth
+    implicitWidth: (bar.isHorizontal && sidebar && sidebar.visible) ? sidebar.width : nonAnimWidth
     implicitHeight: nonAnimHeight
 
     focus: hasCurrent
@@ -118,6 +122,8 @@ Item {
 
         sourceComponent: Content {
             popouts: popoutState
+            sidebar: root.sidebar
+            utilities: root.utilities
         }
     }
 
@@ -147,6 +153,8 @@ Item {
     }
 
     Behavior on implicitWidth {
+        enabled: !(bar.isHorizontal && sidebar && sidebar.visible)
+
         Anim {
             duration: root.animLength
             easing: root.animCurve

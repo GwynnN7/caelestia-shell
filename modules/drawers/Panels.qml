@@ -81,8 +81,8 @@ Item {
         anchors.top: parent.top
         anchors.right: parent.right
 
-        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1) ? (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10) : 0
-        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1) ? (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10) : 0
+        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
+        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
     }
 
     Item {
@@ -146,6 +146,8 @@ Item {
         screen: root.screen
         bar: root.bar
         borderThickness: root.borderThickness
+        sidebar: root.sidebar
+        utilities: root.utilities
     }
 
     Utilities.Wrapper {
@@ -171,6 +173,8 @@ Item {
         id: sidebar
 
         visibilities: root.visibilities
+        popouts: root.popouts
+        popoutsWrapper: root.popoutsWrapper
 
         anchors.top: notifications.bottom
         anchors.bottom: utilities.top

@@ -29,6 +29,9 @@ Item {
         id: layout
 
         anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: Tokens.padding.normal
+        anchors.rightMargin: Tokens.padding.normal
         anchors.verticalCenter: parent.verticalCenter
         spacing: Tokens.spacing.normal
 

@@ -8,6 +8,8 @@ Item {
     id: root
 
     required property DrawerVisibilities visibilities
+    required property var popouts
+    required property var popoutsWrapper
     readonly property Props props: Props {}
 
     readonly property bool shouldBeActive: visibilities.sidebar && Config.sidebar.enabled
@@ -16,7 +18,24 @@ Item {
     visible: offsetScale < 1
     anchors.leftMargin: Config.bar.position === "right" ? (-implicitWidth - 5) * offsetScale : 0
     anchors.rightMargin: Config.bar.position !== "right" ? (-implicitWidth - 5) * offsetScale : 0
-    implicitWidth: Tokens.sizes.sidebar.width
+    implicitWidth: {
+        const defaultWidth = Tokens.sizes.sidebar.width;
+        if (popouts && popouts.hasCurrent && (Config.bar.position === "bottom" || Config.bar.position === "top")) {
+            const naturalWidth = Math.max(defaultWidth, popouts.popoutNaturalWidth);
+            if (popoutsWrapper) {
+                const extendedWidth = parent.width - popoutsWrapper.normalX;
+                return Math.max(naturalWidth, extendedWidth);
+            }
+            return naturalWidth;
+        }
+        return defaultWidth;
+    }
+
+    Behavior on implicitWidth {
+        Anim {
+            type: Anim.DefaultSpatial
+        }
+    }
     opacity: 1 - offsetScale
 
     Behavior on offsetScale {
@@ -32,15 +51,33 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: Tokens.padding.large
-        anchors.topMargin: Config.bar.position === "bottom" ? 0 : Tokens.padding.large
-        anchors.bottomMargin: Config.bar.position === "bottom" ? Tokens.padding.large : 0
+        anchors.topMargin: {
+            if (Config.bar.position === "top") {
+                return (popouts && popouts.hasCurrent) ? 0 : Tokens.padding.large;
+            }
+            if (Config.bar.position === "bottom") {
+                return 0;
+            }
+            return Tokens.padding.large;
+        }
+        anchors.bottomMargin: {
+            if (Config.bar.position === "bottom") {
+                return (popouts && popouts.hasCurrent) ? 0 : Tokens.padding.large;
+            }
+            if (Config.bar.position === "top") {
+                return Tokens.padding.large;
+            }
+            return Tokens.padding.large;
+        }
 
         active: root.shouldBeActive || root.visible
 
         sourceComponent: Content {
-            implicitWidth: Tokens.sizes.sidebar.width - Tokens.padding.large * 2
+            implicitWidth: root.implicitWidth - Tokens.padding.large * 2
             props: root.props
             visibilities: root.visibilities
+            popouts: root.popouts
+            popoutsWrapper: root.popoutsWrapper
         }
     }
 }

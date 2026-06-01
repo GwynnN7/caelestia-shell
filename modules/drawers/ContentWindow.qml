@@ -191,11 +191,40 @@ StyledWindow {
             panel: panels.sidebar
             deformAmount: 0.03
             implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
-            exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
-            topLeftRadius: Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
-            topRightRadius: Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
-            bottomLeftRadius: Config.bar.position === "bottom" ? radius : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
-            bottomRightRadius: Config.bar.position === "bottom" ? radius : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
+            exclude: {
+                const list = [];
+                if (panels.sidebar.offsetScale <= 0.08) {
+                    list.push(utilsBg);
+                    if (panels.popouts.hasCurrent && (Config.bar.position === "bottom" || Config.bar.position === "top")) {
+                        list.push(popoutBg);
+                    }
+                }
+                return list;
+            }
+            topLeftRadius: {
+                if (Config.bar.position === "bottom") {
+                    return Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius;
+                } else if (Config.bar.position === "top") {
+                    return (panels.popouts.hasCurrent ? 0 : radius);
+                } else {
+                    return radius;
+                }
+            }
+            topRightRadius: {
+                if (Config.bar.position === "bottom") {
+                    return Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius;
+                } else if (Config.bar.position === "top") {
+                    return (panels.popouts.hasCurrent ? 0 : radius);
+                } else {
+                    return radius;
+                }
+            }
+            bottomLeftRadius: Config.bar.position === "bottom"
+                ? (panels.popouts.hasCurrent ? 0 : radius)
+                : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
+            bottomRightRadius: Config.bar.position === "bottom"
+                ? (panels.popouts.hasCurrent ? 0 : radius)
+                : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
         }
 
         PanelBg {
@@ -233,6 +262,11 @@ StyledWindow {
 
             panel: panels.popoutsWrapper
             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
+            exclude: (panels.sidebar.offsetScale <= 0.08 && (Config.bar.position === "bottom" || Config.bar.position === "top")) ? [sidebarBg] : []
+            topLeftRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
+            topRightRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
+            bottomLeftRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
+            bottomRightRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
             x: {
                 const baseX = panels.popoutsWrapper.x + panels.popouts.x + panels.leftMargin;
                 if (bar.position === "left")
