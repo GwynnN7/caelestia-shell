@@ -268,10 +268,10 @@ StyledWindow {
             panel: panels.popoutsWrapper
             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
             exclude: (panels.sidebar.offsetScale <= 0.08 && (Config.bar.position === "bottom" || Config.bar.position === "top")) ? [sidebarBg] : []
-            topLeftRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
-            topRightRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
-            bottomLeftRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
-            bottomRightRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? 0 : radius
+            topLeftRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            topRightRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            bottomLeftRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            bottomRightRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
             x: {
                 const baseX = panels.popoutsWrapper.x + panels.popouts.x + panels.leftMargin;
                 if (bar.position === "left")
