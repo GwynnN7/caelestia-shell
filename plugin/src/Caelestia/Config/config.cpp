@@ -54,7 +54,8 @@ GlobalConfig::GlobalConfig(QObject* parent)
     , m_services(new ServiceConfig(this))
     , m_shimeji(new ShimejiConfig(this))
     , m_paths(new UserPaths(this))
-    , m_audio(new AudioConfig(this)) {
+    , m_audio(new AudioConfig(this))
+    , m_record(new RecordConfig(this)) {
     setupFileBackend(configDir() + QStringLiteral("shell.json"));
 }
 
@@ -78,7 +79,8 @@ GlobalConfig::GlobalConfig(GlobalConfig* fallback, const QString& filePath, cons
     , m_services(new ServiceConfig(this))
     , m_shimeji(new ShimejiConfig(this))
     , m_paths(new UserPaths(this))
-    , m_audio(new AudioConfig(this)) {
+    , m_audio(new AudioConfig(this))
+    , m_record(new RecordConfig(this)) {
     if (!filePath.isEmpty())
         setupFileBackend(filePath, screen);
     if (fallback)

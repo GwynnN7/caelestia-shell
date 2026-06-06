@@ -44,6 +44,18 @@ public:
         : ConfigObject(parent) {}
 };
 
+class RecordConfig : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_GLOBAL_PROPERTY(int, fps, 0)
+    CONFIG_GLOBAL_PROPERTY(QVariantList, extraArgs)
+
+public:
+    explicit RecordConfig(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
 class UtilitiesConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
