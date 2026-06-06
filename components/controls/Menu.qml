@@ -6,6 +6,7 @@ import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.components.effects
+import qs.components.containers
 import qs.services
 import qs.modules.drawers
 
@@ -83,7 +84,7 @@ MouseArea {
         level: 2
 
         implicitWidth: Math.max(200, column.implicitWidth + column.anchors.margins * 2)
-        implicitHeight: column.implicitHeight + column.anchors.margins * 2
+        implicitHeight: Math.min(column.implicitHeight + column.anchors.margins * 2, 400)
 
         transform: Scale {
             yScale: root.expanded ? 1 : 0.1
@@ -101,14 +102,24 @@ MouseArea {
             radius: parent.radius
             color: Colours.palette.m3surfaceContainerLow
 
-            ColumnLayout {
-                id: column
-
+            StyledFlickable {
+                id: flickable
                 anchors.fill: parent
-                anchors.margins: Tokens.padding.small
-                spacing: 0
+                contentHeight: column.implicitHeight + column.anchors.margins * 2
+                clip: true
 
-                Repeater {
+                StyledScrollBar.vertical: StyledScrollBar {
+                    flickable: flickable
+                }
+
+                ColumnLayout {
+                    id: column
+
+                    width: flickable.width
+                    anchors.margins: Tokens.padding.small
+                    spacing: 0
+
+                    Repeater {
                     id: repeater
 
                     model: root.items
@@ -184,6 +195,7 @@ MouseArea {
                                 }
                             }
                         }
+                    }
                     }
                 }
             }

@@ -33,15 +33,27 @@ Item {
             const mData = root.currentOrder[i];
             if (!mData) continue;
             
-            if (!mData.isPinned) {
-                mData.isPinned = true;
+            if (mData.isPinned) {
+                newFavs.push(mData.id);
             }
-            
             newArr.push(mData);
-            newFavs.push(mData.id);
         }
         
-        GlobalConfig.launcher.favouriteApps = newFavs;
+        // Only update if arrays are different length or different order
+        const currentFavs = GlobalConfig.launcher.favouriteApps || [];
+        let changed = currentFavs.length !== newFavs.length;
+        if (!changed) {
+            for (let i = 0; i < newFavs.length; i++) {
+                if (currentFavs[i] !== newFavs[i]) {
+                    changed = true;
+                    break;
+                }
+            }
+        }
+        
+        if (changed) {
+            GlobalConfig.launcher.favouriteApps = newFavs;
+        }
         root.modelDataArray = newArr;
     }
 

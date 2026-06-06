@@ -15,7 +15,16 @@ ColumnLayout {
     required property PopoutState popouts
     property var model: popouts.dockModel
 
-    property bool isPinned: model ? model.isPinned : false
+    property bool isPinned: {
+        if (!model) return false;
+        const current = GlobalConfig.launcher.favouriteApps || [];
+        for (let i = 0; i < current.length; i++) {
+            if (model.id === current[i] || (model.entry && model.entry.id === current[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     width: 200
     implicitWidth: 200
@@ -58,15 +67,17 @@ ColumnLayout {
                     onClicked: {
                         if (isPinned) {
                             const current = GlobalConfig.launcher.favouriteApps ? [...GlobalConfig.launcher.favouriteApps] : [];
-                            const index = current.indexOf(model.id);
+                            let index = current.indexOf(model.id);
+                            if (index === -1 && model.entry) index = current.indexOf(model.entry.id);
                             if (index !== -1) {
                                 current.splice(index, 1);
                                 GlobalConfig.launcher.favouriteApps = current;
                             }
                         } else {
                             const current = GlobalConfig.launcher.favouriteApps ? [...GlobalConfig.launcher.favouriteApps] : [];
-                            if (!current.includes(model.id)) {
-                                current.push(model.id);
+                            const idToPin = model.entry ? model.entry.id : model.id;
+                            if (!current.includes(idToPin)) {
+                                current.push(idToPin);
                                 GlobalConfig.launcher.favouriteApps = current;
                             }
                         }
