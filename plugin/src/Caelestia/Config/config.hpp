@@ -18,7 +18,6 @@ class LauncherConfig;
 class LockConfig;
 class NotifsConfig;
 class OsdConfig;
-class RecordConfig;
 class ServiceConfig;
 class SessionConfig;
 class ShimejiConfig;
@@ -71,7 +70,6 @@ class GlobalConfig : public RootConfig {
     CONFIG_SUBOBJECT(ShimejiConfig, shimeji)
     CONFIG_SUBOBJECT(UserPaths, paths)
     CONFIG_SUBOBJECT(AudioConfig, audio)
-    CONFIG_SUBOBJECT(RecordConfig, record)
 
 public:
     static GlobalConfig* instance();
