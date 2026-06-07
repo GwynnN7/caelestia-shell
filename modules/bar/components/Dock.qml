@@ -57,7 +57,7 @@ Item {
         root.modelDataArray = newArr;
     }
 
-    readonly property int padding: Tokens.padding.normal
+    readonly property int padding: Tokens.padding.medium
     readonly property int spacing: Tokens.spacing.small
 
     anchors.fill: parent
@@ -174,7 +174,7 @@ Item {
                     StateLayer {
                         id: stateLayer
                         anchors.fill: parent
-                        radius: Tokens.rounding.normal
+                        radius: Tokens.rounding.medium
                         
                         color: delegateItem.isActive ? Colours.palette.m3onSurface : "transparent"
                         opacity: delegateItem.isActive ? 0.1 : 0
