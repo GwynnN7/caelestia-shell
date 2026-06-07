@@ -170,9 +170,10 @@ PageBase {
             }
         }
 
+        SectionHeader { text: qsTr("Wallpaper") }
+
         ToggleRow {
             Layout.fillWidth: true
-
             first: true
             text: qsTr("Display wallpaper")
             checked: Config.background.wallpaperEnabled
@@ -180,9 +181,61 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
+            text: qsTr("Pause video wallpapers")
+            checked: Config.background.videoWallpaperPaused
+            onToggled: GlobalConfig.background.videoWallpaperPaused = checked
+        }
 
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Enable video audio")
+            checked: Config.background.videoWallpaperSoundEnabled
+            onToggled: GlobalConfig.background.videoWallpaperSoundEnabled = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Pause video on fullscreen")
+            checked: Config.background.videoWallpaperPauseOnFullscreen
+            onToggled: GlobalConfig.background.videoWallpaperPauseOnFullscreen = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            last: true
+            text: qsTr("Mute video when media plays")
+            checked: Config.background.videoWallpaperMuteOnMedia
+            onToggled: GlobalConfig.background.videoWallpaperMuteOnMedia = checked
+        }
+
+        SectionHeader { text: qsTr("Appearance") }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            first: true
+            text: qsTr("Desktop lyrics")
+            checked: Config.background.desktopLyrics.enabled
+            onToggled: GlobalConfig.background.desktopLyrics.enabled = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Shimeji characters")
+            checked: Config.shimeji.enabled
+            onToggled: GlobalConfig.shimeji.enabled = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Bezel mode (Pitch black)")
+            subtext: qsTr("Make the shell pitch black to blend with display bezels")
+            checked: Config.appearance.pitchBlack
+            onToggled: GlobalConfig.appearance.pitchBlack = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
             text: qsTr("Transparency")
             subtext: qsTr("Base %1, layers %2").arg(Colours.transparency.base).arg(Colours.transparency.layers)
             checked: Colours.transparency.enabled
@@ -190,9 +243,7 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
-
             last: true
             text: qsTr("Dark theme")
             checked: !Colours.light

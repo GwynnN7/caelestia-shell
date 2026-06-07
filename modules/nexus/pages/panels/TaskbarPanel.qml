@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick.Layouts
 import Caelestia.Config
+import qs.components.controls
 import qs.modules.nexus.common
 
 PageBase {
@@ -29,6 +30,20 @@ PageBase {
             subtext: qsTr("Keep the bar visible at all times")
             checked: Config.bar.persistent
             onToggled: GlobalConfig.bar.persistent = checked
+        }
+
+        SelectRow {
+            Layout.fillWidth: true
+            label: qsTr("Position")
+            subtext: qsTr("Screen edge to place the bar on")
+            active: Config.bar.position
+            menuItems: [
+                MenuItem { label: qsTr("Top"); value: "top" },
+                MenuItem { label: qsTr("Bottom"); value: "bottom" },
+                MenuItem { label: qsTr("Left"); value: "left" },
+                MenuItem { label: qsTr("Right"); value: "right" }
+            ]
+            onSelected: item => GlobalConfig.bar.position = item.value
         }
 
         ToggleRow {

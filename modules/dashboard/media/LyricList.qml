@@ -279,6 +279,19 @@ Item {
                 blur: 0.4 * lyric.effectScale
             }
 
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (Players.active) {
+                        let time = Lyrics.timeForIndex(index);
+                        if (time >= 0) {
+                            Players.active.position = time + Lyrics.offset + 0.01;
+                        }
+                    }
+                }
+            }
+
             Behavior on effectScale {
                 Anim {
                     type: Anim.SlowEffects

@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Caelestia.Config
+import Caelestia.Services
 import qs.components
 import qs.services
 
@@ -31,8 +32,8 @@ Item {
     readonly property bool allWindowsFloating: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true
     readonly property bool shouldHide: autoHide && !allWindowsFloating
 
-    readonly property bool hasLyrics: LyricsService.model.count > 0
-    readonly property int currentLyricIndex: LyricsService.currentIndex
+    readonly property bool hasLyrics: Lyrics.hasLyrics && Lyrics.lyrics.length > 0
+    property int currentLyricIndex: -1
     readonly property bool isCurrentActive: currentLyricIndex >= 0
 
     property var player: Players.active
@@ -48,10 +49,10 @@ Item {
     property real startNextY: targetNextY + nextLyricItem.height + lyricSpacing
 
     onCurrentLyricIndexChanged: {
-        if (currentLyricIndex >= 0) {
-            displayedLyric = (LyricsService.model.get(currentLyricIndex)?.lyricLine ?? "").replace(/\u00A0/g, " ");
-            previousLyricText = currentLyricIndex > 0 ? (LyricsService.model.get(currentLyricIndex - 1)?.lyricLine ?? "").replace(/\u00A0/g, " ") : "";
-            nextLyricText = currentLyricIndex < LyricsService.model.count - 1 ? (LyricsService.model.get(currentLyricIndex + 1)?.lyricLine ?? "").replace(/\u00A0/g, " ") : "";
+        if (currentLyricIndex >= 0 && Lyrics.hasLyrics) {
+            displayedLyric = (Lyrics.lyrics[currentLyricIndex] ?? "").replace(/\u00A0/g, " ");
+            previousLyricText = currentLyricIndex > 0 ? (Lyrics.lyrics[currentLyricIndex - 1] ?? "").replace(/\u00A0/g, " ") : "";
+            nextLyricText = currentLyricIndex < Lyrics.lyrics.length - 1 ? (Lyrics.lyrics[currentLyricIndex + 1] ?? "").replace(/\u00A0/g, " ") : "";
 
             lyricSlide.running = true;
         }
@@ -108,7 +109,7 @@ Item {
         onTriggered: {
             if (!Players.active)
                 return;
-            LyricsService.updatePosition();
+            currentLyricIndex = Lyrics.indexForTime(Players.active.position);
             Players.active?.positionChanged();
         }
     }
@@ -132,7 +133,13 @@ Item {
     }
 
     function loadLyrics() {
-        LyricsService.loadLyrics();
+        if (root.player) {
+            Lyrics.setTrack(root.player.trackArtist, root.player.trackTitle, root.player.trackAlbum, root.player.length);
+            currentLyricIndex = Lyrics.indexForTime(root.player.position);
+        } else {
+            Lyrics.clearTrack();
+            currentLyricIndex = -1;
+        }
     }
 
     implicitWidth: 350 * root.lyricsScale
