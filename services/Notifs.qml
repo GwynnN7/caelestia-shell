@@ -104,6 +104,10 @@ Singleton {
                 notification: notif
             });
             root.list = [comp, ...root.list];
+
+            if (!props.dnd && !GlobalConfig.audio.sounds.disabledNotifApps.includes(notif.appName)) {
+                Audio.playNotification();
+            }
         }
     }
 

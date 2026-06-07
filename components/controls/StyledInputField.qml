@@ -13,12 +13,15 @@ Item {
     property bool readOnly: false
     property int horizontalAlignment: TextInput.AlignHCenter
 
+    property alias placeholderText: inputField.placeholderText
+
     // Expose activeFocus through alias to avoid FINAL property override
     readonly property alias hasFocus: inputField.activeFocus
 
     signal textEdited(string text)
 
     signal editingFinished
+    signal accepted
 
     implicitWidth: 70
     implicitHeight: inputField.implicitHeight + Tokens.padding.small * 2
@@ -67,6 +70,10 @@ Item {
 
             onEditingFinished: {
                 root.editingFinished();
+            }
+
+            onAccepted: {
+                root.accepted();
             }
 
             Binding {

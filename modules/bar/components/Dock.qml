@@ -290,7 +290,12 @@ Item {
                         id: icon
                         anchors.centerIn: parent
                         implicitSize: Math.round(((delegateItem.width || 0) * 0.7) / 2) * 2 || 0
-                        source: Icons.getAppIcon(modelData.iconName, "image-missing")
+                        source: {
+                            if (modelData.entry && modelData.entry.icon) {
+                                return Quickshell.iconPath(modelData.entry.icon, "image-missing");
+                            }
+                            return Quickshell.iconPath(modelData.iconName, "image-missing");
+                        }
                         asynchronous: true
                         visible: !(Config.bar.dock.recolourIcons ?? false)
                         
@@ -438,24 +443,53 @@ Item {
             
             let found = false;
             for (const app of apps) {
-                if (app.appClass.toLowerCase() === appClass.toLowerCase() || 
-                    app.id.toLowerCase().includes(appClass.toLowerCase()) || 
-                    appClass.toLowerCase().includes(app.id.toLowerCase().replace(".desktop", ""))) {
-                    app.toplevels.push(toplevel);
-                    found = true;
-                    break;
+                const isToplevelSteamGame = appClass.toLowerCase().startsWith("steam_app_");
+                
+                if (isToplevelSteamGame) {
+                    if (app.appClass.toLowerCase() === appClass.toLowerCase()) {
+                        app.toplevels.push(toplevel);
+                        found = true;
+                        break;
+                    }
+                } else {
+                    const baseId = app.id.toLowerCase().replace(".desktop", "");
+                    if (app.appClass.toLowerCase() === appClass.toLowerCase() || 
+                        app.id.toLowerCase().includes(appClass.toLowerCase()) || 
+                        appClass.toLowerCase().includes(baseId)) {
+                        app.toplevels.push(toplevel);
+                        found = true;
+                        break;
+                    }
                 }
             }
             
             if (!found) {
-                const entry = DesktopEntries.applications.values.find(e => e.id.toLowerCase().includes(appClass.toLowerCase()) || appClass.toLowerCase().includes(e.id.toLowerCase().replace(".desktop", ""))) || null;
+                const isToplevelSteamGame = appClass.toLowerCase().startsWith("steam_app_");
+                let entry = null;
+                let iconName = appClass;
+                
+                if (isToplevelSteamGame) {
+                    const appId = appClass.substring(10);
+                    iconName = `steam_icon_${appId}`;
+                    entry = DesktopEntries.applications.values.find(e => e.id.toLowerCase() === `steam_app_${appId}.desktop` || e.id.toLowerCase() === `steam-${appId}.desktop`) || null;
+                } else {
+                    entry = DesktopEntries.heuristicLookup(appClass) || null;
+                    if (!entry) {
+                        entry = DesktopEntries.applications.values.find(e => {
+                            const eBase = e.id.toLowerCase().replace(".desktop", "");
+                            return e.id.toLowerCase().includes(appClass.toLowerCase()) || appClass.toLowerCase().includes(eBase);
+                        }) || null;
+                    }
+                    iconName = entry ? entry.id : appClass;
+                }
+
                 apps.push({
                     id: appClass,
                     isPinned: false,
                     entry: entry,
                     toplevels: [toplevel],
                     appClass: appClass,
-                    iconName: entry ? entry.id : appClass
+                    iconName: iconName
                 });
             }
         }
