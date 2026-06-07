@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "audioconfig.hpp"
 #include "appearanceconfig.hpp"
 #include "backgroundconfig.hpp"
 #include "barconfig.hpp"
@@ -52,7 +53,8 @@ GlobalConfig::GlobalConfig(QObject* parent)
     , m_sidebar(new SidebarConfig(this))
     , m_utilities(new UtilitiesConfig(this))
     , m_winfo(new WInfoConfig(this))
-    , m_paths(new UserPaths(this)) {
+    , m_paths(new UserPaths(this))
+    , m_audio(new AudioConfig(this)) {
     setupFileBackend(configDir() + QStringLiteral("shell.json"));
 }
 
@@ -75,7 +77,8 @@ GlobalConfig::GlobalConfig(GlobalConfig* fallback, const QString& filePath, cons
     , m_sidebar(new SidebarConfig(this))
     , m_utilities(new UtilitiesConfig(this))
     , m_winfo(new WInfoConfig(this))
-    , m_paths(new UserPaths(this)) {
+    , m_paths(new UserPaths(this))
+    , m_audio(new AudioConfig(this)) {
     if (!filePath.isEmpty())
         setupFileBackend(filePath, screen);
     if (fallback)

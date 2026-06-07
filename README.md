@@ -30,6 +30,11 @@ This fork adds the following features on top of the official caelestia shell:
 - **Background Clock** - Desktop clock now follows fonts defined in user's shell.json.
 - **Desktop Lyrics** - Display lyrics on the desktop with customizable positioning, scale, text alignment, colors, animations, and auto-hide when fullscreen windows are present.
 - **Bezel Mode** - Makes the shell background pitch black and fully opaque, creating a seamless look where the shell blends with display bezels.
+- **Wallhaven Wallpaper Searcher** - Browse and search wallpapers from wallhaven.cc with filters, pagination, and direct download to your wallpaper folder.
+- **Premium Developer Console (Terminal Tab)** - Beautifully enhanced dashboard terminal tab with zsh/fish-style inline ghost autocomplete, Up/Down arrow-key scrollback history, dynamic path resolver (`cd`), smooth auto-scrolling, monospace whitespace preservation (Cowsay/ASCII art support), and a dedicated global toggle shortcut (`caelestia:terminal`).
+- **Workspace Material Icons** - Use Material Design icons for workspace indicators instead of unicode symbols. Active workspaces show `radio_button_checked`, inactive show `radio_button_unchecked`. Special workspaces use `star` (scratchpad), `chat_bubble` (communication), `music_note_2` (music). Enable via `useIcon` option, with custom icons configurable per workspace via `wsIcons`.
+- **Notifications Status Icon** - Notification bell in status icons with DND support, sidebar toggle on click, and popout with DND toggle and clear all button.
+- **Bar Dock Module** - MacOS-style application dock for the taskbar, replacing the active window title. Features dynamic layout integration, absolute monitor centering options, matching icon colorizations, and animated popouts.
 
 ## Global Shortcuts
 
@@ -51,6 +56,7 @@ All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hyprlan
 | `caelestia:keybinds` | Open keybinds list |
 | `caelestia:wallpaper` | Open wallpaper picker |
 | `caelestia:showall` | Toggle all UI elements |
+| `caelestia:terminal` | Toggle terminal drawer |
 
 ### Hyprland Keybind Examples
 
@@ -68,6 +74,7 @@ bind = SUPER, V, global, caelestia:clipboard
 bind = SUPER, W, global, caelestia:windowSwitcher
 bind = SUPER, K, global, caelestia:keybinds
 bind = SUPER, B, global, caelestia:wallpaper
+bind = SUPER, T, global, caelestia:terminal
 
 # Other toggles
 bind = SUPER, D, global, caelestia:dashboard
@@ -350,7 +357,7 @@ For example, to disable the bar on DP-1:
 >
 > - `appearance` (`anim`, `transparency`)
 > - `general` (`logo`, `apps`, `idle`, `battery`)
-> - `bar.workspaces` (`perMonitorWorkspaces`, `specialWorkspaceIcons`, `windowIcons`)
+> - `bar.workspaces` (`perMonitorWorkspaces`, `specialWorkspaceIcons`, `windowIcons`, `wsIcons`)
 > - `bar.tray` (`iconSubs`, `hiddenIcons`)
 > - `dashboard` (`mediaUpdateInterval`, `resourceUpdateInterval`)
 > - `launcher` (`specialPrefix`, `actionPrefix`, `enableDangerousActions`, `vimKeybinds`,
@@ -813,7 +820,6 @@ For example, to disable the bar on DP-1:
                 "enabled": true,
                 "dangerous": false
             }
-<<<<<<< HEAD
         ],
         "dragThreshold": 50,
         "vimKeybinds": false,
@@ -833,9 +839,6 @@ For example, to disable the bar on DP-1:
         "favouriteEmojis": [],
         "favouriteClips": [],
         "hiddenApps": []
-=======
-        ]
->>>>>>> upstream/main
     },
     "shimeji": {
         "enabled": false,
@@ -883,6 +886,7 @@ For example, to disable the bar on DP-1:
         "brightnessIncrement": 0.1,
         "maxVolume": 1.0,
         "smartScheme": true,
+        "visualiserBars": 45,
         "defaultPlayer": "Spotify",
         "playerAliases": [{ "from": "com.github.th_ch.youtube_music", "to": "YT Music" }],
         "lyricsBackend": "Auto"
@@ -964,8 +968,7 @@ For example, to disable the bar on DP-1:
             },
             {
                 "id": "vpn",
-<<<<<<< HEAD
-                "enabled": true
+                "enabled": false
             },
             {
                 "id": "wallpaper",
@@ -978,9 +981,6 @@ For example, to disable the bar on DP-1:
             {
                 "id": "pauseWallpaper",
                 "enabled": true
-=======
-                "enabled": false
->>>>>>> upstream/main
             }
         ]
     },

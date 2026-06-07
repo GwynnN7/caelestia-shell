@@ -225,7 +225,27 @@ Singleton {
         if (name === "todo")
             return "checklist";
         if (name === "sysmon")
-            return "monitor_heart";
+            return "list_alt";
+        return name[0].toUpperCase();
+    }
+
+    function getSpecialWsMaterialIcon(name: string): string {
+        name = name.toLowerCase().slice("special:".length);
+
+        for (const iconConfig of GlobalConfig.bar.workspaces.specialWorkspaceIcons)
+            if (matchIconConfig(name, iconConfig))
+                return iconConfig.icon;
+
+        if (name === "special")
+            return "star";
+        if (name === "communication")
+            return "chat_bubble";
+        if (name === "music")
+            return "music_note_2";
+        if (name === "todo")
+            return "checklist";
+        if (name === "sysmon")
+            return "list_alt";
         return name[0].toUpperCase();
     }
 
