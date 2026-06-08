@@ -70,10 +70,25 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
-            last: true
             text: qsTr("Weather")
             checked: Config.dashboard.showWeather
             onToggled: GlobalConfig.dashboard.showWeather = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Terminal")
+            checked: Config.dashboard.showTerminal
+            onToggled: GlobalConfig.dashboard.showTerminal = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            last: true
+            text: qsTr("Recolor media GIF")
+            subtext: qsTr("Apply system theme colors to the media GIF")
+            checked: Config.dashboard.colorizeMediaGif
+            onToggled: GlobalConfig.dashboard.colorizeMediaGif = checked
         }
 
         // Performance widgets
