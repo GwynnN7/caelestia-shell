@@ -13,6 +13,10 @@ Switch {
     implicitWidth: implicitIndicatorWidth
     implicitHeight: implicitIndicatorHeight
 
+    onToggled: {
+        Audio.playEffectTick();
+    }
+
     indicator: StyledRect {
         radius: Tokens.rounding.full
         color: root.checked ? Colours.palette.m3primary : Colours.layer(Colours.palette.m3surfaceContainerHighest, root.cLayer)

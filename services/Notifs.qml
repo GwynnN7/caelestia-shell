@@ -100,7 +100,7 @@ Singleton {
             });
             root.list = [comp, ...root.list];
 
-            if (comp.popup)
+            if (comp.popup && notif.appName !== "caelestia-cli")
                 Audio.playNotification();
         }
     }
