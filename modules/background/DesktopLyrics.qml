@@ -8,6 +8,8 @@ import Quickshell.Hyprland
 import Caelestia.Config
 import Caelestia.Services
 import qs.components
+import qs.components.controls
+import qs.components.effects
 import qs.services
 
 Item {
@@ -32,7 +34,7 @@ Item {
     readonly property bool allWindowsFloating: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true
     readonly property bool shouldHide: autoHide && !allWindowsFloating
 
-    readonly property bool hasLyrics: Lyrics.hasLyrics && Lyrics.lyrics.length > 0
+    readonly property bool hasLyrics: Lyrics.hasLyrics
     property int currentLyricIndex: -1
     readonly property bool isCurrentActive: currentLyricIndex >= 0
 
@@ -114,38 +116,60 @@ Item {
         }
     }
 
-    Connections {
-        function onActiveChanged() {
-            root.player = Players.active;
-            root.loadLyrics();
-        }
-
-        target: Players
-    }
-
-    Connections {
-        function onMetadataChanged() {
-            root.loadLyrics();
-        }
-
-        target: root.player
-        ignoreUnknownSignals: true
-    }
-
-    function loadLyrics() {
-        if (root.player) {
-            Lyrics.setTrack(root.player.trackArtist, root.player.trackTitle, root.player.trackAlbum, root.player.length);
-            currentLyricIndex = Lyrics.indexForTime(root.player.position);
+    function reloadTrack() {
+        const p = Players.active;
+        if (p) {
+            Lyrics.setTrack(p.trackArtist, p.trackTitle, p.trackAlbum, p.length);
         } else {
             Lyrics.clearTrack();
-            currentLyricIndex = -1;
         }
+    }
+
+    Connections {
+        target: Players
+        function onActiveChanged() {
+            root.reloadTrack();
+        }
+    }
+
+    Connections {
+        target: Players.active
+        ignoreUnknownSignals: true
+        function onPostTrackChanged() {
+            root.reloadTrack();
+        }
+    }
+
+    Component.onCompleted: {
+        root.reloadTrack();
+    }
+
+    function forceUpdate() {
+        if (Lyrics.hasLyrics) {
+            currentLyricIndex = Lyrics.indexForTime(Players.active?.position ?? 0);
+            displayedLyric = (Lyrics.lyrics[currentLyricIndex] ?? "").replace(/\u00A0/g, " ");
+            previousLyricText = currentLyricIndex > 0 ? (Lyrics.lyrics[currentLyricIndex - 1] ?? "").replace(/\u00A0/g, " ") : "";
+            nextLyricText = currentLyricIndex < Lyrics.lyrics.length - 1 ? (Lyrics.lyrics[currentLyricIndex + 1] ?? "").replace(/\u00A0/g, " ") : "";
+            lyricSlide.running = true;
+        } else {
+            currentLyricIndex = -1;
+            displayedLyric = "";
+            previousLyricText = "";
+            nextLyricText = "";
+        }
+    }
+
+    Connections {
+        function onHasLyricsChanged() {
+            root.forceUpdate();
+        }
+        target: Lyrics
     }
 
     implicitWidth: 350 * root.lyricsScale
     implicitHeight: 180 * root.lyricsScale
     
-    opacity: (root.hasLyrics && !root.shouldHide) ? 1 : 0
+    opacity: ((root.hasLyrics || Lyrics.loading) && !root.shouldHide) ? 1 : 0
     visible: opacity > 0
 
     Behavior on opacity {
@@ -198,20 +222,94 @@ Item {
             layer.enabled: root.blurEnabled
         }
 
+        Loader {
+            id: loadingIndicator
+            anchors.centerIn: parent
+            asynchronous: true
+            active: opacity > 0
+            opacity: Lyrics.loading && !root.hasLyrics ? 1 : 0
+
+            sourceComponent: ColumnLayout {
+                spacing: Tokens.spacing.large * root.lyricsScale
+
+                StyledRect {
+                    Layout.alignment: Qt.AlignHCenter
+                    implicitWidth: shape.implicitSize + Tokens.padding.medium * 2 * root.lyricsScale
+                    implicitHeight: shape.implicitSize + Tokens.padding.medium * 2 * root.lyricsScale
+                    color: root.safePrimary
+                    radius: Tokens.rounding.full
+
+                    LoadingIndicator {
+                        id: shape
+
+                        anchors.centerIn: parent
+                        implicitSize: Math.round(Tokens.sizes.dashboard.mediaSectionWidth / 5 * root.lyricsScale)
+                        containsIcon: true
+                    }
+                }
+
+                StyledText {
+                    text: qsTr("Loading lyrics...")
+                    color: root.safeSecondary
+                    font.pointSize: Tokens.font.title.medium.pointSize * root.lyricsScale
+                    font.family: Tokens.font.title.medium.family
+                    font.weight: Tokens.font.title.medium.weight
+                }
+            }
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
+        }
+
         // --- NEW INNER CONTAINER FOR FADE MASK ---
         Item {
             id: fadeContainer
             anchors.fill: parent
             clip: true
+            opacity: root.hasLyrics ? 1 : 0
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.SlowEffects
+                }
+            }
 
             layer.enabled: true
-            layer.effect: ShaderEffect {
-                required property Item source
-                
-                // Tweak this value to make the fade taller or shorter
-                property real fadeMargin: 0.25 
+            layer.effect: Mask {
+                maskSource: fadeMask
 
-                fragmentShader: Quickshell.shellPath("assets/shaders/fade.frag.qsb")
+                Rectangle {
+                    id: fadeMask
+
+                    layer.enabled: true
+                    visible: false
+                    implicitWidth: fadeContainer.width
+                    implicitHeight: fadeContainer.height
+
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+
+                        GradientStop {
+                            color: Qt.alpha("black", 0)
+                            position: 0
+                        }
+                        GradientStop {
+                            color: Qt.alpha("black", 1)
+                            position: 0.25 // fadeMargin
+                        }
+                        GradientStop {
+                            color: Qt.alpha("black", 1)
+                            position: 0.75 // 1 - fadeMargin
+                        }
+                        GradientStop {
+                            color: Qt.alpha("black", 0)
+                            position: 1
+                        }
+                    }
+                }
             }
 
             // --- Previous Lyric ---
@@ -221,6 +319,7 @@ Item {
                 width: parent.width
                 height: prevLyricLabel.implicitHeight
                 anchors.horizontalCenter: parent.horizontalCenter
+                y: root.targetPrevY
                 visible: root.isCurrentActive
 
                 StyledText {
@@ -250,6 +349,7 @@ Item {
                 width: parent.width
                 height: currentLyricLabel.implicitHeight
                 anchors.horizontalCenter: parent.horizontalCenter
+                y: root.targetCenterY
                 visible: root.isCurrentActive
 
                 MultiEffect {
@@ -305,6 +405,7 @@ Item {
                 width: parent.width
                 height: nextLyricLabel.implicitHeight
                 anchors.horizontalCenter: parent.horizontalCenter
+                y: root.targetNextY
                 visible: root.isCurrentActive
 
                 StyledText {

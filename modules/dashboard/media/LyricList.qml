@@ -14,13 +14,32 @@ import qs.services
 Item {
     id: root
 
-    // Funny binding hack to make lyrics update
-    readonly property var _: {
+    function reloadTrack() {
         const p = Players.active;
-        if (p)
+        if (p) {
             Lyrics.setTrack(p.trackArtist, p.trackTitle, p.trackAlbum, p.length);
-        else
+        } else {
             Lyrics.clearTrack();
+        }
+    }
+
+    Connections {
+        target: Players
+        function onActiveChanged() {
+            root.reloadTrack();
+        }
+    }
+
+    Connections {
+        target: Players.active
+        ignoreUnknownSignals: true
+        function onPostTrackChanged() {
+            root.reloadTrack();
+        }
+    }
+
+    Component.onCompleted: {
+        root.reloadTrack();
     }
 
     readonly property real fadeAmount: 0.1
@@ -260,6 +279,7 @@ Item {
             id: lyric
 
             required property string modelData
+            required property int index
             property real effectScale: ListView.isCurrentItem ? 1 : 0
 
             anchors.left: ListView.view?.contentItem.left
