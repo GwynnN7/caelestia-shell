@@ -43,7 +43,6 @@ GridLayout {
         Layout.alignment: isHorizontal ? (Qt.AlignVCenter | Qt.AlignLeft) : (Qt.AlignHCenter | Qt.AlignTop)
         Layout.preferredWidth: isHorizontal ? (Tokens.sizes.bar.innerWidth - Tokens.padding.small) : -1
         Layout.preferredHeight: isHorizontal ? -1 : (Tokens.sizes.bar.innerWidth - Tokens.padding.small)
-        Layout.leftMargin: isHorizontal ? Math.floor(Tokens.spacing.small / 2) + 1 : 0
 
         asynchronous: true
         sourceComponent: Config.bar.workspaces.useIcon ? iconComponent : textComponent
