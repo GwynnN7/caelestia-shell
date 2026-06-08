@@ -128,10 +128,8 @@ Item {
     function reloadTrack() {
         const p = Players.active;
         if (p) {
-            console.log("DesktopLyrics reloadTrack: ", p.trackTitle, " artist: ", p.trackArtist);
             Lyrics.setTrack(p.trackArtist, p.trackTitle, p.trackAlbum, p.length);
         } else {
-            console.log("DesktopLyrics reloadTrack: NO PLAYER");
             Lyrics.clearTrack();
         }
     }
@@ -188,7 +186,6 @@ Item {
     implicitHeight: 180 * root.lyricsScale
     
     opacity: ((root.hasLyrics || Lyrics.loading) && !root.shouldHide) ? 1 : 0
-    onOpacityChanged: console.log("DesktopLyrics opacity:", opacity, "hasLyrics:", root.hasLyrics, "loading:", Lyrics.loading, "shouldHide:", root.shouldHide)
     visible: opacity > 0
 
     Behavior on opacity {
@@ -255,7 +252,7 @@ Item {
                     Layout.alignment: Qt.AlignHCenter
                     implicitWidth: shape.implicitSize + Tokens.padding.medium * 2 * root.lyricsScale
                     implicitHeight: shape.implicitSize + Tokens.padding.medium * 2 * root.lyricsScale
-                    color: root.safePrimary
+                    color: Colours.palette.m3primaryContainer
                     radius: Tokens.rounding.full
 
                     LoadingIndicator {
@@ -264,7 +261,7 @@ Item {
                         anchors.centerIn: parent
                         implicitSize: Math.round(Tokens.sizes.dashboard.mediaSectionWidth / 5 * root.lyricsScale)
                         containsIcon: true
-                        color: root.useLightSet ? Colours.palette.m3primary : Colours.palette.m3onPrimary
+                        color: Colours.palette.m3primary
                     }
                 }
 
