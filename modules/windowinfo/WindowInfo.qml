@@ -51,6 +51,7 @@ Item {
 
                 color: Colours.tPalette.m3surfaceContainer
                 radius: Tokens.rounding.large
+                clip: true
 
                 Details {
                     client: root.client

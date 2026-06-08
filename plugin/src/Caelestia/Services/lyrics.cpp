@@ -224,10 +224,10 @@ int Lyrics::indexForTime(qreal time) const {
 }
 
 qreal Lyrics::timeForIndex(int index) const {
-    if (index >= 0 && index < m_lines.size()) {
-        return m_lines.at(index).time;
+    if (index < 0 || index >= m_lines.size()) {
+        return -1.0;
     }
-    return -1.0;
+    return m_lines.at(index).time + m_offset;
 }
 
 void Lyrics::setTrack(const QString& artist, const QString& title, const QString& album, qreal duration) {

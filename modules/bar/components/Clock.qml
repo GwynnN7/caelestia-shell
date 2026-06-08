@@ -25,8 +25,8 @@ StyledRect {
         id: layout
 
         anchors.centerIn: parent
-        columnSpacing: Tokens.spacing.small
-        rowSpacing: Tokens.spacing.small
+        columnSpacing: Tokens.spacing.extraSmall
+        rowSpacing: Tokens.spacing.extraSmall
         columns: isHorizontal ? -1 : 1
         rows: isHorizontal ? 1 : -1
         flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
