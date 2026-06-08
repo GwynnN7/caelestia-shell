@@ -81,6 +81,8 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
+        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1 && !sidebar.visible) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
+        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1 && !sidebar.visible) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
     }
 
     Item {
