@@ -15,6 +15,7 @@ ColumnLayout {
     required property string title
     required property NexusState nState
     property bool isSubPage
+    property bool scrollable: true
     readonly property int cappedWidth: Math.min(800, width)
 
     default property Item contentChild
@@ -59,6 +60,7 @@ ColumnLayout {
     VerticalFadeFlickable {
         id: flickable
 
+        interactive: root.scrollable
         Layout.fillWidth: true
         Layout.fillHeight: true
 
@@ -66,7 +68,7 @@ ColumnLayout {
         topMargin: Tokens.padding.large
         bottomMargin: Tokens.padding.extraLarge
 
-        contentHeight: root.contentChild?.implicitHeight ?? 0
+        contentHeight: root.scrollable ? (root.contentChild?.implicitHeight ?? 0) : height
         contentItem.children: [root.contentChild]
     }
 }

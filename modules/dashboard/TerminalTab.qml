@@ -439,6 +439,12 @@ Item {
                             background: null
                             focus: true
 
+                            onVisibleChanged: {
+                                if (visible) {
+                                    forceActiveFocus();
+                                }
+                            }
+
                             property var commandHistory: []
                             property int historyIndex: -1
                             property string tempTypedText: ""

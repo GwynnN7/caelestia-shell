@@ -128,7 +128,9 @@ Item {
 
         Popout {
             name: "notifications"
-            sourceComponent: Notifications {}
+            sourceComponent: Notifications {
+                popouts: root.popouts
+            }
         }
 
         Popout {

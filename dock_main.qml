@@ -57,7 +57,7 @@ Item {
         root.modelDataArray = newArr;
     }
 
-    readonly property int padding: Tokens.padding.medium
+    readonly property int padding: Tokens.padding.normal
     readonly property int spacing: Tokens.spacing.small
 
     anchors.fill: parent
@@ -149,7 +149,7 @@ Item {
                         const from = drag.source.delegateIndex;
                         const to = delegateContainer.index;
                         if (from !== undefined && to !== undefined && from !== to) {
-                            dockModel.move(from, to, 1);
+                            visualModel.items.move(from, to);
                             const movedItem = root.currentOrder.splice(from, 1)[0];
                             root.currentOrder.splice(to, 0, movedItem);
                         }
@@ -174,7 +174,7 @@ Item {
                     StateLayer {
                         id: stateLayer
                         anchors.fill: parent
-                        radius: Tokens.rounding.medium
+                        radius: Tokens.rounding.normal
                         
                         color: delegateItem.isActive ? Colours.palette.m3onSurface : "transparent"
                         opacity: delegateItem.isActive ? 0.1 : 0
@@ -301,8 +301,8 @@ Item {
                         
                         SequentialAnimation {
                             id: bounceAnim
-                            NumberAnimation { target: delegateItem; property: "scale"; to: 0.7; duration: 100; easing.type: Easing.OutQuad }
-                            NumberAnimation { target: delegateItem; property: "scale"; to: 1.0; duration: 400; easing.type: Easing.OutElastic }
+                            NumberAnimation { target: icon; property: "scale"; to: 0.7; duration: 100; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: icon; property: "scale"; to: 1.0; duration: 400; easing.type: Easing.OutElastic }
                         }
                     }
 
@@ -529,15 +529,15 @@ Item {
             }
         }
         
+        root.modelDataArray = apps;
+        
         if (changed) {
             for (let i = dockModel.count - 1; i >= 0; i--) {
                 let found = false;
                 for (let j = 0; j < apps.length; j++) {
                     if (apps[j].id === dockModel.get(i).appId) { found = true; break; }
                 }
-                if (!found) {
-                    dockModel.remove(i);
-                }
+                if (!found) dockModel.remove(i);
             }
             
             for (let i = 0; i < apps.length; i++) {
@@ -545,9 +545,7 @@ Item {
                 for (let j = 0; j < dockModel.count; j++) {
                     if (dockModel.get(j).appId === apps[i].id) { found = true; break; }
                 }
-                if (!found) {
-                    dockModel.append({ appId: apps[i].id });
-                }
+                if (!found) dockModel.append({ appId: apps[i].id });
             }
             
             for (let i = 0; i < apps.length; i++) {
@@ -557,14 +555,11 @@ Item {
                     for (let j = i + 1; j < dockModel.count; j++) {
                         if (dockModel.get(j).appId === currentId) { foundIdx = j; break; }
                     }
-                    if (foundIdx !== -1) {
-                        dockModel.move(foundIdx, i, 1);
-                    }
+                    if (foundIdx !== -1) dockModel.move(foundIdx, i, 1);
                 }
             }
         }
         
-        root.modelDataArray = apps;
         root.modelUpdateTrigger += 1;
     }
 

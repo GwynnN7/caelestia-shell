@@ -14,10 +14,10 @@ ColumnLayout {
 
     width: 300
     implicitWidth: 300
-    spacing: Tokens.spacing.normal
+    spacing: Tokens.spacing.medium
 
     StyledText {
-        Layout.topMargin: Tokens.padding.normal
+        Layout.topMargin: Tokens.padding.medium
         Layout.leftMargin: Tokens.padding.small
         text: qsTr("Notifications")
         font.weight: 500
@@ -25,19 +25,19 @@ ColumnLayout {
 
     StyledRect {
         Layout.fillWidth: true
-        implicitWidth: cardLayout.implicitWidth + Tokens.padding.normal * 2
-        implicitHeight: cardLayout.implicitHeight + Tokens.padding.normal * 2
-        radius: Tokens.rounding.normal
+        implicitWidth: cardLayout.implicitWidth + Tokens.padding.medium * 2
+        implicitHeight: cardLayout.implicitHeight + Tokens.padding.medium * 2
+        radius: Tokens.rounding.medium
         color: Colours.tPalette.m3surfaceContainer
         clip: true
 
         ColumnLayout {
             id: cardLayout
 
-            width: parent.width - Tokens.padding.normal * 2
-            x: Tokens.padding.normal
-            y: Tokens.padding.normal
-            spacing: Tokens.spacing.normal
+            width: parent.width - Tokens.padding.medium * 2
+            x: Tokens.padding.medium
+            y: Tokens.padding.medium
+            spacing: Tokens.spacing.medium
 
             Toggle {
                 label: qsTr("Do not disturb")
@@ -48,7 +48,7 @@ ColumnLayout {
             StyledText {
                 text: Notifs.dnd ? qsTr("Notifications off") : qsTr("%1 unread").arg(Notifs.notClosed.length)
                 color: Colours.palette.m3onSurfaceVariant
-                font.pointSize: Tokens.font.size.small
+                font.pointSize: Tokens.font.body.small.pointSize
             }
         }
     }
@@ -71,7 +71,7 @@ ColumnLayout {
 
         Layout.fillWidth: true
         Layout.rightMargin: Tokens.padding.small
-        spacing: Tokens.spacing.normal
+        spacing: Tokens.spacing.medium
 
         StyledText {
             Layout.fillWidth: true

@@ -6,6 +6,7 @@ import qs.modules.dashboard
 PageBase {
     title: qsTr("Wallhaven")
     isSubPage: true
+    scrollable: false
 
     WallhavenTab {
         anchors.fill: parent

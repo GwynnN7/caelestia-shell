@@ -261,7 +261,7 @@ CustomMouseArea {
         }
 
         // Show utilities on hover
-        const showUtilities = !popouts.hasCurrent && panels.popoutsWrapper.offsetScale > 0.99 && inBottomPanel(panels.utilities, x, y, true);
+        const showUtilities = !popouts.hasCurrent && panels.popoutsWrapper.offsetScale > 0.99 && (Config.bar.position === "bottom" ? inTopPanel(panels.utilities, x, y) : inBottomPanel(panels.utilities, x, y, true));
 
         // Always update visibility based on hover if not in shortcut mode
         if (!utilitiesShortcutActive) {
@@ -269,6 +269,14 @@ CustomMouseArea {
         } else if (showUtilities) {
             // If hovering over utilities area while in shortcut mode, transition to hover control
             utilitiesShortcutActive = false;
+        }
+
+        // If in shortcut mode, we only check if cursor is STILL in the area, but we DON'T update visibility
+        // Instead, if it leaves the area, we exit shortcut mode
+        if (utilitiesShortcutActive) {
+            if (!(Config.bar.position === "bottom" ? inTopPanel(panels.utilities, x, y) : inBottomPanel(panels.utilities, x, y, true))) {
+                utilitiesShortcutActive = false;
+            }
         }
     }
 
@@ -324,7 +332,7 @@ CustomMouseArea {
         function onUtilitiesChanged() {
             if (root.visibilities.utilities) {
                 // Utilities became visible, immediately check if this should be shortcut mode
-                const inUtilitiesArea = root.inBottomPanel(root.panels.utilities, root.mouseX, root.mouseY);
+                const inUtilitiesArea = Config.bar.position === "bottom" ? root.inTopPanel(root.panels.utilities, root.mouseX, root.mouseY) : root.inBottomPanel(root.panels.utilities, root.mouseX, root.mouseY);
                 if (!inUtilitiesArea) {
                     root.utilitiesShortcutActive = true;
                 }
