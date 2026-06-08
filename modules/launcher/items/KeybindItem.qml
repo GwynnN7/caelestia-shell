@@ -22,9 +22,9 @@ Item {
 
     Item {
         anchors.fill: parent
-        anchors.leftMargin: Tokens.padding.larger
-        anchors.rightMargin: Tokens.padding.larger
-        anchors.margins: Tokens.padding.smaller
+        anchors.leftMargin: Tokens.padding.largeIncreased
+        anchors.rightMargin: Tokens.padding.largeIncreased
+        anchors.margins: Tokens.padding.extraSmall
 
         MaterialIcon {
             id: icon
@@ -38,7 +38,7 @@ Item {
 
         ColumnLayout {
             anchors.left: icon.right
-            anchors.leftMargin: Tokens.spacing.normal
+            anchors.leftMargin: Tokens.spacing.medium
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
 
@@ -54,7 +54,7 @@ Item {
 
             StyledText {
                 text: (modelData && modelData.action) ? modelData.action : ""
-                font.pointSize: Tokens.font.size.small
+                font.pointSize: Tokens.fontSize.small
                 color: Colours.palette.m3onSurfaceVariant
                 elide: Text.ElideRight
             }

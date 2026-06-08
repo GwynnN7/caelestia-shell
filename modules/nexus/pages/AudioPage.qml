@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
 import qs.components
+import qs.components.controls
 import qs.services
 import qs.utils
 import qs.modules.nexus.common
@@ -12,6 +13,19 @@ PageBase {
     id: root
 
     title: qsTr("Audio")
+
+    function addApp() {
+        let appName = silenceAppInput.text.trim();
+        if (appName !== "") {
+            let list = Array.from(GlobalConfig.audio.sounds.disabledNotifApps);
+            if (!list.includes(appName)) {
+                list.push(appName);
+                GlobalConfig.audio.sounds.disabledNotifApps = list;
+                GlobalConfig.save();
+            }
+            silenceAppInput.text = "";
+        }
+    }
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -29,6 +43,7 @@ PageBase {
             value: Audio.volume
             enabled: !Audio.muted
             onMoved: v => Audio.setVolume(v)
+            onInteraction: v => Audio.playEffectTick()
         }
 
         ToggleRow {
@@ -58,6 +73,7 @@ PageBase {
             value: Audio.sourceVolume
             enabled: !Audio.sourceMuted
             onMoved: v => Audio.setSourceVolume(v)
+            onInteraction: v => Audio.playEffectTick()
         }
 
         ToggleRow {
@@ -225,6 +241,88 @@ PageBase {
             checked: GlobalConfig.audio.sounds.screenRecord
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.screenRecord = checked
+        }
+
+        // Notification Silencing
+        StyledText {
+            Layout.fillWidth: true
+            Layout.topMargin: Tokens.spacing.large - parent.spacing
+            text: qsTr("Notification Silencing")
+            font: Tokens.font.body.small
+            color: Colours.palette.m3primary
+        }
+
+        StyledText {
+            Layout.fillWidth: true
+            Layout.leftMargin: Tokens.padding.small
+            Layout.bottomMargin: Tokens.spacing.medium
+            text: qsTr("Mute notification sounds for specific apps")
+            color: Colours.palette.m3outline
+            font: Tokens.font.body.small
+            wrapMode: Text.WordWrap
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Tokens.spacing.small
+
+            StyledInputField {
+                id: silenceAppInput
+                Layout.fillWidth: true
+                // placeholderText is also not exposed in StyledInputField? Let's check... wait, we can't use it if it's not exposed.
+                onEditingFinished: root.addApp()
+            }
+
+            IconTextButton {
+                text: qsTr("Add")
+                icon: "add"
+                onClicked: root.addApp()
+            }
+        }
+
+        Flow {
+            Layout.fillWidth: true
+            spacing: Tokens.spacing.small
+
+            Repeater {
+                model: GlobalConfig.audio.sounds.disabledNotifApps
+                delegate: StyledRect {
+                    required property string modelData
+                    required property int index
+
+                    width: implicitWidth
+                    height: implicitHeight
+                    color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
+                    radius: Tokens.rounding.large
+                    implicitWidth: chipLayout.implicitWidth + Tokens.padding.medium * 2
+                    implicitHeight: chipLayout.implicitHeight + Tokens.padding.extraSmall * 2
+
+                    RowLayout {
+                        id: chipLayout
+                        x: Tokens.padding.medium
+                        y: Tokens.padding.extraSmall
+                        spacing: Tokens.spacing.extraSmall
+
+                        StyledText {
+                            text: modelData
+                        }
+
+                        MaterialIcon {
+                            text: "close"
+                            font: Tokens.font.icon.small
+
+                            StateLayer {
+                                onClicked: {
+                                    let list = Array.from(GlobalConfig.audio.sounds.disabledNotifApps);
+                                    list.splice(index, 1);
+                                    GlobalConfig.audio.sounds.disabledNotifApps = list;
+                                    GlobalConfig.save();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

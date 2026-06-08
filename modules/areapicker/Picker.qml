@@ -80,6 +80,7 @@ MouseArea {
             } else {
                 Quickshell.execDetached(["swappy", "-f", path]);
             }
+            Audio.playCameraClick();
             closeAnim.start();
         });
     }

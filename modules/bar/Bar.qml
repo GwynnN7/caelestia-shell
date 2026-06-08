@@ -63,7 +63,7 @@ GridLayout {
             } else {
                 popouts.hasCurrent = false;
             }
-        } else if (id === "tray" && Config.bar.popouts.tray) {
+        } else if (id === "tray" && Config.bar.popouts.tray && !visibilities.sidebar) {
             const tray = ch.item as Tray;
             const mouseMap = mapToItem(tray.expandIcon, isHorizontal ? pos : tray.implicitWidth / 2, isHorizontal ? tray.implicitHeight / 2 : pos);
             if (!Config.bar.tray.compact || (tray.expanded && !tray.expandIcon.contains(mouseMap))) {

@@ -34,9 +34,9 @@ Item {
 
     Item {
         anchors.fill: parent
-        anchors.leftMargin: Tokens.padding.larger
-        anchors.rightMargin: Tokens.padding.larger
-        anchors.margins: Tokens.padding.smaller
+        anchors.leftMargin: Tokens.padding.largeIncreased
+        anchors.rightMargin: Tokens.padding.largeIncreased
+        anchors.margins: Tokens.padding.extraSmall
 
         MaterialIcon {
             id: icon
@@ -46,7 +46,7 @@ Item {
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: Tokens.padding.smaller
+            anchors.leftMargin: Tokens.padding.extraSmall
         }
 
         Item {
@@ -56,7 +56,7 @@ Item {
             height: (root.modelData?.isImage ?? false) ? 80 : 0
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: icon.right
-            anchors.leftMargin: (root.modelData?.isImage ?? false) ? Tokens.spacing.normal : 0
+            anchors.leftMargin: (root.modelData?.isImage ?? false) ? Tokens.spacing.medium : 0
             visible: root.modelData?.isImage ?? false
 
             property string imagePath: (root.modelData?.isImage ?? false) ? "/tmp/caelestia-clipboard/" + (root.modelData?.id ?? "") + ".png" : ""
@@ -71,13 +71,13 @@ Item {
 
         StyledText {
             anchors.left: icon.right
-            anchors.leftMargin: Tokens.spacing.normal
+            anchors.leftMargin: Tokens.spacing.medium
             anchors.right: favIcon.left
             anchors.rightMargin: Tokens.spacing.small
             anchors.verticalCenter: parent.verticalCenter
 
             text: root.modelData?.preview ?? ""
-            font.pointSize: Tokens.font.size.normal
+            font.pointSize: Tokens.fontSize.normal
 elide: Text.ElideRight
             visible: !(root.modelData?.isImage ?? false)
         }

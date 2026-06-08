@@ -45,11 +45,27 @@ StyledRect {
 
         StyledText {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-
-            visible: Config.bar.clock.showDate
-
+            visible: Config.bar.clock.showDate && !isHorizontal
             horizontalAlignment: StyledText.AlignHCenter
-            text: isHorizontal ? Time.format("ddd d") : Time.format("ddd\nd")
+            text: Time.format("ddd")
+            font: Tokens.font.body.small
+            color: root.colour
+        }
+
+        StyledText {
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+            visible: Config.bar.clock.showDate && !isHorizontal
+            horizontalAlignment: StyledText.AlignHCenter
+            text: Time.format("d")
+            font: Tokens.font.body.small
+            color: root.colour
+        }
+
+        StyledText {
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+            visible: Config.bar.clock.showDate && isHorizontal
+            horizontalAlignment: StyledText.AlignHCenter
+            text: Time.format("ddd d")
             font: Tokens.font.body.small
             color: root.colour
         }
@@ -69,32 +85,14 @@ StyledRect {
             text: isHorizontal ? Time.format(GlobalConfig.services.useTwelveHourClock ? "h:mm ap" : "HH:mm") : Time.hourStr
             font: root.font.build()
             color: root.colour
-
-            TextMetrics {
-                id: hourMetrics
-
-                font: root.font.build()
-                text: Time.hourStr
-            }
         }
 
         StyledText {
-            Layout.topMargin: -parent.spacing - 4
             Layout.alignment: Qt.AlignHCenter
             visible: !isHorizontal
             text: Time.minuteStr
-            font: {
-                const scale = text === "11" ? 1.15 : Math.min(1.05, Math.max(hourMetrics.width, minMetrics.width) / minMetrics.width);
-                return root.font.width(scale * 100).letterSpacing(scale).build();
-            }
+            font: root.font.build()
             color: root.colour
-
-            TextMetrics {
-                id: minMetrics
-
-                font: root.font.build()
-                text: Time.minuteStr
-            }
         }
 
         Loader {

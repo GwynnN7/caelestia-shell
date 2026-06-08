@@ -32,15 +32,15 @@ Item {
 
     Item {
         anchors.fill: parent
-        anchors.leftMargin: Tokens.padding.larger
-        anchors.rightMargin: Tokens.padding.larger
-        anchors.margins: Tokens.padding.smaller
+        anchors.leftMargin: Tokens.padding.largeIncreased
+        anchors.rightMargin: Tokens.padding.largeIncreased
+        anchors.margins: Tokens.padding.extraSmall
 
         StyledText {
             id: emojiChar
 
             text: root.modelData?.char ?? ""
-            font.pointSize: Tokens.font.size.title
+            font.pointSize: Tokens.fontSize.extraLarge
 
             anchors.verticalCenter: parent.verticalCenter
         }
@@ -49,13 +49,13 @@ Item {
             id: name
 
             anchors.left: emojiChar.right
-            anchors.leftMargin: Tokens.spacing.normal
+            anchors.leftMargin: Tokens.spacing.medium
             anchors.right: parent.right
             anchors.rightMargin: 80
             anchors.verticalCenter: emojiChar.verticalCenter
 
             text: root.modelData?.name ?? ""
-            font.pointSize: Tokens.font.size.normal
+            font.pointSize: Tokens.fontSize.normal
             elide: Text.ElideRight
         }
 

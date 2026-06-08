@@ -23,6 +23,7 @@ Item {
     property string outputBuffer: ""
     property string currentDirectory: Paths.home
     property string currentSuggestion: ""
+    property string hostname: ""
     property int activeProcessesCount: 0
     property bool isRunning: activeProcessesCount > 0
 
@@ -162,11 +163,10 @@ Item {
         outputArea.text = "";
     }
 
-    readonly property string prompt: (() => {
-        const user = Utils?.getEnv?.("USER") || "user";
-        const home = Paths.home.split("/").pop() || "~";
-        return user + "@" + home;
-    })()
+    readonly property string prompt: {
+        const user = Quickshell.env("USER") || "user";
+        return user + "@" + (root.hostname !== "" ? root.hostname : "caelestia");
+    }
 
     Component {
         id: shellProcessComp
@@ -307,8 +307,29 @@ Item {
         }
     }
 
+    Component {
+        id: hostnameResolverComp
+
+        Process {
+            running: false
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    let resolved = this.text.trim();
+                    if (resolved && resolved !== "") {
+                        root.hostname = resolved;
+                    }
+                    destroy();
+                }
+            }
+        }
+    }
+
     Component.onCompleted: {
         startShell();
+        hostnameResolverComp.createObject(root, {
+            command: ["cat", "/etc/hostname"],
+            running: true
+        });
     }
 
     StyledRect {
@@ -319,8 +340,8 @@ Item {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Tokens.padding.normal
-            spacing: Tokens.spacing.normal
+            anchors.margins: Tokens.padding.medium
+            spacing: Tokens.spacing.medium
 
             // Terminal output area
             StyledFlickable {
@@ -349,10 +370,7 @@ Item {
                     cursorVisible: false
                     textFormat: TextEdit.RichText
                     wrapMode: TextEdit.Wrap
-                    font {
-                        family: "JetBrains Mono, Consolas, monospace"
-                        pointSize: Tokens.font.size.smaller
-                    }
+                    font: Tokens.font.mono.small
                     color: "#eceff4" // Nord Snow Storm (Bright off-white for perfect readability)
                 }
             }
@@ -364,7 +382,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
 
-                radius: Tokens.rounding.normal // Corrected to match standard dashboard input fields
+                radius: Tokens.rounding.medium // Corrected to match standard dashboard input fields
                 color: Colours.palette.m3surfaceContainer // Solid standard surfaceContainer background
                 border.width: 0 // Removed outline border completely
 
@@ -372,17 +390,13 @@ Item {
                     id: inputRow
 
                     anchors.fill: parent
-                    anchors.leftMargin: Tokens.padding.normal
-                    anchors.rightMargin: Tokens.padding.normal
+                    anchors.leftMargin: Tokens.padding.medium
+                    anchors.rightMargin: Tokens.padding.medium
                     spacing: Tokens.spacing.small
 
                     StyledText {
                         text: root.prompt + " ❯"
-                        font {
-                            family: "JetBrains Mono, Consolas, monospace"
-                            pointSize: Tokens.font.size.smaller
-                            bold: true
-                        }
+                        font: Tokens.font.mono.small
                         color: "#a6e3a1" // Vibrant, bright Catppuccin Green for excellent contrast
                     }
 
@@ -407,16 +421,15 @@ Item {
                             text: {
                                 let typed = commandInput.text;
                                 let escapedTyped = typed.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                let normalColor = Colours.palette.m3onSurface.toString();
                                 let suggestionColor = Qt.alpha(Colours.palette.m3onSurfaceVariant, 0.35).toString();
 
                                 if (currentSuggestion !== "" && currentSuggestion.startsWith(typed)) {
                                     let suffix = currentSuggestion.substring(typed.length);
                                     let escapedSuffix = suffix.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                    return "<span style='color: " + normalColor + ";'>" + escapedTyped + "</span>" +
+                                    return "<span style='color: transparent;'>" + escapedTyped + "</span>" +
                                            "<span style='color: " + suggestionColor + ";'>" + escapedSuffix + "</span>";
                                 }
-                                return "<span style='color: " + normalColor + ";'>" + escapedTyped + "</span>";
+                                return "";
                             }
                         }
 
@@ -429,11 +442,7 @@ Item {
                             topPadding: 0
                             bottomPadding: 0
 
-                            font {
-                                family: "JetBrains Mono, Consolas, monospace"
-                                pointSize: Tokens.font.size.smaller
-                            }
-                            color: "transparent" // Make text transparent so it doesn't double-render or conflict
+                            font: Tokens.font.mono.small
                             selectedTextColor: Colours.palette.m3onSurface // Ensure highlighted/selected text is fully visible
 
                             background: null

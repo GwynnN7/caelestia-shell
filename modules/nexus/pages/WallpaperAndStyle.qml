@@ -272,13 +272,7 @@ PageBase {
             enabled: Config.background.visualiser.enabled
         }
 
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Sound effects")
-            checked: Config.audio.sounds.enabled
-            onToggled: GlobalConfig.audio.sounds.enabled = checked
-        }
+
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing

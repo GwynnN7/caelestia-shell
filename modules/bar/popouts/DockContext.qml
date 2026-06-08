@@ -28,12 +28,12 @@ ColumnLayout {
 
     width: 200
     implicitWidth: 200
-    spacing: Tokens.spacing.normal
+    spacing: Tokens.spacing.medium
 
     StyledRect {
         Layout.fillWidth: true
-        implicitHeight: cardLayout.implicitHeight + Tokens.padding.normal * 2
-        radius: Tokens.rounding.normal
+        implicitHeight: cardLayout.implicitHeight + Tokens.padding.medium * 2
+        radius: Tokens.rounding.medium
         color: Colours.tPalette.m3surfaceContainer
         clip: true
         visible: model && model.entry != null
@@ -44,7 +44,7 @@ ColumnLayout {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: Tokens.padding.normal
+            anchors.margins: Tokens.padding.medium
             spacing: Tokens.spacing.small
 
             // Pin/Unpin action
@@ -58,9 +58,9 @@ ColumnLayout {
                 color: "transparent"
 
                 StateLayer {
-                    anchors.margins: -Tokens.padding.normal / 2
-                    anchors.leftMargin: -Tokens.padding.normal
-                    anchors.rightMargin: -Tokens.padding.normal
+                    anchors.margins: -Tokens.padding.medium / 2
+                    anchors.leftMargin: -Tokens.padding.medium
+                    anchors.rightMargin: -Tokens.padding.medium
 
                     radius: pinItem.radius
 
@@ -103,9 +103,9 @@ ColumnLayout {
                 color: "transparent"
 
                 StateLayer {
-                    anchors.margins: -Tokens.padding.normal / 2
-                    anchors.leftMargin: -Tokens.padding.normal
-                    anchors.rightMargin: -Tokens.padding.normal
+                    anchors.margins: -Tokens.padding.medium / 2
+                    anchors.leftMargin: -Tokens.padding.medium
+                    anchors.rightMargin: -Tokens.padding.medium
 
                     radius: newWinItem.radius
 

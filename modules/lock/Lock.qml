@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.components.misc
+import qs.services
 
 Scope {
     property alias lock: lock
@@ -13,6 +14,13 @@ Scope {
         id: lock
 
         signal unlock
+
+        onLockedChanged: {
+            if (locked)
+                Audio.playLock();
+            else
+                Audio.playUnlock();
+        }
 
         LockSurface {
             lock: lock

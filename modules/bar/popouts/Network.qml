@@ -20,7 +20,8 @@ ColumnLayout {
     property bool showPasswordDialog: false
 
     spacing: Tokens.spacing.small
-    width: Tokens.sizes.bar.networkWidth
+    property bool _isSidebarOpen: popouts.sidebarOpen
+    width: Math.max(Tokens.sizes.bar.networkWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
 
     // Wireless section
     StyledText {

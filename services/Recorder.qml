@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.services
 
 Singleton {
     id: root
@@ -54,6 +55,7 @@ Singleton {
                     Quickshell.execDetached(["caelestia", "record"]);
                     props.running = false;
                     props.paused = false;
+                    Audio.playVideoStop();
                 } else if (root.needsPause) {
                     Quickshell.execDetached(["caelestia", "record", "-p"]);
                     props.paused = !props.paused;
@@ -63,6 +65,7 @@ Singleton {
                 props.running = true;
                 props.paused = false;
                 props.elapsed = 0;
+                Audio.playVideoRecord();
             }
 
             root.needsStart = false;

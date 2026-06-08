@@ -6,16 +6,19 @@ import QtQuick.Layouts
 import Caelestia.Config
 import qs.components
 import qs.services
+import ".."
 
 ColumnLayout {
     id: root
+    required property PopoutState popouts
 
     function refresh() {
         kb.refresh();
     }
 
     spacing: Tokens.spacing.small
-    width: Tokens.sizes.bar.kbLayoutWidth
+    property bool _isSidebarOpen: popouts.sidebarOpen
+    width: Math.max(Tokens.sizes.bar.kbLayoutWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
 
     Component.onCompleted: kb.start()
 

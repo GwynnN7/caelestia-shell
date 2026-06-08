@@ -15,7 +15,8 @@ ColumnLayout {
 
     required property PopoutState popouts
 
-    width: 300
+    property bool _isSidebarOpen: popouts.sidebarOpen
+    width: Math.max(300, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
     spacing: Tokens.spacing.small
 
     StyledText {

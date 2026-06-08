@@ -70,7 +70,8 @@ ColumnLayout {
     }
 
     spacing: Tokens.spacing.medium
-    implicitWidth: 400
+    property bool _isSidebarOpen: popouts.sidebarOpen
+    implicitWidth: Math.max(400, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
     implicitHeight: content.implicitHeight + Tokens.padding.extraLargeIncreased
     visible: shouldBeVisible || isClosing
     enabled: shouldBeVisible && !isClosing

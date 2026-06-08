@@ -8,11 +8,12 @@ Item {
     required property var screenSize
     required property var borderThickness
     required property string imgPath
+    property real floorOffset: 0
 
-    readonly property real floorY: screenSize.height - 128 - borderThickness
+    readonly property real floorY: screenSize.height - 128 - borderThickness - floorOffset
     readonly property real minX: 0
     readonly property real maxX: screenSize.width - 128
-    readonly property real maxY: screenSize.height - 128
+    readonly property real maxY: screenSize.height - 128 - floorOffset
 
     property real vx: 0
     property real vy: 0

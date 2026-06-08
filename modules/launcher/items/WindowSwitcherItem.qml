@@ -24,11 +24,11 @@ Item {
         opacity = Qt.binding(() => PathView.onPath ? 1 : 0);
     }
 
-    implicitWidth: previewBox.width + Tokens.padding.larger * 2
-    implicitHeight: previewBox.height + label.height + Tokens.spacing.small / 2 + Tokens.padding.large + Tokens.padding.normal
+    implicitWidth: previewBox.width + Tokens.padding.largeIncreased * 2
+    implicitHeight: previewBox.height + label.height + Tokens.spacing.small / 2 + Tokens.padding.large + Tokens.padding.medium
 
     StateLayer {
-        radius: Tokens.rounding.normal
+        radius: Tokens.rounding.medium
         onClicked: root.clicked()
     }
 
@@ -56,7 +56,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         y: Tokens.padding.large
         color: Colours.tPalette.m3surfaceContainer
-        radius: Tokens.rounding.normal
+        radius: Tokens.rounding.medium
 
         implicitWidth: Tokens.sizes.launcher.windowSwitcherWidth
         implicitHeight: implicitWidth / 16 * 9
@@ -76,12 +76,12 @@ Item {
         anchors.topMargin: Tokens.spacing.small / 2
         anchors.horizontalCenter: parent.horizontalCenter
 
-        width: previewBox.width - Tokens.padding.normal * 2
+        width: previewBox.width - Tokens.padding.medium * 2
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
         renderType: Text.QtRendering
         text: root.modelData?.title ?? ""
-        font.pointSize: Tokens.font.size.normal
+        font: Tokens.font.body.medium
     }
 
     Behavior on scale {
