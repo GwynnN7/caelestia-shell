@@ -204,48 +204,141 @@ Item {
 
         visible: root.state === "wallpapers"
 
-        Repeater {
-            model: root.launcherSortColors
+        // Red button
+        Rectangle {
+            width: 32
+            height: 32
+            radius: Tokens.rounding.full
+            color: "#e53935"
 
-            Item {
+            Rectangle {
+                anchors.centerIn: parent
                 width: 32
                 height: 32
+                radius: parent.radius
+                color: "transparent"
+                border.width: root.launcherSortColor === "#e53935" ? 2 : 0
+                border.color: Colours.palette.m3onSurface
+            }
 
-                readonly property color currentColor: modelData
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.launcherToggleSortColor("#e53935")
+            }
+        }
 
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: 28
-                    height: 28
-                    radius: Tokens.rounding.full
-                    color: currentColor
-                }
+        // Blue button
+        Rectangle {
+            width: 32
+            height: 32
+            radius: Tokens.rounding.full
+            color: "#1e88e5"
 
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: root.launcherSortColor === currentColor ? 32 : 0
-                    height: root.launcherSortColor === currentColor ? 32 : 0
-                    radius: Tokens.rounding.full
-                    color: "transparent"
-                    border.width: root.launcherSortColor === currentColor ? 2 : 0
-                    border.color: Colours.palette.m3onSurface
+            Rectangle {
+                anchors.centerIn: parent
+                width: 32
+                height: 32
+                radius: parent.radius
+                color: "transparent"
+                border.width: root.launcherSortColor === "#1e88e5" ? 2 : 0
+                border.color: Colours.palette.m3onSurface
+            }
 
-                    Behavior on width {
-                        Anim {
-                            type: Anim.DefaultEffects
-                        }
-                    }
-                    Behavior on height {
-                        Anim {
-                            type: Anim.DefaultEffects
-                        }
-                    }
-                }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.launcherToggleSortColor("#1e88e5")
+            }
+        }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.launcherToggleSortColor(currentColor)
-                }
+        // Green button
+        Rectangle {
+            width: 32
+            height: 32
+            radius: Tokens.rounding.full
+            color: "#43a047"
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 32
+                height: 32
+                radius: parent.radius
+                color: "transparent"
+                border.width: root.launcherSortColor === "#43a047" ? 2 : 0
+                border.color: Colours.palette.m3onSurface
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.launcherToggleSortColor("#43a047")
+            }
+        }
+
+        // Yellow button
+        Rectangle {
+            width: 32
+            height: 32
+            radius: Tokens.rounding.full
+            color: "#fdd835"
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 32
+                height: 32
+                radius: parent.radius
+                color: "transparent"
+                border.width: root.launcherSortColor === "#fdd835" ? 2 : 0
+                border.color: Colours.palette.m3onSurface
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.launcherToggleSortColor("#fdd835")
+            }
+        }
+
+        // Purple button
+        Rectangle {
+            width: 32
+            height: 32
+            radius: Tokens.rounding.full
+            color: "#8e24aa"
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 32
+                height: 32
+                radius: parent.radius
+                color: "transparent"
+                border.width: root.launcherSortColor === "#8e24aa" ? 2 : 0
+                border.color: Colours.palette.m3onSurface
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.launcherToggleSortColor("#8e24aa")
+            }
+        }
+
+        // Orange button
+        Rectangle {
+            width: 32
+            height: 32
+            radius: Tokens.rounding.full
+            color: "#fb8c00"
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 32
+                height: 32
+                radius: parent.radius
+                color: "transparent"
+                border.width: root.launcherSortColor === "#fb8c00" ? 2 : 0
+                border.color: Colours.palette.m3onSurface
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.launcherToggleSortColor("#fb8c00")
             }
         }
     }
