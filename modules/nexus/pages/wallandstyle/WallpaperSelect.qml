@@ -34,7 +34,7 @@ PageBase {
     }
 
     // List of sorting colors
-    readonly property list<color> sortColors: ["#e53935" // Red
+    readonly property var sortColors: ["#e53935" // Red
         , "#1e88e5" // Blue
         , "#43a047" // Green
         , "#fdd835" // Yellow
@@ -198,37 +198,141 @@ PageBase {
             Layout.alignment: Qt.AlignHCenter
             spacing: Tokens.spacing.medium
 
-            Repeater {
-                model: root.sortColors
+            // Red button
+            Rectangle {
+                width: 36
+                height: 36
+                radius: Tokens.rounding.full
+                color: "#e53935"
 
-                Item {
-                    width: 40
-                    height: 40
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: parent.radius
+                    color: "transparent"
+                    border.width: root.sortColor === "#e53935" ? 3 : 0
+                    border.color: Colours.palette.m3onSurface
+                }
 
-                    // Selection indicator ring
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: 36
-                        height: 36
-                        radius: Tokens.rounding.full
-                        color: "transparent"
-                        border.width: root.sortColor === modelData ? 3 : 0
-                        border.color: Colours.palette.m3onSurface
-                    }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.toggleSortColor("#e53935")
+                }
+            }
 
-                    // Color fill
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: 32
-                        height: 32
-                        radius: Tokens.rounding.full
-                        color: modelData
-                    }
+            // Blue button
+            Rectangle {
+                width: 36
+                height: 36
+                radius: Tokens.rounding.full
+                color: "#1e88e5"
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: root.toggleSortColor(modelData)
-                    }
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: parent.radius
+                    color: "transparent"
+                    border.width: root.sortColor === "#1e88e5" ? 3 : 0
+                    border.color: Colours.palette.m3onSurface
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.toggleSortColor("#1e88e5")
+                }
+            }
+
+            // Green button
+            Rectangle {
+                width: 36
+                height: 36
+                radius: Tokens.rounding.full
+                color: "#43a047"
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: parent.radius
+                    color: "transparent"
+                    border.width: root.sortColor === "#43a047" ? 3 : 0
+                    border.color: Colours.palette.m3onSurface
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.toggleSortColor("#43a047")
+                }
+            }
+
+            // Yellow button
+            Rectangle {
+                width: 36
+                height: 36
+                radius: Tokens.rounding.full
+                color: "#fdd835"
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: parent.radius
+                    color: "transparent"
+                    border.width: root.sortColor === "#fdd835" ? 3 : 0
+                    border.color: Colours.palette.m3onSurface
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.toggleSortColor("#fdd835")
+                }
+            }
+
+            // Purple button
+            Rectangle {
+                width: 36
+                height: 36
+                radius: Tokens.rounding.full
+                color: "#8e24aa"
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: parent.radius
+                    color: "transparent"
+                    border.width: root.sortColor === "#8e24aa" ? 3 : 0
+                    border.color: Colours.palette.m3onSurface
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.toggleSortColor("#8e24aa")
+                }
+            }
+
+            // Orange button
+            Rectangle {
+                width: 36
+                height: 36
+                radius: Tokens.rounding.full
+                color: "#fb8c00"
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: parent.radius
+                    color: "transparent"
+                    border.width: root.sortColor === "#fb8c00" ? 3 : 0
+                    border.color: Colours.palette.m3onSurface
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.toggleSortColor("#fb8c00")
                 }
             }
         }

@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Caelestia.Config
+import Caelestia
 import qs.components
 import qs.components.controls
 import qs.services
@@ -29,6 +30,51 @@ Item {
     clip: true
     state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
 
+    // Color sorting state for launcher wallpaper picker
+    property color launcherSortColor: "transparent"
+    property var launcherColorDistances: ({})
+    property var launcherWallpaperColors: ({})
+
+    function launcherToggleSortColor(color: color) {
+        if (launcherSortColor === color) {
+            launcherSortColor = "transparent";
+            launcherWallpaperColors = ({});
+            launcherColorDistances = ({});
+        } else {
+            launcherSortColor = color;
+            launcherAnalyzeColors();
+        }
+    }
+
+    function launcherColorDistance(c1: color, c2: color): real {
+        const dr = c1.r - c2.r;
+        const dg = c1.g - c2.g;
+        const db = c1.b - c2.b;
+        return Math.sqrt(dr * dr + dg * dg + db * db);
+    }
+
+    function launcherAnalyzeColors() {
+        const walls = Wallpapers.list;
+        const baseDir = Paths.wallsdir;
+        const newDistances = {};
+
+        for (const w of walls) {
+            if (w.parentDir === baseDir) {
+                newDistances[w.path] = launcherColorDistance(launcherWallpaperColors[w.path] ?? "black", launcherSortColor);
+            }
+        }
+
+        launcherColorDistances = newDistances;
+    }
+
+    readonly property list<color> launcherSortColors: ["#e53935" // Red
+        , "#1e88e5" // Blue
+        , "#43a047" // Green
+        , "#fdd835" // Yellow
+        , "#8e24aa" // Purple
+        , "#fb8c00"  // Orange
+    ]
+
     states: [
         State {
             name: "apps"
@@ -49,7 +95,7 @@ Item {
 
             PropertyChanges {
                 root.implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, wallpaperList.implicitWidth)
-                root.implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight
+                root.implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56 // Extra space for color buttons
                 wallpaperList.active: true
             }
         },
@@ -136,14 +182,71 @@ Item {
         active: false
 
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        height: root.Tokens.sizes.launcher.wallpaperHeight
 
         sourceComponent: WallpaperList {
             search: root.search
             visibilities: root.visibilities
             panels: root.panels
             content: root.content
+        }
+    }
+
+    // Color sorting buttons for launcher wallpaper picker
+    Row {
+        id: colorButtonsRow
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Tokens.padding.medium
+        spacing: Tokens.spacing.small
+
+        visible: root.state === "wallpapers"
+
+        Repeater {
+            model: root.launcherSortColors
+
+            Item {
+                width: 32
+                height: 32
+
+                readonly property color currentColor: modelData
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 28
+                    height: 28
+                    radius: Tokens.rounding.full
+                    color: currentColor
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: root.launcherSortColor === currentColor ? 32 : 0
+                    height: root.launcherSortColor === currentColor ? 32 : 0
+                    radius: Tokens.rounding.full
+                    color: "transparent"
+                    border.width: root.launcherSortColor === currentColor ? 2 : 0
+                    border.color: Colours.palette.m3onSurface
+
+                    Behavior on width {
+                        Anim {
+                            type: Anim.DefaultEffects
+                        }
+                    }
+                    Behavior on height {
+                        Anim {
+                            type: Anim.DefaultEffects
+                        }
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.launcherToggleSortColor(currentColor)
+                }
+            }
         }
     }
 
@@ -192,8 +295,10 @@ Item {
 
         MaterialIcon {
             text: {
-                if (root.state === "wallpapers") return "wallpaper_slideshow";
-                if (root.state === "keybinds") return "keyboard";
+                if (root.state === "wallpapers")
+                    return "wallpaper_slideshow";
+                if (root.state === "keybinds")
+                    return "keyboard";
                 return "manage_search";
             }
             color: Colours.palette.m3onSurfaceVariant
@@ -207,8 +312,10 @@ Item {
 
             StyledText {
                 text: {
-                    if (root.state === "wallpapers") return qsTr("No wallpapers found");
-                    if (root.state === "keybinds") return qsTr("No keybinds found");
+                    if (root.state === "wallpapers")
+                        return qsTr("No wallpapers found");
+                    if (root.state === "keybinds")
+                        return qsTr("No keybinds found");
                     return qsTr("No results");
                 }
                 color: Colours.palette.m3onSurfaceVariant
@@ -217,8 +324,10 @@ Item {
 
             StyledText {
                 text: {
-                    if (root.state === "wallpapers") return Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else");
-                    if (root.state === "keybinds") return qsTr("No keybinds match your search");
+                    if (root.state === "wallpapers")
+                        return Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else");
+                    if (root.state === "keybinds")
+                        return qsTr("No keybinds match your search");
                     return qsTr("Try searching for something else");
                 }
                 color: Colours.palette.m3onSurfaceVariant
