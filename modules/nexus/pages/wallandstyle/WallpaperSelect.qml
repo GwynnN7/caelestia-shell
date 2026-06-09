@@ -69,15 +69,68 @@ PageBase {
             }
         }
 
-        WallItem {
-            imgHeight: Math.round(width * 0.3)
-            radius: Tokens.rounding.extraLarge
-            source: Quickshell.shellPath("assets/wallpaper.webp")
-            text: qsTr("Featured wallpaper")
-            fillLabel: false
-            onClicked: {
-                Wallpapers.setWallpaper(Quickshell.shellPath("assets/wallpaper.webp"));
-                root.nState.closeSubPage();
+        StyledText {
+            Layout.topMargin: Tokens.spacing.medium
+            text: qsTr("Featured wallpapers")
+            font: Tokens.font.title.small
+        }
+
+        GridLayout {
+            Layout.fillWidth: true
+
+            columns: Config.nexus.wallpapersPerRow
+            rowSpacing: Tokens.spacing.medium
+            columnSpacing: Tokens.spacing.large
+
+            property list<var> featuredList: [
+                {
+                    path: "assets/wallpapers/Gravitation.png",
+                    name: "Gravitation",
+                    author: "PixelKhaos"
+                },
+                {
+                    path: "assets/wallpapers/CelestialTech.png",
+                    name: "CelestialTech",
+                    author: "DiM"
+                },
+                {
+                    path: "assets/wallpapers/Material-Nebula.png",
+                    name: "Material-Nebula",
+                    author: "DiM"
+                },
+                {
+                    path: "assets/wallpapers/Material-Wave.png",
+                    name: "Material-Wave",
+                    author: "Marv"
+                },
+                {
+                    path: "assets/wallpapers/Minimal-Paper.png",
+                    name: "Minimal-Paper",
+                    author: "Forger"
+                },
+                {
+                    path: "assets/wallpapers/silly-lestia.png",
+                    name: "silly-lestia",
+                    author: "DiM"
+                }
+            ]
+
+            Repeater {
+                model: parent.featuredList
+
+                WallItem {
+                    required property var modelData
+
+                    imgHeight: Math.round(width * 0.3)
+                    radius: Tokens.rounding.extraLarge
+                    source: Quickshell.shellPath(modelData.path)
+                    text: modelData.name
+                    fillLabel: false
+                    onClicked: {
+                        Wallpapers.setWallpaper(Quickshell.shellPath(modelData.path));
+                        root.nState.closeSubPage();
+                    }
+                }
             }
         }
 
