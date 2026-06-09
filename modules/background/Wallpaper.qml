@@ -30,8 +30,7 @@ Item {
         else if (current !== one) {
             two.screen = screen;
             two.update();
-        }
-        else {
+        } else {
             one.screen = screen;
             one.update();
         }
@@ -133,7 +132,7 @@ Item {
         property var screen: null
 
         onIsVideoImageChanged: updateContent()
-        
+
         function update(): void {
             this.screen = root.screen;
             if (isVideoImage) {

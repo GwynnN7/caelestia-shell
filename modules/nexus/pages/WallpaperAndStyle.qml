@@ -183,7 +183,9 @@ PageBase {
             }
         }
 
-        SectionHeader { text: qsTr("Wallpaper") }
+        SectionHeader {
+            text: qsTr("Wallpaper")
+        }
 
         ToggleRow {
             Layout.fillWidth: true
@@ -226,7 +228,9 @@ PageBase {
             onToggled: GlobalConfig.background.videoWallpaperMuteOnMedia = checked
         }
 
-        SectionHeader { text: qsTr("Appearance") }
+        SectionHeader {
+            text: qsTr("Appearance")
+        }
 
         ToggleRow {
             Layout.fillWidth: true
@@ -271,8 +275,6 @@ PageBase {
             onToggled: GlobalConfig.background.visualiser.autoHide = checked
             enabled: Config.background.visualiser.enabled
         }
-
-
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing

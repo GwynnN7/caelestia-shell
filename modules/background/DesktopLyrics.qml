@@ -184,7 +184,7 @@ Item {
 
     implicitWidth: 350 * root.lyricsScale
     implicitHeight: 180 * root.lyricsScale
-    
+
     opacity: ((root.hasLyrics || Lyrics.loading) && !root.shouldHide) ? 1 : 0
     visible: opacity > 0
 
@@ -332,7 +332,7 @@ Item {
             // --- Previous Lyric ---
             Item {
                 id: prevLyricItem
-                
+
                 width: parent.width
                 height: prevLyricLabel.implicitHeight
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -351,9 +351,12 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: {
                         switch (root.alignment) {
-                            case 0: return Text.AlignLeft;
-                            case 2: return Text.AlignRight;
-                            default: return Text.AlignHCenter;
+                        case 0:
+                            return Text.AlignLeft;
+                        case 2:
+                            return Text.AlignRight;
+                        default:
+                            return Text.AlignHCenter;
                         }
                     }
                 }
@@ -402,9 +405,12 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: {
                         switch (root.alignment) {
-                            case 0: return Text.AlignLeft;
-                            case 2: return Text.AlignRight;
-                            default: return Text.AlignHCenter;
+                        case 0:
+                            return Text.AlignLeft;
+                        case 2:
+                            return Text.AlignRight;
+                        default:
+                            return Text.AlignHCenter;
                         }
                     }
 
@@ -437,9 +443,12 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: {
                         switch (root.alignment) {
-                            case 0: return Text.AlignLeft;
-                            case 2: return Text.AlignRight;
-                            default: return Text.AlignHCenter;
+                        case 0:
+                            return Text.AlignLeft;
+                        case 2:
+                            return Text.AlignRight;
+                        default:
+                            return Text.AlignHCenter;
                         }
                     }
                 }

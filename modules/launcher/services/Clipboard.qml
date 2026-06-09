@@ -27,7 +27,8 @@ QtObject {
     }
 
     function getSortedItems(): var {
-        if (!items.length) return [];
+        if (!items.length)
+            return [];
         const favClips = new Set((GlobalConfig.launcher.favouriteClips || []).map(String));
         const favs = [];
         const rest = [];
@@ -48,7 +49,10 @@ QtObject {
     function ensureImageCached(id: int, onReady: var): void {
         const imgPath = getImagePath(id);
         Quickshell.execDetached(["sh", "-c", "mkdir -p " + imageCacheDir + " && cliphist decode " + id + " > " + imgPath + " 2>&1"]);
-        const timer = waitTimer.createObject(root, { imgPath: imgPath, callback: onReady });
+        const timer = waitTimer.createObject(root, {
+            imgPath: imgPath,
+            callback: onReady
+        });
     }
 
     property Component waitTimer: Component {
@@ -71,10 +75,12 @@ QtObject {
 
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];
-                    if (!line) continue;
+                    if (!line)
+                        continue;
 
                     const match = line.match(/^(\d+)\t(.+)/);
-                    if (!match) continue;
+                    if (!match)
+                        continue;
 
                     result.push({
                         id: parseInt(match[1]),

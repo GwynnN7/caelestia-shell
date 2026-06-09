@@ -196,7 +196,6 @@ Item {
                 TerminalTab {}
             }
 
-
             Behavior on contentX {
                 Anim {}
             }

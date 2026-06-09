@@ -22,13 +22,15 @@ StyledRect {
 
     readonly property var quickToggles: {
         const configToggles = Config.utilities.quickToggles || [];
-        const disabledIds = new Set(
-            configToggles.filter(t => t.enabled === false).map(t => t.id)
-        );
+        const disabledIds = new Set(configToggles.filter(t => t.enabled === false).map(t => t.id));
 
         const builtIn = [
-            { id: "badapple" },
-            { id: "pauseWallpaper" }
+            {
+                id: "badapple"
+            },
+            {
+                id: "pauseWallpaper"
+            }
         ].filter(t => !disabledIds.has(t.id));
 
         const allToggles = [...configToggles.filter(t => !disabledIds.has(t.id)), ...builtIn];
@@ -167,11 +169,11 @@ StyledRect {
                         isToggle: false
                         inactiveOnColour: Colours.palette.m3onSurfaceVariant
                         onClicked: {
-                        if (BadApplePlayer.shouldPlay)
-                            BadApplePlayer.stop();
-                        else
-                            BadApplePlayer.play();
-                    }
+                            if (BadApplePlayer.shouldPlay)
+                                BadApplePlayer.stop();
+                            else
+                                BadApplePlayer.play();
+                        }
                     }
                 }
                 DelegateChoice {

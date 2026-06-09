@@ -22,9 +22,11 @@ StyledWindow {
     visible: shouldBeVisible
 
     function getImgPath(): string {
-        if (!modelData) return "";
+        if (!modelData)
+            return "";
         let path = Paths.absolutePath(String(contentItem.Config.shimeji.path));
-        if (!path) return "";
+        if (!path)
+            return "";
 
         if (path.endsWith(".zip")) {
             const extractDir = path.replace(".zip", "/");

@@ -12,10 +12,22 @@ PageBase {
     isSubPage: true
 
     readonly property list<MenuItem> positionItems: [
-        MenuItem { text: qsTr("Top"); property string value: "top" },
-        MenuItem { text: qsTr("Bottom"); property string value: "bottom" },
-        MenuItem { text: qsTr("Left"); property string value: "left" },
-        MenuItem { text: qsTr("Right"); property string value: "right" }
+        MenuItem {
+            text: qsTr("Top")
+            property string value: "top"
+        },
+        MenuItem {
+            text: qsTr("Bottom")
+            property string value: "bottom"
+        },
+        MenuItem {
+            text: qsTr("Left")
+            property string value: "left"
+        },
+        MenuItem {
+            text: qsTr("Right")
+            property string value: "right"
+        }
     ]
 
     ColumnLayout {

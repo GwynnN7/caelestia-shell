@@ -30,12 +30,10 @@ QtObject {
     }
 
     function query(search: string): var {
-        if (!search) return items;
+        if (!search)
+            return items;
         const lower = search.toLowerCase();
-        return items.filter(w =>
-            w.title.toLowerCase().includes(lower) ||
-            w.class.toLowerCase().includes(lower)
-        );
+        return items.filter(w => w.title.toLowerCase().includes(lower) || w.class.toLowerCase().includes(lower));
     }
 
     function focusWindow(address: string): void {

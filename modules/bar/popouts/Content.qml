@@ -106,7 +106,9 @@ Item {
 
         Popout {
             name: "battery"
-            sourceComponent: Battery { popouts: root.popouts }
+            sourceComponent: Battery {
+                popouts: root.popouts
+            }
         }
 
         Popout {
@@ -118,12 +120,16 @@ Item {
 
         Popout {
             name: "kblayout"
-            sourceComponent: KbLayout { popouts: root.popouts }
+            sourceComponent: KbLayout {
+                popouts: root.popouts
+            }
         }
 
         Popout {
             name: "lockstatus"
-            sourceComponent: LockStatus { popouts: root.popouts }
+            sourceComponent: LockStatus {
+                popouts: root.popouts
+            }
         }
 
         Popout {

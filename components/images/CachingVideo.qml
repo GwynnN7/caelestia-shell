@@ -41,10 +41,12 @@ Item {
     }
 
     function checkPauseState() {
-        if (!root.screen) return;
+        if (!root.screen)
+            return;
 
         if (GlobalConfig.background.videoWallpaperPaused) {
-            if (mediaPlayer.playing) mediaPlayer.pause();
+            if (mediaPlayer.playing)
+                mediaPlayer.pause();
             return;
         }
 
@@ -67,7 +69,8 @@ Item {
             shouldPause = anyFullscreen || anyTiled;
         } else {
             const monitor = Hypr.monitorFor(root.screen);
-            if (!monitor) return;
+            if (!monitor)
+                return;
 
             const toplevels = monitor.activeWorkspace?.toplevels?.values || [];
 
@@ -88,7 +91,7 @@ Item {
         const muteOnMedia = GlobalConfig.background.videoWallpaperMuteOnMedia;
         const soundEnabled = GlobalConfig.background.videoWallpaperSoundEnabled;
         const isPlaying = Players.active?.isPlaying ?? false;
-        
+
         audioOutput.muted = !root.isFirstInstance || !soundEnabled || (muteOnMedia && isPlaying);
     }
 
@@ -113,12 +116,24 @@ Item {
 
     Connections {
         target: GlobalConfig.background
-        function onVideoWallpaperPausedChanged() { checkPauseState(); }
-        function onVideoWallpaperPauseOnAllDisplaysChanged() { checkPauseState(); }
-        function onVideoWallpaperPauseOnFullscreenChanged() { checkPauseState(); }
-        function onVideoWallpaperPauseOnTiledChanged() { checkPauseState(); }
-        function onVideoWallpaperMuteOnMediaChanged() { checkMuteState(); }
-        function onVideoWallpaperSoundEnabledChanged() { checkMuteState(); }
+        function onVideoWallpaperPausedChanged() {
+            checkPauseState();
+        }
+        function onVideoWallpaperPauseOnAllDisplaysChanged() {
+            checkPauseState();
+        }
+        function onVideoWallpaperPauseOnFullscreenChanged() {
+            checkPauseState();
+        }
+        function onVideoWallpaperPauseOnTiledChanged() {
+            checkPauseState();
+        }
+        function onVideoWallpaperMuteOnMediaChanged() {
+            checkMuteState();
+        }
+        function onVideoWallpaperSoundEnabledChanged() {
+            checkMuteState();
+        }
     }
 
     Component.onCompleted: {
@@ -136,6 +151,7 @@ Item {
 
     onPathChanged: {
         mediaPlayer.source = path || "";
-        if (path) mediaPlayer.play();
+        if (path)
+            mediaPlayer.play();
     }
 }

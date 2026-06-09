@@ -40,10 +40,22 @@ Item {
             gradient: Gradient {
                 orientation: isHorizontal ? Gradient.Horizontal : Gradient.Vertical
 
-                GradientStop { position: 0; color: Qt.rgba(0, 0, 0, 0) }
-                GradientStop { position: 0.3; color: Qt.rgba(0, 0, 0, 1) }
-                GradientStop { position: 0.7; color: Qt.rgba(0, 0, 0, 1) }
-                GradientStop { position: 1; color: Qt.rgba(0, 0, 0, 0) }
+                GradientStop {
+                    position: 0
+                    color: Qt.rgba(0, 0, 0, 0)
+                }
+                GradientStop {
+                    position: 0.3
+                    color: Qt.rgba(0, 0, 0, 1)
+                }
+                GradientStop {
+                    position: 0.7
+                    color: Qt.rgba(0, 0, 0, 1)
+                }
+                GradientStop {
+                    position: 1
+                    color: Qt.rgba(0, 0, 0, 0)
+                }
             }
         }
 
@@ -91,7 +103,7 @@ Item {
         anchors.fill: parent
         spacing: Tokens.spacing.medium
         interactive: false
-        
+
         orientation: isHorizontal ? ListView.Horizontal : ListView.Vertical
 
         currentIndex: model.values.findIndex(w => w.name === root.activeSpecial)
@@ -106,7 +118,7 @@ Item {
         highlightRangeMode: ListView.StrictlyEnforceRange
 
         highlightFollowsCurrentItem: false
-        
+
         highlight: Item {
             x: isHorizontal ? (view.currentItem?.x ?? 0) : 0
             y: isHorizontal ? 0 : (view.currentItem?.y ?? 0)
@@ -179,7 +191,7 @@ Item {
         sourceComponent: Item {
             StyledClippingRect {
                 id: indicator
-                
+
                 anchors.left: isHorizontal ? undefined : parent.left
                 anchors.right: isHorizontal ? undefined : parent.right
                 anchors.top: isHorizontal ? parent.top : undefined
@@ -207,10 +219,30 @@ Item {
                     implicitHeight: view.height
                 }
 
-                Behavior on x { enabled: isHorizontal; Anim { type: Anim.Emphasized } }
-                Behavior on y { enabled: !isHorizontal; Anim { type: Anim.Emphasized } }
-                Behavior on implicitWidth { enabled: isHorizontal; Anim { type: Anim.Emphasized } }
-                Behavior on implicitHeight { enabled: !isHorizontal; Anim { type: Anim.Emphasized } }
+                Behavior on x {
+                    enabled: isHorizontal
+                    Anim {
+                        type: Anim.Emphasized
+                    }
+                }
+                Behavior on y {
+                    enabled: !isHorizontal
+                    Anim {
+                        type: Anim.Emphasized
+                    }
+                }
+                Behavior on implicitWidth {
+                    enabled: isHorizontal
+                    Anim {
+                        type: Anim.Emphasized
+                    }
+                }
+                Behavior on implicitHeight {
+                    enabled: !isHorizontal
+                    Anim {
+                        type: Anim.Emphasized
+                    }
+                }
             }
         }
     }
@@ -221,7 +253,7 @@ Item {
         anchors.fill: view
 
         drag.target: view.contentItem
-        
+
         drag.axis: isHorizontal ? Drag.XAxis : Drag.YAxis
         drag.maximumX: 0
         drag.minimumX: isHorizontal ? Math.min(0, view.width - view.contentWidth - Tokens.padding.small) : 0
@@ -234,7 +266,7 @@ Item {
             const currentPos = isHorizontal ? event.x : event.y;
             if (Math.abs(currentPos - startPos) > drag.threshold)
                 return;
-            
+
             const ws = view.itemAt(event.x, event.y) as SpecialWsDelegate;
             if (ws?.modelData)
                 Hypr.dispatch(`togglespecialworkspace ${ws.modelData.name.slice(8)}`);
@@ -247,9 +279,7 @@ Item {
         id: ws
 
         required property HyprlandWorkspace modelData
-        readonly property int size: isHorizontal ?
-            (label.Layout.preferredWidth + (hasWindows ? windows.implicitWidth + Tokens.padding.extraSmall : 0)) : 
-            (label.Layout.preferredHeight + (hasWindows ? windows.implicitHeight + Tokens.padding.extraSmall : 0))
+        readonly property int size: isHorizontal ? (label.Layout.preferredWidth + (hasWindows ? windows.implicitWidth + Tokens.padding.extraSmall : 0)) : (label.Layout.preferredHeight + (hasWindows ? windows.implicitHeight + Tokens.padding.extraSmall : 0))
         property int wsId
         property string icon
         property bool hasWindows
@@ -273,8 +303,14 @@ Item {
         }
 
         Connections {
-            function onIdChanged(): void { if (ws.modelData) ws.wsId = ws.modelData.id; }
-            function onNameChanged(): void { if (ws.modelData) ws.icon = Icons.getSpecialWsIcon(ws.modelData.name); }
+            function onIdChanged(): void {
+                if (ws.modelData)
+                    ws.wsId = ws.modelData.id;
+            }
+            function onNameChanged(): void {
+                if (ws.modelData)
+                    ws.icon = Icons.getSpecialWsIcon(ws.modelData.name);
+            }
             function onLastIpcObjectChanged(): void {
                 if (ws.modelData) {
                     ws.hasWindows = root.Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
@@ -346,10 +382,23 @@ Item {
             id: columnComponent
             Column {
                 spacing: 0
-                add: Transition { Anim { properties: "scale"; from: 0; to: 1; easing: Tokens.anim.standardDecel } }
-                move: Transition { 
-                    Anim { properties: "scale"; to: 1; easing: Tokens.anim.standardDecel }
-                    Anim { properties: "x,y" }
+                add: Transition {
+                    Anim {
+                        properties: "scale"
+                        from: 0
+                        to: 1
+                        easing: Tokens.anim.standardDecel
+                    }
+                }
+                move: Transition {
+                    Anim {
+                        properties: "scale"
+                        to: 1
+                        easing: Tokens.anim.standardDecel
+                    }
+                    Anim {
+                        properties: "x,y"
+                    }
                 }
 
                 Repeater {
@@ -375,10 +424,23 @@ Item {
             id: rowComponent
             Row {
                 spacing: 0
-                add: Transition { Anim { properties: "scale"; from: 0; to: 1; easing: Tokens.anim.standardDecel } }
+                add: Transition {
+                    Anim {
+                        properties: "scale"
+                        from: 0
+                        to: 1
+                        easing: Tokens.anim.standardDecel
+                    }
+                }
                 move: Transition {
-                    Anim { properties: "scale"; to: 1; easing: Tokens.anim.standardDecel }
-                    Anim { properties: "x,y" }
+                    Anim {
+                        properties: "scale"
+                        to: 1
+                        easing: Tokens.anim.standardDecel
+                    }
+                    Anim {
+                        properties: "x,y"
+                    }
                 }
 
                 Repeater {

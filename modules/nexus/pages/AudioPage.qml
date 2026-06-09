@@ -163,7 +163,7 @@ PageBase {
             checked: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.enabled = checked
         }
-        
+
         SliderRow {
             Layout.fillWidth: true
             icon: "volume_up"
@@ -193,7 +193,7 @@ PageBase {
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.cameraClick = checked
         }
-        
+
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Charging started")
@@ -201,7 +201,7 @@ PageBase {
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.chargingStarted = checked
         }
-        
+
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Volume tick")
@@ -209,7 +209,7 @@ PageBase {
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.effectTick = checked
         }
-        
+
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Screen lock")
@@ -217,7 +217,7 @@ PageBase {
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.lock = checked
         }
-        
+
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Screen unlock")
@@ -225,7 +225,7 @@ PageBase {
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.unlock = checked
         }
-        
+
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Low battery")
@@ -233,7 +233,7 @@ PageBase {
             enabled: GlobalConfig.audio.sounds.enabled
             onToggled: GlobalConfig.audio.sounds.lowBattery = checked
         }
-        
+
         ToggleRow {
             Layout.fillWidth: true
             last: true

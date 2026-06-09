@@ -60,8 +60,6 @@ Variants {
                 wallpaper: wallpaper
                 z: 2
             }
-
-            
         }
 
         Loader {

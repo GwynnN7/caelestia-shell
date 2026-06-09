@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 
-
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -16,8 +15,6 @@ import qs.utils
 
 Item {
     id: root
-
-
 
     property string searchQuery: ""
     property var currentResults: []

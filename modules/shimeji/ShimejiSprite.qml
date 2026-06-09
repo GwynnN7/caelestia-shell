@@ -78,21 +78,23 @@ Item {
             sleep: ["shime20.png", "shime21.png"],
             walk: ["shime1.png", "shime2.png", "shime1.png", "shime3.png"],
             stand: ["shime1.png"],
-            eat: ["shime26.png", "shime15.png", "shime27.png", "shime16.png", "shime28.png", "shime17.png", "shime29.png", "shime11.png"],
+            eat: ["shime26.png", "shime15.png", "shime27.png", "shime16.png", "shime28.png", "shime17.png", "shime29.png", "shime11.png"]
         };
         const list = frames[anim];
         return list ? list[index % list.length] : "";
     }
 
     function tick() {
-        if (dragging) return;
+        if (dragging)
+            return;
 
         if (!onGround) {
             vy += gravity;
             vx *= 0.98;
         } else if (Math.abs(vx) > 0.1) {
             vx *= 0.3;
-            if (Math.abs(vx) < 0.5) vx = 0;
+            if (Math.abs(vx) < 0.5)
+                vx = 0;
         }
 
         if (walkTarget >= 0) {
@@ -176,7 +178,7 @@ Item {
             }
         }
 
-        onReleased: dragging = false;
+        onReleased: dragging = false
     }
 
     Image {
@@ -241,8 +243,10 @@ Item {
         if (!dragging) {
             vx = dragVx * 2;
             vy = dragVy > 0 ? dragVy * 2 : dragVy * 2;
-            if (Math.abs(vx) < 1) vx = 0;
-            if (Math.abs(vy) < 1) vy = 0;
+            if (Math.abs(vx) < 1)
+                vx = 0;
+            if (Math.abs(vy) < 1)
+                vy = 0;
             onGround = false;
             pickIdle();
         }

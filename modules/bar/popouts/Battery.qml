@@ -7,8 +7,8 @@ import qs.components
 import qs.services
 
 Column {
-    required property PopoutState popouts
     id: root
+    required property PopoutState popouts
 
     spacing: Tokens.spacing.medium
     property bool _isSidebarOpen: popouts.sidebarOpen

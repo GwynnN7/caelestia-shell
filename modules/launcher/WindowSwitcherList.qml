@@ -59,8 +59,7 @@ PathView {
     Component.onDestruction: {}
 
     onCurrentItemChanged: {
-        if (currentItem) {
-        }
+        if (currentItem) {}
     }
 
     implicitWidth: Math.min(numItems, count) * itemWidth

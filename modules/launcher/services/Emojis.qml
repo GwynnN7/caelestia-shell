@@ -13,7 +13,8 @@ QtObject {
     property bool _loaded: false
 
     function reload(): void {
-        if (_loaded) return;
+        if (_loaded)
+            return;
         reader.running = true;
         loadFrequencies();
     }
@@ -33,16 +34,19 @@ QtObject {
     }
 
     function getSortedItems(): var {
-        if (!items.length) return [];
+        if (!items.length)
+            return [];
         const favEmojis = GlobalConfig.launcher.favouriteEmojis || [];
         const favSet = new Set(favEmojis);
         return [...items].sort((a, b) => {
             const aIsFav = favSet.has(a.char);
             const bIsFav = favSet.has(b.char);
-            if (aIsFav !== bIsFav) return aIsFav ? -1 : 1;
+            if (aIsFav !== bIsFav)
+                return aIsFav ? -1 : 1;
             const freqA = frequencies[a.char] || 0;
             const freqB = frequencies[b.char] || 0;
-            if (freqA !== freqB) return freqB - freqA;
+            if (freqA !== freqB)
+                return freqB - freqA;
             return 0;
         });
     }
@@ -57,10 +61,12 @@ QtObject {
 
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];
-                    if (!line) continue;
+                    if (!line)
+                        continue;
 
                     const spaceIdx = line.indexOf(" ");
-                    if (spaceIdx < 0) continue;
+                    if (spaceIdx < 0)
+                        continue;
 
                     result.push({
                         char: line.substring(0, spaceIdx),

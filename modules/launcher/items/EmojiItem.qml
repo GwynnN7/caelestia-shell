@@ -23,7 +23,8 @@ Item {
     }
 
     function clicked() {
-        if (!root.modelData) return;
+        if (!root.modelData)
+            return;
         root.list.visibilities.launcher = false;
         Quickshell.execDetached(["wl-copy", root.modelData.char]);
         Emojis.recordUsage(root.modelData.char);
@@ -68,11 +69,13 @@ Item {
             hoverEnabled: true
             onClicked: {
                 const emojiChar = root.modelData?.char;
-                if (!emojiChar) return;
+                if (!emojiChar)
+                    return;
                 const favEmojis = GlobalConfig.launcher.favouriteEmojis ? [...GlobalConfig.launcher.favouriteEmojis] : [];
                 if (favEmojis.includes(emojiChar)) {
                     const idx = favEmojis.indexOf(emojiChar);
-                    if (idx !== -1) favEmojis.splice(idx, 1);
+                    if (idx !== -1)
+                        favEmojis.splice(idx, 1);
                 } else {
                     favEmojis.push(emojiChar);
                 }

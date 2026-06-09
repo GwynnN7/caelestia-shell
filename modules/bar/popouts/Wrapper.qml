@@ -20,14 +20,8 @@ Item {
     readonly property alias winfo: winfo
     readonly property alias nexus: nexus
 
-    readonly property real nonAnimWidth: content.shouldBeActive ? content.implicitWidth :
-                                         winfo.shouldBeActive ? winfo.implicitWidth :
-                                         nexus.shouldBeActive ? nexus.implicitWidth :
-                                         content.implicitWidth
-    readonly property real nonAnimHeight: content.shouldBeActive ? content.implicitHeight :
-                                          winfo.shouldBeActive ? winfo.implicitHeight :
-                                          nexus.shouldBeActive ? nexus.implicitHeight :
-                                          content.implicitHeight
+    readonly property real nonAnimWidth: content.shouldBeActive ? content.implicitWidth : winfo.shouldBeActive ? winfo.implicitWidth : nexus.shouldBeActive ? nexus.implicitWidth : content.implicitWidth
+    readonly property real nonAnimHeight: content.shouldBeActive ? content.implicitHeight : winfo.shouldBeActive ? winfo.implicitHeight : nexus.shouldBeActive ? nexus.implicitHeight : content.implicitHeight
     readonly property Item current: (content.item as Content)?.current ?? null
     readonly property bool isDetached: detachedMode.length > 0
 

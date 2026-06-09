@@ -81,9 +81,10 @@ GridLayout {
                 const icons = Config.bar.workspaces.wsIcons;
                 if (icons && icons.length > 0) {
                     const wIcon = icons.find(i => i.ws === root.ws || i.ws === root.ws.toString());
-                    if (wIcon && wIcon.icon) return wIcon.icon;
+                    if (wIcon && wIcon.icon)
+                        return wIcon.icon;
                 }
-                return root.activeWsId === root.ws ? "radio_button_checked" : "radio_button_unchecked"
+                return root.activeWsId === root.ws ? "radio_button_checked" : "radio_button_unchecked";
             }
             color: Config.bar.workspaces.occupiedBg || root.isOccupied || root.activeWsId === root.ws ? Colours.palette.m3onSurface : Colours.layer(Colours.palette.m3outlineVariant, 2)
             horizontalAlignment: StyledText.AlignHCenter

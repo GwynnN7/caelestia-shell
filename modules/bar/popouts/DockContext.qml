@@ -16,7 +16,8 @@ ColumnLayout {
     property var model: popouts.dockModel
 
     property bool isPinned: {
-        if (!model) return false;
+        if (!model)
+            return false;
         const current = GlobalConfig.launcher.favouriteApps || [];
         for (let i = 0; i < current.length; i++) {
             if (model.id === current[i] || (model.entry && model.entry.id === current[i])) {
@@ -68,7 +69,8 @@ ColumnLayout {
                         if (isPinned) {
                             const current = GlobalConfig.launcher.favouriteApps ? [...GlobalConfig.launcher.favouriteApps] : [];
                             let index = current.indexOf(model.id);
-                            if (index === -1 && model.entry) index = current.indexOf(model.entry.id);
+                            if (index === -1 && model.entry)
+                                index = current.indexOf(model.entry.id);
                             if (index !== -1) {
                                 current.splice(index, 1);
                                 GlobalConfig.launcher.favouriteApps = current;

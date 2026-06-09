@@ -12,7 +12,7 @@ QtObject {
     property var keybinds: []
     property bool initialized: false
 
-    signal loaded()
+    signal loaded
 
     property Process reader: Process {
         running: false
@@ -68,12 +68,13 @@ QtObject {
     }
 
     function formatBind(bind: string): string {
-        if (!bind) return "";
+        if (!bind)
+            return "";
         const modifiers = ["SUPER", "SHIFT", "CTRL", "ALT", "CONTROL", "SHIFTCTRL", "SUPERALT", "CTRLSHIFT", "SUPERSHIFT"];
         let result = bind;
         for (const mod of modifiers) {
             const regex = new RegExp(mod, 'gi');
-            result = result.replace(regex, (match) => match.charAt(0).toUpperCase() + match.slice(1).toLowerCase());
+            result = result.replace(regex, match => match.charAt(0).toUpperCase() + match.slice(1).toLowerCase());
         }
         const parts = result.split(',').map(p => p.trim());
         const formattedParts = parts.map(p => {
@@ -115,10 +116,7 @@ QtObject {
             return keybinds;
 
         const query = searchText.toLowerCase();
-        return keybinds.filter(k =>
-            k.bind.toLowerCase().includes(query) ||
-            k.action.toLowerCase().includes(query)
-        );
+        return keybinds.filter(k => k.bind.toLowerCase().includes(query) || k.action.toLowerCase().includes(query));
     }
 
     Component.onCompleted: loadKeybinds()

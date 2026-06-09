@@ -85,11 +85,13 @@ Item {
             hoverEnabled: true
             onClicked: {
                 const appId = root.modelData?.id;
-                if (!appId) return;
+                if (!appId)
+                    return;
                 const hiddenApps = GlobalConfig.launcher.hiddenApps ? [...GlobalConfig.launcher.hiddenApps] : [];
                 if (Strings.testRegexList(hiddenApps, appId)) {
                     const idx = hiddenApps.indexOf(appId);
-                    if (idx !== -1) hiddenApps.splice(idx, 1);
+                    if (idx !== -1)
+                        hiddenApps.splice(idx, 1);
                 } else {
                     hiddenApps.push(appId);
                 }
@@ -113,11 +115,13 @@ Item {
             hoverEnabled: true
             onClicked: {
                 const appId = root.modelData?.id;
-                if (!appId) return;
+                if (!appId)
+                    return;
                 const favApps = GlobalConfig.launcher.favouriteApps ? [...GlobalConfig.launcher.favouriteApps] : [];
                 if (Strings.testRegexList(favApps, appId)) {
                     const idx = favApps.indexOf(appId);
-                    if (idx !== -1) favApps.splice(idx, 1);
+                    if (idx !== -1)
+                        favApps.splice(idx, 1);
                 } else {
                     favApps.push(appId);
                 }

@@ -174,23 +174,72 @@ Item {
             name: "right"
             Config.screen: root.screen.name
             when: Config.bar.position === "right"
-            AnchorChanges { target: osdWrapper; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: osd; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: notifications; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: sessionWrapper; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: session; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: utilities; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: toasts; anchors.left: sidebar.right; anchors.right: undefined }
-            AnchorChanges { target: sidebar; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges {
+                target: osdWrapper
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: osd
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: notifications
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: sessionWrapper
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: session
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: utilities
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: toasts
+                anchors.left: sidebar.right
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: sidebar
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
         },
         State {
             name: "bottom"
             Config.screen: root.screen.name
             when: Config.bar.position === "bottom"
-            AnchorChanges { target: notifications; anchors.top: undefined; anchors.bottom: parent.bottom }
-            AnchorChanges { target: utilities; anchors.bottom: undefined; anchors.top: parent.top }
-            AnchorChanges { target: toasts; anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.right: undefined }
-            AnchorChanges { target: sidebar; anchors.top: utilities.bottom; anchors.bottom: notifications.top }
+            AnchorChanges {
+                target: notifications
+                anchors.top: undefined
+                anchors.bottom: parent.bottom
+            }
+            AnchorChanges {
+                target: utilities
+                anchors.bottom: undefined
+                anchors.top: parent.top
+            }
+            AnchorChanges {
+                target: toasts
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: sidebar
+                anchors.top: utilities.bottom
+                anchors.bottom: notifications.top
+            }
             PropertyChanges {
                 target: sidebar
                 anchors.topMargin: -4

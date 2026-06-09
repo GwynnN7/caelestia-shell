@@ -25,7 +25,8 @@ Item {
     }
 
     function clicked() {
-        if (!root.modelData) return;
+        if (!root.modelData)
+            return;
         root.list.visibilities.launcher = false;
         const preview = root.modelData.preview.length > 30 ? root.modelData.preview.slice(0, 30) + "..." : root.modelData.preview;
         Quickshell.execDetached(["sh", "-c", "cliphist decode " + root.modelData.id + " | wl-copy"]);
@@ -78,7 +79,7 @@ Item {
 
             text: root.modelData?.preview ?? ""
             font.pointSize: Tokens.fontSize.normal
-elide: Text.ElideRight
+            elide: Text.ElideRight
             visible: !(root.modelData?.isImage ?? false)
         }
 
@@ -91,11 +92,13 @@ elide: Text.ElideRight
             hoverEnabled: true
             onClicked: {
                 const clipId = String(root.modelData?.id);
-                if (!clipId) return;
+                if (!clipId)
+                    return;
                 const favClips = GlobalConfig.launcher.favouriteClips ? [...GlobalConfig.launcher.favouriteClips] : [];
                 if (favClips.includes(clipId)) {
                     const idx = favClips.indexOf(clipId);
-                    if (idx !== -1) favClips.splice(idx, 1);
+                    if (idx !== -1)
+                        favClips.splice(idx, 1);
                 } else {
                     favClips.push(clipId);
                 }

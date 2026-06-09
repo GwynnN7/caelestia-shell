@@ -117,8 +117,9 @@ StyledListView {
                 model.values: {
                     const prefix = GlobalConfig.launcher.actionPrefix;
                     const text = root.search.text.slice((prefix + "emoji ").length).toLowerCase();
-                    if (!text) return Emojis.getSortedItems();
-                    return Emojis.items.filter(function(item) {
+                    if (!text)
+                        return Emojis.getSortedItems();
+                    return Emojis.items.filter(function (item) {
                         return item.name.toLowerCase().includes(text);
                     });
                 }
@@ -132,8 +133,9 @@ StyledListView {
                 model.values: {
                     const prefix = GlobalConfig.launcher.actionPrefix;
                     const text = root.search.text.slice((prefix + "clipboard ").length).toLowerCase();
-                    if (!text) return Clipboard.getSortedItems();
-                    return Clipboard.items.filter(function(item) {
+                    if (!text)
+                        return Clipboard.getSortedItems();
+                    return Clipboard.items.filter(function (item) {
                         return item.preview.toLowerCase().includes(text);
                     });
                 }

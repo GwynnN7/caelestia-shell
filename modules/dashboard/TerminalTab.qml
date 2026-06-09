@@ -28,10 +28,7 @@ Item {
     property bool isRunning: activeProcessesCount > 0
 
     function ansiToHtml(ansiStr) {
-        let escaped = ansiStr
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+        let escaped = ansiStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         let result = "";
         let regex = /\x1b\[([0-9;]*)m/g;
@@ -60,25 +57,39 @@ Item {
                     styles.push("text-decoration: underline;");
                 } else if (code >= 30 && code <= 37) {
                     const colors = {
-                        30: "#1e1e2e", // Dark / Black
-                        31: "#f38ba8", // Red
-                        32: "#a6e3a1", // Green
-                        33: "#f9e2af", // Yellow
-                        34: "#89b4fa", // Blue
-                        35: "#cba6f7", // Magenta
-                        36: "#89dceb", // Cyan
+                        30: "#1e1e2e" // Dark / Black
+                        ,
+                        31: "#f38ba8" // Red
+                        ,
+                        32: "#a6e3a1" // Green
+                        ,
+                        33: "#f9e2af" // Yellow
+                        ,
+                        34: "#89b4fa" // Blue
+                        ,
+                        35: "#cba6f7" // Magenta
+                        ,
+                        36: "#89dceb" // Cyan
+                        ,
                         37: "#cdd6f4"  // White
                     };
                     styles.push("color: " + (colors[code] || "#cdd6f4") + ";");
                 } else if (code >= 90 && code <= 97) {
                     const colors = {
-                        90: "#585b70", // Bright Black (Gray)
-                        91: "#f38ba8", // Bright Red
-                        92: "#a6e3a1", // Bright Green
-                        93: "#f9e2af", // Bright Yellow
-                        94: "#89b4fa", // Bright Blue
-                        95: "#cba6f7", // Bright Magenta
-                        96: "#89dceb", // Bright Cyan
+                        90: "#585b70" // Bright Black (Gray)
+                        ,
+                        91: "#f38ba8" // Bright Red
+                        ,
+                        92: "#a6e3a1" // Bright Green
+                        ,
+                        93: "#f9e2af" // Bright Yellow
+                        ,
+                        94: "#89b4fa" // Bright Blue
+                        ,
+                        95: "#cba6f7" // Bright Magenta
+                        ,
+                        96: "#89dceb" // Bright Cyan
+                        ,
                         97: "#cdd6f4"  // Bright White
                     };
                     styles.push("color: " + (colors[code] || "#cdd6f4") + ";");
@@ -119,7 +130,8 @@ Item {
 
     function sendCommand(text) {
         let trimmed = text.trim();
-        if (trimmed === "") return;
+        if (trimmed === "")
+            return;
 
         // Print folder path and command to the screen exactly like the shell
         outputBuffer += (outputBuffer === "" ? "" : "\n") + "\x1b[36m" + prompt + "\x1b[0m\n\x1b[32m❯\x1b[0m " + trimmed + "\n";
@@ -426,8 +438,7 @@ Item {
                                 if (currentSuggestion !== "" && currentSuggestion.startsWith(typed)) {
                                     let suffix = currentSuggestion.substring(typed.length);
                                     let escapedSuffix = suffix.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                    return "<span style='color: transparent;'>" + escapedTyped + "</span>" +
-                                           "<span style='color: " + suggestionColor + ";'>" + escapedSuffix + "</span>";
+                                    return "<span style='color: transparent;'>" + escapedTyped + "</span>" + "<span style='color: " + suggestionColor + ";'>" + escapedSuffix + "</span>";
                                 }
                                 return "";
                             }
@@ -463,7 +474,7 @@ Item {
                             }
 
                             // Press Right Arrow key to accept the suggestion
-                            Keys.onRightPressed: (event) => {
+                            Keys.onRightPressed: event => {
                                 if (currentSuggestion !== "" && currentSuggestion.startsWith(text) && cursorPosition === text.length) {
                                     text = currentSuggestion;
                                     cursorPosition = text.length;
@@ -474,8 +485,9 @@ Item {
                             }
 
                             // Traverse history up with arrow key
-                            Keys.onUpPressed: (event) => {
-                                if (commandHistory.length === 0) return;
+                            Keys.onUpPressed: event => {
+                                if (commandHistory.length === 0)
+                                    return;
                                 if (historyIndex === -1) {
                                     tempTypedText = text;
                                     historyIndex = commandHistory.length - 1;
@@ -488,8 +500,9 @@ Item {
                             }
 
                             // Traverse history down with arrow key
-                            Keys.onDownPressed: (event) => {
-                                if (historyIndex === -1) return;
+                            Keys.onDownPressed: event => {
+                                if (historyIndex === -1)
+                                    return;
                                 if (historyIndex < commandHistory.length - 1) {
                                     historyIndex++;
                                     text = commandHistory[historyIndex];
@@ -502,14 +515,15 @@ Item {
                             }
 
                             // Trigger native fish autocompletion on Tab key press
-                            Keys.onTabPressed: (event) => {
+                            Keys.onTabPressed: event => {
                                 if (currentSuggestion !== "" && currentSuggestion.startsWith(text)) {
                                     text = currentSuggestion;
                                     cursorPosition = text.length;
                                     event.accepted = true;
                                 } else {
                                     let typed = text;
-                                    if (typed.trim() === "") return;
+                                    if (typed.trim() === "")
+                                        return;
 
                                     autocompleterComp.createObject(root, {
                                         command: ["fish", "-c", "complete -C\"" + typed.replace(/"/g, "\\\"") + "\""],
@@ -536,8 +550,6 @@ Item {
                             }
                         }
                     }
-
-
                 }
             }
         }
