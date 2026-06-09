@@ -17,23 +17,11 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: qsTr("Wallpapers")
-    isSubPage: true
-
-    // Color sorting state
     property color sortColor: "transparent"
     property var colorDistances: ({})
     property int sortVersion: 0
+    property var wallpaperColors: ({})
 
-    // Helper function to compute color distance (Euclidean distance in RGB space)
-    function colorDistance(c1: color, c2: color): real {
-        const dr = c1.r - c2.r;
-        const dg = c1.g - c2.g;
-        const db = c1.b - c2.b;
-        return Math.sqrt(dr * dr + dg * dg + db * db);
-    }
-
-    // List of sorting colors
     readonly property var sortColors: ["#e53935" // Red
         , "#1e88e5" // Blue
         , "#43a047" // Green
@@ -41,6 +29,13 @@ PageBase {
         , "#8e24aa" // Purple
         , "#fb8c00"  // Orange
     ]
+
+    function colorDistance(c1: color, c2: color): real {
+        const dr = c1.r - c2.r;
+        const dg = c1.g - c2.g;
+        const db = c1.b - c2.b;
+        return Math.sqrt(dr * dr + dg * dg + db * db);
+    }
 
     function toggleSortColor(color: color) {
         if (root.sortColor === color) {
@@ -66,10 +61,6 @@ PageBase {
         root.sortVersion++;
     }
 
-    // Store dominant colors for wallpapers as they load
-    property var wallpaperColors: ({})
-
-    // Cleanup analyzed colors when sort is cleared
     onSortColorChanged: {
         if (sortColor === "transparent") {
             wallpaperColors = ({});
@@ -134,12 +125,6 @@ PageBase {
         }
 
         GridLayout {
-            Layout.fillWidth: true
-
-            columns: Config.nexus.wallpapersPerRow
-            rowSpacing: Tokens.spacing.medium
-            columnSpacing: Tokens.spacing.large
-
             property list<var> featuredList: [
                 {
                     path: "assets/wallpapers/Gravitation.png",
@@ -172,6 +157,12 @@ PageBase {
                     author: "DiM"
                 }
             ]
+
+            Layout.fillWidth: true
+
+            columns: Config.nexus.wallpapersPerRow
+            rowSpacing: Tokens.spacing.medium
+            columnSpacing: Tokens.spacing.large
 
             Repeater {
                 model: parent.featuredList
@@ -387,6 +378,7 @@ PageBase {
 
                 WallItem {
                     id: wallItem
+
                     required property FileSystemEntry modelData
 
                     // Empty placeholders for sizing

@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Caelestia
 import Caelestia.Config
 import Caelestia.Images
 
@@ -12,6 +13,48 @@ QtObject {
     property var items: []
 
     readonly property string imageCacheDir: "/tmp/caelestia-clipboard"
+
+    property Component waitTimer: Component {
+        Timer {
+            property string imgPath
+            property var callback
+
+            interval: 1000
+            repeat: false
+
+            onTriggered: callback(imgPath)
+        }
+    }
+
+    property Process fetcher: Process {
+        running: false
+        command: ["cliphist", "list"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const result = [];
+                const lines = text.trim().split("\n");
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (!line)
+                        continue;
+
+                    const match = line.match(/^(\d+)\t(.+)/);
+                    if (!match)
+                        continue;
+
+                    result.push({
+                        id: parseInt(match[1]),
+                        preview: match[2],
+                        isImage: /^\[\[ binary data \d+ KiB png \d+x\d+ \]\]/.test(match[2])
+                    });
+                }
+
+                root.items = result;
+                preloadImages();
+            }
+        }
+    }
 
     function reload(): void {
         fetcher.running = true;
@@ -53,45 +96,5 @@ QtObject {
             imgPath: imgPath,
             callback: onReady
         });
-    }
-
-    property Component waitTimer: Component {
-        Timer {
-            property string imgPath
-            property var callback
-            interval: 1000
-            repeat: false
-            onTriggered: callback(imgPath)
-        }
-    }
-
-    property Process fetcher: Process {
-        running: false
-        command: ["cliphist", "list"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const result = [];
-                const lines = text.trim().split("\n");
-
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
-                    if (!line)
-                        continue;
-
-                    const match = line.match(/^(\d+)\t(.+)/);
-                    if (!match)
-                        continue;
-
-                    result.push({
-                        id: parseInt(match[1]),
-                        preview: match[2],
-                        isImage: /^\[\[ binary data \d+ KiB png \d+x\d+ \]\]/.test(match[2])
-                    });
-                }
-
-                root.items = result;
-                preloadImages();
-            }
-        }
     }
 }

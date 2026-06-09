@@ -10,14 +10,16 @@ import ".."
 
 ColumnLayout {
     id: root
+
     required property PopoutState popouts
+
+    property bool _isSidebarOpen: popouts.sidebarOpen
 
     function refresh() {
         kb.refresh();
     }
 
     spacing: Tokens.spacing.small
-    property bool _isSidebarOpen: popouts.sidebarOpen
     width: Math.max(Tokens.sizes.bar.kbLayoutWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
 
     Component.onCompleted: kb.start()

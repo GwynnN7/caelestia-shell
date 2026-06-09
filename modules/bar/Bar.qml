@@ -22,9 +22,7 @@ GridLayout {
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
-    columns: isHorizontal ? -1 : 1
-    rows: isHorizontal ? 1 : -1
-    flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+    readonly property real spacing: isHorizontal ? columnSpacing : rowSpacing
 
     function closeTray(): void {
         if (!Config.bar.tray.compact)
@@ -137,9 +135,12 @@ GridLayout {
         }
     }
 
+    columns: isHorizontal ? -1 : 1
+    rows: isHorizontal ? 1 : -1
+    flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+
     columnSpacing: Tokens.spacing.medium
     rowSpacing: Tokens.spacing.medium
-    readonly property real spacing: isHorizontal ? columnSpacing : rowSpacing
 
     Repeater {
         id: repeater

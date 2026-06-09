@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Caelestia
 import Caelestia.Config
 
 QtObject {
@@ -11,45 +12,6 @@ QtObject {
     property var items: []
     property var frequencies: ({})
     property bool _loaded: false
-
-    function reload(): void {
-        if (_loaded)
-            return;
-        reader.running = true;
-        loadFrequencies();
-    }
-
-    function loadFrequencies(): void {
-        freqReader.running = true;
-    }
-
-    function saveFrequencies(): void {
-        freqWriter.arguments = ["-echo", JSON.stringify(frequencies), ">", Paths.config + "emoji-frequencies.json"];
-        freqWriter.running = true;
-    }
-
-    function recordUsage(char: string): void {
-        frequencies[char] = (frequencies[char] || 0) + 1;
-        saveFrequencies();
-    }
-
-    function getSortedItems(): var {
-        if (!items.length)
-            return [];
-        const favEmojis = GlobalConfig.launcher.favouriteEmojis || [];
-        const favSet = new Set(favEmojis);
-        return [...items].sort((a, b) => {
-            const aIsFav = favSet.has(a.char);
-            const bIsFav = favSet.has(b.char);
-            if (aIsFav !== bIsFav)
-                return aIsFav ? -1 : 1;
-            const freqA = frequencies[a.char] || 0;
-            const freqB = frequencies[b.char] || 0;
-            if (freqA !== freqB)
-                return freqB - freqA;
-            return 0;
-        });
-    }
 
     property Process reader: Process {
         running: false
@@ -96,5 +58,44 @@ QtObject {
 
     property Process freqWriter: Process {
         running: false
+    }
+
+    function reload(): void {
+        if (_loaded)
+            return;
+        reader.running = true;
+        loadFrequencies();
+    }
+
+    function loadFrequencies(): void {
+        freqReader.running = true;
+    }
+
+    function saveFrequencies(): void {
+        freqWriter.arguments = ["-echo", JSON.stringify(frequencies), ">", Paths.config + "emoji-frequencies.json"];
+        freqWriter.running = true;
+    }
+
+    function recordUsage(char: string): void {
+        frequencies[char] = (frequencies[char] || 0) + 1;
+        saveFrequencies();
+    }
+
+    function getSortedItems(): var {
+        if (!items.length)
+            return [];
+        const favEmojis = GlobalConfig.launcher.favouriteEmojis || [];
+        const favSet = new Set(favEmojis);
+        return [...items].sort((a, b) => {
+            const aIsFav = favSet.has(a.char);
+            const bIsFav = favSet.has(b.char);
+            if (aIsFav !== bIsFav)
+                return aIsFav ? -1 : 1;
+            const freqA = frequencies[a.char] || 0;
+            const freqB = frequencies[b.char] || 0;
+            if (freqA !== freqB)
+                return freqB - freqA;
+            return 0;
+        });
     }
 }

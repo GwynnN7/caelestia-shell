@@ -1,12 +1,12 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
 import Caelestia.Components
 import Caelestia.Config
 import Caelestia.Services
 import qs.components
 import qs.components.controls
-import QtQuick.Effects
 import qs.components.widgets
 import qs.services
 import qs.utils
@@ -174,6 +174,7 @@ Item {
 
         AnimatedImage {
             id: gif
+
             anchors.fill: parent
 
             playing: Players.active?.isPlaying ?? false

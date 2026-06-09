@@ -104,6 +104,7 @@ Item {
 
     Behavior on implicitHeight {
         enabled: !bar.isHorizontal
+
         Anim {
             type: Anim.DefaultSpatial
         }
@@ -111,6 +112,7 @@ Item {
 
     Behavior on implicitWidth {
         enabled: bar.isHorizontal
+
         Anim {
             type: Anim.DefaultSpatial
         }
@@ -136,6 +138,7 @@ Item {
 
         StyledText {
             id: styledText
+
             anchors.centerIn: parent
 
             font.pointSize: metrics.font.pointSize

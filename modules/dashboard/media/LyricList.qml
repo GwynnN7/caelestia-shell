@@ -14,6 +14,10 @@ import qs.services
 Item {
     id: root
 
+    readonly property real fadeAmount: 0.1
+    property bool flag
+    property list<string> lyricList: Lyrics.lyrics
+
     function reloadTrack() {
         const p = Players.active;
         if (p) {
@@ -23,28 +27,9 @@ Item {
         }
     }
 
-    Connections {
-        target: Players
-        function onActiveChanged() {
-            root.reloadTrack();
-        }
-    }
-
-    Connections {
-        target: Players.active
-        ignoreUnknownSignals: true
-        function onPostTrackChanged() {
-            root.reloadTrack();
-        }
-    }
-
     Component.onCompleted: {
         root.reloadTrack();
     }
-
-    readonly property real fadeAmount: 0.1
-    property bool flag
-    property list<string> lyricList: Lyrics.lyrics
 
     layer.enabled: true
     layer.effect: Mask {
@@ -170,6 +155,23 @@ Item {
             }
         }
     ]
+
+    Connections {
+        function onActiveChanged() {
+            root.reloadTrack();
+        }
+
+        target: Players
+    }
+
+    Connections {
+        function onPostTrackChanged() {
+            root.reloadTrack();
+        }
+
+        target: Players.active
+        ignoreUnknownSignals: true
+    }
 
     Connections {
         function onHasLyricsChanged() {
@@ -334,24 +336,6 @@ Item {
 
         Behavior on opacity {
             Anim {
-                type: Anim.SlowEffects
-            }
-        }
-    }
-
-    Behavior on lyricList {
-        SequentialAnimation {
-            Anim {
-                target: lyrics
-                property: "opacity"
-                to: 0
-                type: Anim.DefaultEffects
-            }
-            PropertyAction {}
-            Anim {
-                target: lyrics
-                property: "opacity"
-                to: 1
                 type: Anim.SlowEffects
             }
         }

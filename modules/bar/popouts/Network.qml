@@ -18,9 +18,9 @@ ColumnLayout {
     property string view: "wireless" // "wireless" or "ethernet"
     property var passwordNetwork: null
     property bool showPasswordDialog: false
+    property bool _isSidebarOpen: popouts.sidebarOpen
 
     spacing: Tokens.spacing.small
-    property bool _isSidebarOpen: popouts.sidebarOpen
     width: Math.max(Tokens.sizes.bar.networkWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
 
     // Wireless section

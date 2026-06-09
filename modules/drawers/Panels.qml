@@ -46,6 +46,87 @@ Item {
     anchors.topMargin: Config.bar.position === "top" ? bar.implicitHeight : borderThickness
     anchors.bottomMargin: Config.bar.position === "bottom" ? bar.implicitHeight : borderThickness
 
+    states: [
+        State {
+            name: "right"
+            Config.screen: root.screen.name
+            when: Config.bar.position === "right"
+
+            AnchorChanges {
+                target: osdWrapper
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: osd
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: notifications
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: sessionWrapper
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: session
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: utilities
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: toasts
+                anchors.left: sidebar.right
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: sidebar
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+        },
+
+        State {
+            name: "bottom"
+            Config.screen: root.screen.name
+            when: Config.bar.position === "bottom"
+
+            AnchorChanges {
+                target: notifications
+                anchors.top: undefined
+                anchors.bottom: parent.bottom
+            }
+            AnchorChanges {
+                target: utilities
+                anchors.bottom: undefined
+                anchors.top: parent.top
+            }
+            AnchorChanges {
+                target: toasts
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+            AnchorChanges {
+                target: sidebar
+                anchors.top: utilities.bottom
+                anchors.bottom: notifications.top
+            }
+            PropertyChanges {
+                target: sidebar
+                anchors.topMargin: -4
+            }
+        }
+    ]
+
     Item {
         id: osdWrapper
 
@@ -73,6 +154,8 @@ Item {
     Notifications.Wrapper {
         id: notifications
 
+        property bool shouldPush: popoutsWrapper.offsetScale < 1 && popoutsWrapper.content.currentName !== "dockcontext" && popoutsWrapper.content.currentName !== "dockhover" && !sidebar.visible
+
         visibilities: root.visibilities
         sidebarPanel: sidebar
         osdPanel: osdWrapper
@@ -81,7 +164,6 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
-        property bool shouldPush: popoutsWrapper.offsetScale < 1 && popoutsWrapper.content.currentName !== "dockcontext" && popoutsWrapper.content.currentName !== "dockhover" && !sidebar.visible
         anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
         anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
     }
@@ -168,82 +250,4 @@ Item {
         anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : -notifications.anchors.topMargin
         anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
     }
-
-    states: [
-        State {
-            name: "right"
-            Config.screen: root.screen.name
-            when: Config.bar.position === "right"
-            AnchorChanges {
-                target: osdWrapper
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: osd
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: notifications
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: sessionWrapper
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: session
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: utilities
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: toasts
-                anchors.left: sidebar.right
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: sidebar
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-        },
-        State {
-            name: "bottom"
-            Config.screen: root.screen.name
-            when: Config.bar.position === "bottom"
-            AnchorChanges {
-                target: notifications
-                anchors.top: undefined
-                anchors.bottom: parent.bottom
-            }
-            AnchorChanges {
-                target: utilities
-                anchors.bottom: undefined
-                anchors.top: parent.top
-            }
-            AnchorChanges {
-                target: toasts
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-            AnchorChanges {
-                target: sidebar
-                anchors.top: utilities.bottom
-                anchors.bottom: notifications.top
-            }
-            PropertyChanges {
-                target: sidebar
-                anchors.topMargin: -4
-            }
-        }
-    ]
 }

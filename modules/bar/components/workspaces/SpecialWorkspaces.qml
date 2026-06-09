@@ -127,11 +127,13 @@ Item {
 
             Behavior on x {
                 enabled: isHorizontal
+
                 Anim {}
             }
 
             Behavior on y {
                 enabled: !isHorizontal
+
                 Anim {}
             }
         }
@@ -221,24 +223,31 @@ Item {
 
                 Behavior on x {
                     enabled: isHorizontal
+
                     Anim {
                         type: Anim.Emphasized
                     }
                 }
+
                 Behavior on y {
                     enabled: !isHorizontal
+
                     Anim {
                         type: Anim.Emphasized
                     }
                 }
+
                 Behavior on implicitWidth {
                     enabled: isHorizontal
+
                     Anim {
                         type: Anim.Emphasized
                     }
                 }
+
                 Behavior on implicitHeight {
                     enabled: !isHorizontal
+
                     Anim {
                         type: Anim.Emphasized
                     }
@@ -307,16 +316,19 @@ Item {
                 if (ws.modelData)
                     ws.wsId = ws.modelData.id;
             }
+
             function onNameChanged(): void {
                 if (ws.modelData)
                     ws.icon = Icons.getSpecialWsIcon(ws.modelData.name);
             }
+
             function onLastIpcObjectChanged(): void {
                 if (ws.modelData) {
                     ws.hasWindows = root.Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
                     ws.wsId = ws.modelData.id;
                 }
             }
+
             target: ws.modelData
         }
 
@@ -325,6 +337,7 @@ Item {
                 if (ws.modelData)
                     ws.hasWindows = root.Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
             }
+
             target: root.Config.bar.workspaces
         }
 
@@ -341,6 +354,7 @@ Item {
 
             Component {
                 id: iconComp
+
                 MaterialIcon {
                     fill: 1
                     text: ws.icon
@@ -350,6 +364,7 @@ Item {
 
             Component {
                 id: letterComp
+
                 StyledText {
                     text: ws.icon
                     verticalAlignment: Qt.AlignVCenter
@@ -373,6 +388,7 @@ Item {
 
             Behavior on Layout.preferredHeight {
                 enabled: !isHorizontal
+
                 Anim {}
             }
         }
@@ -380,8 +396,10 @@ Item {
         // MOVED COMPONENTS INSIDE DELEGATE: This fixes the "ws is not defined" error
         Component {
             id: columnComponent
+
             Column {
                 spacing: 0
+
                 add: Transition {
                     Anim {
                         properties: "scale"
@@ -390,6 +408,7 @@ Item {
                         easing: Tokens.anim.standardDecel
                     }
                 }
+
                 move: Transition {
                     Anim {
                         properties: "scale"
@@ -412,6 +431,7 @@ Item {
 
                     MaterialIcon {
                         required property var modelData
+
                         grade: 0
                         text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
                         color: Colours.palette.m3onSurfaceVariant
@@ -422,6 +442,7 @@ Item {
 
         Component {
             id: rowComponent
+
             Row {
                 spacing: 0
                 add: Transition {
@@ -454,6 +475,7 @@ Item {
 
                     MaterialIcon {
                         required property var modelData
+
                         grade: 0
                         text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
                         color: Colours.palette.m3onSurfaceVariant

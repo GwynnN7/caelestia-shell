@@ -26,6 +26,11 @@ Item {
     readonly property bool shouldBeVisible: !fullscreen && !disabled && (Config.bar.persistent || visibilities.bar || isHovered)
     property bool isHovered
 
+    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+    readonly property int clampedThickness: Math.max(Config.border.minThickness, isHorizontal ? implicitHeight : implicitWidth)
+    readonly property int clampedWidth: isHorizontal ? root.width : clampedThickness
+    readonly property int clampedHeight: isHorizontal ? clampedThickness : root.height
+
     function closeTray(): void {
         (content.item as Bar)?.closeTray();
     }
@@ -37,11 +42,6 @@ Item {
     function handleWheel(y: real, angleDelta: point): void {
         (content.item as Bar)?.handleWheel(y, angleDelta);
     }
-
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-    readonly property int clampedThickness: Math.max(Config.border.minThickness, isHorizontal ? implicitHeight : implicitWidth)
-    readonly property int clampedWidth: isHorizontal ? root.width : clampedThickness
-    readonly property int clampedHeight: isHorizontal ? clampedThickness : root.height
 
     clip: true
     visible: isHorizontal ? height > Config.border.thickness : width > Config.border.thickness
@@ -84,6 +84,7 @@ Item {
 
     Component {
         id: horizontalBar
+
         Bar {
             anchors.fill: parent
             width: root.contentWidth
@@ -96,6 +97,7 @@ Item {
 
     Component {
         id: verticalBar
+
         Bar {
             anchors.fill: parent
             screen: root.screen
@@ -119,6 +121,7 @@ Item {
                 name: "left"
                 Config.screen: root.screen.name
                 when: Config.bar.position === "left"
+
                 AnchorChanges {
                     target: content
                     anchors.left: undefined
@@ -131,6 +134,7 @@ Item {
                 name: "right"
                 Config.screen: root.screen.name
                 when: Config.bar.position === "right"
+
                 AnchorChanges {
                     target: content
                     anchors.left: parent.left
@@ -143,6 +147,7 @@ Item {
                 name: "top"
                 Config.screen: root.screen.name
                 when: Config.bar.position === "top"
+
                 AnchorChanges {
                     target: content
                     anchors.left: parent.left
@@ -155,6 +160,7 @@ Item {
                 name: "bottom"
                 Config.screen: root.screen.name
                 when: Config.bar.position === "bottom"
+
                 AnchorChanges {
                     target: content
                     anchors.left: parent.left

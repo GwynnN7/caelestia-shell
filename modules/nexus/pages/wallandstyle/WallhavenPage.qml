@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.nexus.common
 import qs.modules.dashboard
+import qs.modules.nexus.common
 
 PageBase {
     title: qsTr("Wallhaven")

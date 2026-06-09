@@ -137,6 +137,7 @@ StyledWindow {
 
     Item {
         id: layoutContainer
+
         Config.screen: root.screen.name
         anchors.fill: parent
         opacity: GlobalConfig.appearance.pitchBlack ? 1 : (Colours.transparency.enabled ? Colours.transparency.base : root.surfaceColour.a)
@@ -283,6 +284,84 @@ StyledWindow {
         borderThickness: root.borderLayoutThickness
         fullscreen: root.hasFullscreen
 
+        states: [
+            State {
+                name: "left"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "left"
+
+                AnchorChanges {
+                    target: bar
+                    anchors.left: parent.left
+                    anchors.right: undefined
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                }
+                PropertyChanges {
+                    target: bar
+                    width: bar.implicitWidth
+                    height: undefined
+                }
+            },
+
+            State {
+                name: "right"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "right"
+
+                AnchorChanges {
+                    target: bar
+                    anchors.left: undefined
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                }
+                PropertyChanges {
+                    target: bar
+                    width: bar.implicitWidth
+                    height: undefined
+                }
+            },
+
+            State {
+                name: "top"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "top"
+
+                AnchorChanges {
+                    target: bar
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: undefined
+                }
+                PropertyChanges {
+                    target: bar
+                    width: undefined
+                    height: bar.implicitHeight
+                }
+            },
+
+            State {
+                name: "bottom"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "bottom"
+
+                AnchorChanges {
+                    target: bar
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: undefined
+                    anchors.bottom: parent.bottom
+                }
+                PropertyChanges {
+                    target: bar
+                    width: undefined
+                    height: bar.implicitHeight
+                }
+            }
+        ]
+
         Panels {
             id: panels
 
@@ -331,77 +410,6 @@ StyledWindow {
 
             Component.onCompleted: Visibilities.registerBar(root.screen, this)
         }
-
-        states: [
-            State {
-                name: "left"
-                Config.screen: root.screen.name
-                when: Config.bar.position === "left"
-                AnchorChanges {
-                    target: bar
-                    anchors.left: parent.left
-                    anchors.right: undefined
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                }
-                PropertyChanges {
-                    target: bar
-                    width: bar.implicitWidth
-                    height: undefined
-                }
-            },
-            State {
-                name: "right"
-                Config.screen: root.screen.name
-                when: Config.bar.position === "right"
-                AnchorChanges {
-                    target: bar
-                    anchors.left: undefined
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                }
-                PropertyChanges {
-                    target: bar
-                    width: bar.implicitWidth
-                    height: undefined
-                }
-            },
-            State {
-                name: "top"
-                Config.screen: root.screen.name
-                when: Config.bar.position === "top"
-                AnchorChanges {
-                    target: bar
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: undefined
-                }
-                PropertyChanges {
-                    target: bar
-                    width: undefined
-                    height: bar.implicitHeight
-                }
-            },
-            State {
-                name: "bottom"
-                Config.screen: root.screen.name
-                when: Config.bar.position === "bottom"
-                AnchorChanges {
-                    target: bar
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: undefined
-                    anchors.bottom: parent.bottom
-                }
-                PropertyChanges {
-                    target: bar
-                    width: undefined
-                    height: bar.implicitHeight
-                }
-            }
-        ]
     }
 
     component PanelBg: BlobRect {

@@ -34,6 +34,7 @@ RowLayout {
 
         ColumnLayout {
             id: fallbackLayout
+
             anchors.centerIn: parent
             spacing: Tokens.spacing.medium
 
@@ -43,6 +44,7 @@ RowLayout {
 
                 IconImage {
                     id: fallbackIcon
+
                     asynchronous: true
                     Layout.alignment: Qt.AlignVCenter
                     implicitSize: fallbackDetails.implicitHeight
@@ -51,6 +53,7 @@ RowLayout {
 
                 ColumnLayout {
                     id: fallbackDetails
+
                     spacing: 0
                     Layout.fillWidth: true
 
@@ -84,6 +87,7 @@ RowLayout {
 
             ColumnLayout {
                 id: cardLayout
+
                 anchors.centerIn: parent
                 spacing: Tokens.spacing.medium
 
@@ -101,6 +105,7 @@ RowLayout {
 
                     StyledText {
                         id: titleText
+
                         Layout.fillWidth: true
                         text: modelData.title || ""
                         font.pointSize: Tokens.font.body.small.pointSize
@@ -126,6 +131,7 @@ RowLayout {
 
                         MaterialIcon {
                             id: winfoIcon
+
                             anchors.centerIn: parent
                             text: "chevron_right"
                             fontStyle.pointSize: Tokens.font.body.medium.pointSize
@@ -149,6 +155,7 @@ RowLayout {
 
                         MaterialIcon {
                             id: closeIcon
+
                             anchors.centerIn: parent
                             text: "close"
                             fontStyle.pointSize: Tokens.font.body.medium.pointSize
@@ -204,6 +211,7 @@ RowLayout {
 
                         MaterialIcon {
                             id: prevIcon
+
                             anchors.centerIn: parent
                             text: "skip_previous"
                             fontStyle.pointSize: Tokens.font.body.large.pointSize
@@ -223,6 +231,7 @@ RowLayout {
 
                         MaterialIcon {
                             id: playIcon
+
                             anchors.centerIn: parent
                             text: (root.player && root.player.isPlaying) ? "pause" : "play_arrow"
                             fontStyle.pointSize: Tokens.font.body.large.pointSize
@@ -242,6 +251,7 @@ RowLayout {
 
                         MaterialIcon {
                             id: nextIcon
+
                             anchors.centerIn: parent
                             text: "skip_next"
                             fontStyle.pointSize: Tokens.font.body.large.pointSize

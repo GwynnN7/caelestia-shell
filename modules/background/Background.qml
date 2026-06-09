@@ -49,9 +49,11 @@ Variants {
 
             BadAppleVideo {
                 id: badappleVid
+
+                property var screenModel: win.modelData
+
                 anchors.fill: parent
                 z: 1
-                property var screenModel: win.modelData
             }
 
             Visualiser {
@@ -65,11 +67,11 @@ Variants {
         Loader {
             id: clockLoader
 
-            asynchronous: true
-            active: Config.background.desktopClock.enabled
-
             readonly property int clockBarZone: Visibilities.bars.get(win.modelData.name)?.exclusiveZone ?? (Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness))
             readonly property int clockBaseMargin: Tokens.padding.extraLargeIncreased
+
+            asynchronous: true
+            active: Config.background.desktopClock.enabled
 
             anchors.margins: clockBaseMargin
             anchors.leftMargin: Config.bar.position === "left" ? clockBaseMargin + clockBarZone : clockBaseMargin
@@ -176,11 +178,11 @@ Variants {
         Loader {
             id: lyricsLoader
 
-            asynchronous: true
-            active: Config.background.desktopLyrics.enabled
-
             readonly property int lyricsBarZone: Visibilities.bars.get(win.modelData.name)?.exclusiveZone ?? (Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness))
             readonly property int lyricsBaseMargin: Tokens.padding.large * 2
+
+            asynchronous: true
+            active: Config.background.desktopLyrics.enabled
 
             anchors.margins: lyricsBaseMargin
             anchors.leftMargin: Config.bar.position === "left" ? lyricsBaseMargin + lyricsBarZone : lyricsBaseMargin

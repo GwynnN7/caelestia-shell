@@ -1,7 +1,5 @@
 pragma ComponentBehavior: Bound
 
-import "items"
-import "services"
 import QtQuick
 import Quickshell
 import Caelestia.Config
@@ -9,6 +7,8 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import "items"
+import "services"
 
 StyledListView {
     id: root
@@ -18,24 +18,26 @@ StyledListView {
 
     readonly property string searchQuery: (search.text.slice((GlobalConfig.launcher.actionPrefix + "keybinds ").length)).toLowerCase()
 
-    Component.onCompleted: {
-        refreshModel();
-    }
-
-    Connections {
-        target: Keybinds
-        function onLoaded() {
-            refreshModel();
-        }
-    }
-
     function refreshModel() {
         const results = Keybinds.query(searchQuery);
         model.values = results;
     }
 
+    function handleKeybindsLoaded() {
+        refreshModel();
+    }
+
+    function handleSearchTextChanged() {
+        refreshModel();
+    }
+
+    Component.onCompleted: {
+        refreshModel();
+    }
+
     model: ScriptModel {
         id: model
+
         values: []
         onValuesChanged: root.currentIndex = 0
     }
@@ -46,16 +48,25 @@ StyledListView {
         }
     }
 
-    Connections {
-        target: search
-        function onTextChanged() {
+    onStateChanged: {
+        if (state === "keybinds") {
             refreshModel();
         }
     }
 
-    onStateChanged: {
-        if (state === "keybinds") {
-            refreshModel();
+    add: Transition {
+        Anim {
+            properties: "opacity,scale"
+            from: 0
+            to: 1
+        }
+    }
+
+    remove: Transition {
+        Anim {
+            properties: "opacity,scale"
+            from: 1
+            to: 0
         }
     }
 
@@ -84,23 +95,23 @@ StyledListView {
         }
     }
 
-    add: Transition {
-        Anim {
-            properties: "opacity,scale"
-            from: 0
-            to: 1
-        }
-    }
-
-    remove: Transition {
-        Anim {
-            properties: "opacity,scale"
-            from: 1
-            to: 0
-        }
-    }
-
     delegate: KeybindItem {
         list: root
+    }
+
+    Connections {
+        target: Keybinds
+
+        function onLoaded() {
+            handleKeybindsLoaded();
+        }
+    }
+
+    Connections {
+        target: search
+
+        function onTextChanged() {
+            handleSearchTextChanged();
+        }
     }
 }

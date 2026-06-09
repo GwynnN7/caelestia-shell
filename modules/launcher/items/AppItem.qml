@@ -23,6 +23,7 @@ Item {
 
     StateLayer {
         id: stateLayer
+
         radius: Tokens.rounding.large
         acceptedButtons: Qt.LeftButton
         onClicked: {
@@ -78,6 +79,7 @@ Item {
 
         MouseArea {
             id: hideIcon
+
             width: 32
             height: 32
             anchors.verticalCenter: parent.verticalCenter
@@ -107,6 +109,7 @@ Item {
 
         MouseArea {
             id: favIcon
+
             width: 32
             height: 32
             anchors.verticalCenter: parent.verticalCenter

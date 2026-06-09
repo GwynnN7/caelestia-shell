@@ -92,6 +92,7 @@ Item {
             State {
                 name: "left"
                 when: bar.position === "left"
+
                 AnchorChanges {
                     target: content
                     anchors.left: parent.left
@@ -105,6 +106,7 @@ Item {
             State {
                 name: "right"
                 when: bar.position === "right"
+
                 AnchorChanges {
                     target: content
                     anchors.left: undefined
@@ -118,6 +120,7 @@ Item {
             State {
                 name: "top"
                 when: bar.position === "top"
+
                 AnchorChanges {
                     target: content
                     anchors.left: undefined
@@ -131,6 +134,7 @@ Item {
             State {
                 name: "bottom"
                 when: bar.position === "bottom"
+
                 AnchorChanges {
                     target: content
                     anchors.left: undefined

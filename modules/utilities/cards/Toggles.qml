@@ -9,9 +9,9 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 import qs.modules.nexus
 import qs.modules.bar.popouts as BarPopouts
-import qs.utils
 import "../../background"
 
 StyledRect {
@@ -48,6 +48,7 @@ StyledRect {
             return true;
         });
     }
+
     readonly property int splitIndex: Math.ceil(quickToggles.length / 2)
     readonly property bool needExtraRow: quickToggles.length > 6
 
@@ -193,8 +194,10 @@ StyledRect {
                     roleValue: "pauseWallpaper"
                     delegate: Toggle {
                         id: pauseWallpaperToggle
+
                         icon: "pause"
                         isToggle: true
+
                         Component.onCompleted: checked = Qt.binding(() => GlobalConfig.background.videoWallpaperPaused)
                         onClicked: {
                             const newVal = !GlobalConfig.background.videoWallpaperPaused;

@@ -4,37 +4,11 @@ import Quickshell
 
 Item {
     id: root
-    objectName: "badapple"
 
     property var screenModel: null
-
-    Rectangle {
-        anchors.fill: parent
-        color: "black"
-    }
-
-    MediaPlayer {
-        id: mediaPlayer
-        source: `${Quickshell.shellDir}/assets/badapple.mp4`
-        videoOutput: videoOutput
-    }
-
-    VideoOutput {
-        id: videoOutput
-        anchors.fill: parent
-    }
-
-    AudioOutput {
-        id: audioOutput
-    }
-
-    Component.onCompleted: {
-        mediaPlayer.audioOutput = audioOutput;
-        root.isFirstInstance = (BadApplePlayer.firstInstance === null);
-        BadApplePlayer.firstInstance = root;
-    }
-
     property bool isFirstInstance: false
+
+    readonly property bool playing: BadApplePlayer.shouldPlay
 
     function play() {
         BadApplePlayer.play();
@@ -43,8 +17,6 @@ Item {
     function stop() {
         BadApplePlayer.stop();
     }
-
-    readonly property bool playing: BadApplePlayer.shouldPlay
 
     visible: BadApplePlayer.shouldPlay
 
@@ -57,9 +29,19 @@ Item {
         }
     }
 
-    Connections {
-        target: BadApplePlayer
+    Component.onCompleted: {
+        mediaPlayer.audioOutput = audioOutput;
+        root.isFirstInstance = (BadApplePlayer.firstInstance === null);
+        BadApplePlayer.firstInstance = root;
+    }
 
+    Component.onDestruction: {
+        if (BadApplePlayer.firstInstance === root) {
+            BadApplePlayer.firstInstance = null;
+        }
+    }
+
+    Connections {
         function onToggleRequested() {
             root.visible = BadApplePlayer.shouldPlay;
             if (BadApplePlayer.shouldPlay) {
@@ -69,11 +51,29 @@ Item {
                 mediaPlayer.stop();
             }
         }
+
+        target: BadApplePlayer
     }
 
-    Component.onDestruction: {
-        if (BadApplePlayer.firstInstance === root) {
-            BadApplePlayer.firstInstance = null;
-        }
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+    }
+
+    MediaPlayer {
+        id: mediaPlayer
+
+        source: `${Quickshell.shellDir}/assets/badapple.mp4`
+        videoOutput: videoOutput
+    }
+
+    VideoOutput {
+        id: videoOutput
+
+        anchors.fill: parent
+    }
+
+    AudioOutput {
+        id: audioOutput
     }
 }

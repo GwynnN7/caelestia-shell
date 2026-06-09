@@ -1,12 +1,12 @@
 pragma ComponentBehavior: Bound
 
-import "items"
-import "services"
 import QtQuick
 import Quickshell
 import Caelestia.Config
 import qs.components.controls
 import qs.services
+import "items"
+import "services"
 
 PathView {
     id: root
@@ -71,22 +71,6 @@ PathView {
     preferredHighlightEnd: 0.5
     highlightRangeMode: PathView.StrictlyEnforceRange
 
-    delegate: WindowSwitcherItem {
-        list: root
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: true
-        onWheel: wheel => {
-            if (wheel.angleDelta.y > 0)
-                root.decrementCurrentIndex();
-            else
-                root.incrementCurrentIndex();
-            wheel.accepted = true;
-        }
-    }
-
     path: Path {
         startY: root.height / 2
 
@@ -105,6 +89,22 @@ PathView {
         PathLine {
             x: root.width
             relativeY: 0
+        }
+    }
+
+    delegate: WindowSwitcherItem {
+        list: root
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+        onWheel: wheel => {
+            if (wheel.angleDelta.y > 0)
+                root.decrementCurrentIndex();
+            else
+                root.incrementCurrentIndex();
+            wheel.accepted = true;
         }
     }
 }

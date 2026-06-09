@@ -12,8 +12,6 @@ QtObject {
     property var keybinds: []
     property bool initialized: false
 
-    signal loaded
-
     property Process reader: Process {
         running: false
         command: ["sh", "-c", "grep -rhE '^bind\\s*=' " + hyprConfPath.substring(0, hyprConfPath.lastIndexOf('/')) + "/ 2>/dev/null; grep -rhE '^\\$[a-zA-Z_][a-zA-Z0-9_]*\\s*=' " + hyprConfPath.substring(0, hyprConfPath.lastIndexOf('/')) + "/ 2>/dev/null | sort"]
@@ -30,6 +28,8 @@ QtObject {
             }
         }
     }
+
+    signal loaded
 
     function extractVariables(lines) {
         const vars = {};

@@ -8,27 +8,31 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: qsTr("Taskbar")
-    isSubPage: true
-
     readonly property list<MenuItem> positionItems: [
         MenuItem {
-            text: qsTr("Top")
             property string value: "top"
+
+            text: qsTr("Top")
         },
         MenuItem {
-            text: qsTr("Bottom")
             property string value: "bottom"
+
+            text: qsTr("Bottom")
         },
         MenuItem {
-            text: qsTr("Left")
             property string value: "left"
+
+            text: qsTr("Left")
         },
         MenuItem {
-            text: qsTr("Right")
             property string value: "right"
+
+            text: qsTr("Right")
         }
     ]
+
+    title: qsTr("Taskbar")
+    isSubPage: true
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter

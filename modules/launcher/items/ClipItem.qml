@@ -3,8 +3,8 @@ import Quickshell
 import Quickshell.Io
 import Caelestia
 import Caelestia.Config
-import qs.components.images
 import qs.components
+import qs.components.images
 import qs.services
 import qs.modules.launcher.services
 
@@ -14,6 +14,21 @@ Item {
     required property var modelData
     required property var list
 
+    function clicked() {
+        if (!root.modelData)
+            return;
+        root.list.visibilities.launcher = false;
+        const preview = root.modelData.preview.length > 30 ? root.modelData.preview.slice(0, 30) + "..." : root.modelData.preview;
+        Quickshell.execDetached(["sh", "-c", "cliphist decode " + root.modelData.id + " | wl-copy"]);
+        Toaster.toast(qsTr("Copied to clipboard"), preview, "content_paste");
+    }
+
+    Component.onCompleted: {
+        if (root.modelData?.isImage) {
+            Clipboard.ensureImageCached(root.modelData.id);
+        }
+    }
+
     implicitHeight: (root.modelData?.isImage ?? false) ? Tokens.sizes.launcher.itemHeight * 2 : Tokens.sizes.launcher.itemHeight
 
     anchors.left: parent?.left
@@ -22,15 +37,6 @@ Item {
     StateLayer {
         radius: Tokens.rounding.large
         onClicked: root.clicked()
-    }
-
-    function clicked() {
-        if (!root.modelData)
-            return;
-        root.list.visibilities.launcher = false;
-        const preview = root.modelData.preview.length > 30 ? root.modelData.preview.slice(0, 30) + "..." : root.modelData.preview;
-        Quickshell.execDetached(["sh", "-c", "cliphist decode " + root.modelData.id + " | wl-copy"]);
-        Toaster.toast(qsTr("Copied to clipboard"), preview, "content_paste");
     }
 
     Item {
@@ -53,14 +59,14 @@ Item {
         Item {
             id: imagePreview
 
+            property string imagePath: (root.modelData?.isImage ?? false) ? "/tmp/caelestia-clipboard/" + (root.modelData?.id ?? "") + ".png" : ""
+
             width: (root.modelData?.isImage ?? false) ? 120 : 0
             height: (root.modelData?.isImage ?? false) ? 80 : 0
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: icon.right
             anchors.leftMargin: (root.modelData?.isImage ?? false) ? Tokens.spacing.medium : 0
             visible: root.modelData?.isImage ?? false
-
-            property string imagePath: (root.modelData?.isImage ?? false) ? "/tmp/caelestia-clipboard/" + (root.modelData?.id ?? "") + ".png" : ""
 
             Image {
                 anchors.fill: parent
@@ -85,6 +91,7 @@ Item {
 
         MouseArea {
             id: favIcon
+
             width: 32
             height: 32
             anchors.verticalCenter: parent.verticalCenter
@@ -111,12 +118,6 @@ Item {
                 fill: GlobalConfig.launcher.favouriteClips && GlobalConfig.launcher.favouriteClips.includes(String(root.modelData?.id)) ? 1 : 0
                 color: favIcon.containsMouse ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
             }
-        }
-    }
-
-    Component.onCompleted: {
-        if (root.modelData?.isImage) {
-            Clipboard.ensureImageCached(root.modelData.id);
         }
     }
 }

@@ -18,8 +18,24 @@ StyledWindow {
 
     readonly property bool shouldBeVisible: !GlobalConfig.forScreen(modelData.name).shimeji.autoHide || (Hypr.monitorFor(modelData)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true)
 
-    screen: modelData
-    visible: shouldBeVisible
+    property var extractedPaths: []
+
+    property Process extractor: Process {
+        running: false
+        command: ["unzip", "-o"]
+        workingDirectory: "/tmp"
+    }
+
+    readonly property real borderThickness: modelData ? contentItem.Config.border.thickness : 0
+
+    readonly property var barWrapper: (() => {
+        let name = root.screen ? root.screen.name : undefined;
+        let bar = name ? Visibilities.bars.get(name) : undefined;
+        console.log("Shimeji barWrapper evaluated:", name, bar, bar ? bar.exclusiveZone : "no bar", "config position:", Config.bar.position);
+        return bar;
+    })()
+
+    readonly property real floorOffset: Config.bar.position === "bottom" ? (barWrapper ? barWrapper.exclusiveZone : 0) : 0
 
     function getImgPath(): string {
         if (!modelData)
@@ -41,14 +57,8 @@ StyledWindow {
         return path.replace(/\/?$/, "/");
     }
 
-    property var extractedPaths: []
-    property Process extractor: Process {
-        running: false
-        command: ["unzip", "-o"]
-        workingDirectory: "/tmp"
-    }
-
-    readonly property real borderThickness: modelData ? contentItem.Config.border.thickness : 0
+    screen: modelData
+    visible: shouldBeVisible
 
     name: "shimeji"
     WlrLayershell.layer: WlrLayer.Bottom
@@ -67,19 +77,12 @@ StyledWindow {
         });
     }
 
-    readonly property var barWrapper: {
-        let name = root.screen ? root.screen.name : undefined;
-        let bar = name ? Visibilities.bars.get(name) : undefined;
-        console.log("Shimeji barWrapper evaluated:", name, bar, bar ? bar.exclusiveZone : "no bar", "config position:", Config.bar.position);
-        return bar;
-    }
-    readonly property real floorOffset: Config.bar.position === "bottom" ? (barWrapper ? barWrapper.exclusiveZone : 0) : 0
-
     Item {
         anchors.fill: parent
 
         Repeater {
             id: spriteRepeater
+
             model: root.shimejiCount > 0 ? root.shimejiCount : 1
 
             ShimejiSprite {

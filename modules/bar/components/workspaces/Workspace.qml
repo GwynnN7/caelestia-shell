@@ -111,6 +111,7 @@ GridLayout {
 
     Component {
         id: columnComponent
+
         Column {
             spacing: 0
 
@@ -157,6 +158,7 @@ GridLayout {
 
     Component {
         id: rowComponent
+
         Row {
             spacing: 0
 
@@ -203,11 +205,13 @@ GridLayout {
 
     Behavior on Layout.preferredHeight {
         enabled: !isHorizontal
+
         Anim {}
     }
 
     Behavior on Layout.preferredWidth {
         enabled: isHorizontal
+
         Anim {}
     }
 }

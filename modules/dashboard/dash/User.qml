@@ -18,6 +18,7 @@ Item {
     required property FileDialog facePicker
 
     property color pfpFallbackColour: Colours.layer(Colours.palette.m3surfaceContainerHighest, 2)
+    property var hyprlandSplashLines: []
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.large
@@ -25,8 +26,6 @@ Item {
     Behavior on pfpFallbackColour {
         CAnim {}
     }
-
-    property var hyprlandSplashLines: []
 
     Process {
         running: Config.dashboard.showHyprlandSplash

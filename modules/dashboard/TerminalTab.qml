@@ -15,9 +15,6 @@ import qs.utils
 Item {
     id: root
 
-    implicitWidth: 840
-    implicitHeight: 500
-
     readonly property string shellName: "fish"
 
     property string outputBuffer: ""
@@ -26,6 +23,11 @@ Item {
     property string hostname: ""
     property int activeProcessesCount: 0
     property bool isRunning: activeProcessesCount > 0
+
+    readonly property string prompt: {
+        const user = Quickshell.env("USER") || "user";
+        return user + "@" + (root.hostname !== "" ? root.hostname : "caelestia");
+    }
 
     function ansiToHtml(ansiStr) {
         let escaped = ansiStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -175,9 +177,15 @@ Item {
         outputArea.text = "";
     }
 
-    readonly property string prompt: {
-        const user = Quickshell.env("USER") || "user";
-        return user + "@" + (root.hostname !== "" ? root.hostname : "caelestia");
+    implicitWidth: 840
+    implicitHeight: 500
+
+    Component.onCompleted: {
+        startShell();
+        hostnameResolverComp.createObject(root, {
+            command: ["cat", "/etc/hostname"],
+            running: true
+        });
     }
 
     Component {
@@ -303,6 +311,7 @@ Item {
 
     Timer {
         id: autocompleteDebounceTimer
+
         interval: 80 // Responsive but light debouncing
         repeat: false
         onTriggered: {
@@ -334,14 +343,6 @@ Item {
                 }
             }
         }
-    }
-
-    Component.onCompleted: {
-        startShell();
-        hostnameResolverComp.createObject(root, {
-            command: ["cat", "/etc/hostname"],
-            running: true
-        });
     }
 
     StyledRect {
@@ -447,6 +448,10 @@ Item {
                         StyledTextField {
                             id: commandInput
 
+                            property var commandHistory: []
+                            property int historyIndex: -1
+                            property string tempTypedText: ""
+
                             anchors.fill: parent
                             leftPadding: 0
                             rightPadding: 0
@@ -464,10 +469,6 @@ Item {
                                     forceActiveFocus();
                                 }
                             }
-
-                            property var commandHistory: []
-                            property int historyIndex: -1
-                            property string tempTypedText: ""
 
                             onTextChanged: {
                                 autocompleteDebounceTimer.restart();

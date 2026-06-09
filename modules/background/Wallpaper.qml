@@ -131,8 +131,6 @@ Item {
         property bool isVideoImage: root.isVideo(root.source)
         property var screen: null
 
-        onIsVideoImageChanged: updateContent()
-
         function update(): void {
             this.screen = root.screen;
             if (isVideoImage) {
@@ -162,10 +160,22 @@ Item {
             }
         }
 
+        onIsVideoImageChanged: updateContent()
+
         anchors.fill: parent
 
         opacity: 0
         scale: Wallpapers.showPreview ? 1 : 0.8
+
+        states: State {
+            name: "visible"
+            when: root.current === img
+
+            PropertyChanges {
+                img.opacity: 1
+                img.scale: 1
+            }
+        }
 
         CachingAnimatedImage {
             anchors.fill: parent
@@ -191,16 +201,6 @@ Item {
             onPlayingChanged: {
                 if (playing && img.isVideoImage)
                     root.current = img;
-            }
-        }
-
-        states: State {
-            name: "visible"
-            when: root.current === img
-
-            PropertyChanges {
-                img.opacity: 1
-                img.scale: 1
             }
         }
 

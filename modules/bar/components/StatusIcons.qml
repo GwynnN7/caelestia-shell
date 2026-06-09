@@ -28,6 +28,8 @@ StyledRect {
     GridLayout {
         id: iconColumn
 
+        readonly property real spacing: isHorizontal ? columnSpacing : rowSpacing
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: isHorizontal ? undefined : parent.bottom
@@ -44,7 +46,6 @@ StyledRect {
 
         columnSpacing: Tokens.spacing.medium / 2
         rowSpacing: Tokens.spacing.medium / 2
-        readonly property real spacing: isHorizontal ? columnSpacing : rowSpacing
 
         // Lock keys status
         WrappedLoader {
@@ -86,10 +87,13 @@ StyledRect {
 
                     Behavior on implicitHeight {
                         enabled: !isHorizontal
+
                         Anim {}
                     }
+
                     Behavior on implicitWidth {
                         enabled: isHorizontal
+
                         Anim {}
                     }
                 }
@@ -125,10 +129,13 @@ StyledRect {
 
                     Behavior on implicitHeight {
                         enabled: !isHorizontal
+
                         Anim {}
                     }
+
                     Behavior on implicitWidth {
                         enabled: isHorizontal
+
                         Anim {}
                     }
                 }
@@ -264,10 +271,13 @@ StyledRect {
 
             Behavior on Layout.preferredHeight {
                 enabled: !isHorizontal
+
                 Anim {}
             }
+
             Behavior on Layout.preferredWidth {
                 enabled: isHorizontal
+
                 Anim {}
             }
         }

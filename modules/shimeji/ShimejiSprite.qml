@@ -33,21 +33,6 @@ Item {
     property int frameIndex: 0
     property bool facingRight: true
 
-    x: 0
-    y: floorY
-    width: 128
-    height: 128
-
-    Component.onCompleted: {
-        const margin = 50;
-        x = margin + Math.random() * (screenSize.width - 128 - margin * 2);
-        y = floorY;
-        onGround = true;
-        vx = 0;
-        vy = 0;
-        pickIdle();
-    }
-
     function pickIdle() {
         const roll = Math.random();
         if (roll < 0.35)
@@ -141,8 +126,37 @@ Item {
         }
     }
 
+    x: 0
+    y: floorY
+    width: 128
+    height: 128
+
+    Component.onCompleted: {
+        const margin = 50;
+        x = margin + Math.random() * (screenSize.width - 128 - margin * 2);
+        y = floorY;
+        onGround = true;
+        vx = 0;
+        vy = 0;
+        pickIdle();
+    }
+
+    onDraggingChanged: {
+        if (!dragging) {
+            vx = dragVx * 2;
+            vy = dragVy > 0 ? dragVy * 2 : dragVy * 2;
+            if (Math.abs(vx) < 1)
+                vx = 0;
+            if (Math.abs(vy) < 1)
+                vy = 0;
+            onGround = false;
+            pickIdle();
+        }
+    }
+
     MouseArea {
         id: grabArea
+
         x: 0
         y: 0
         width: 128
@@ -183,6 +197,7 @@ Item {
 
     Image {
         id: spriteImage
+
         anchors.fill: parent
         source: {
             const fn = root.animFrame(currentAnim, frameIndex);
@@ -197,6 +212,7 @@ Item {
 
     Timer {
         id: physicsTimer
+
         interval: 30
         repeat: true
         running: true
@@ -205,6 +221,7 @@ Item {
 
     Timer {
         id: animTimer
+
         interval: 200
         repeat: true
         running: true
@@ -236,19 +253,6 @@ Item {
                     }
                 }
             }
-        }
-    }
-
-    onDraggingChanged: {
-        if (!dragging) {
-            vx = dragVx * 2;
-            vy = dragVy > 0 ? dragVy * 2 : dragVy * 2;
-            if (Math.abs(vx) < 1)
-                vx = 0;
-            if (Math.abs(vy) < 1)
-                vy = 0;
-            onGround = false;
-            pickIdle();
         }
     }
 }

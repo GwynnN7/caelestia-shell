@@ -136,11 +136,13 @@ StyledRect {
 
                 Behavior on anchors.bottomMargin {
                     enabled: !isHorizontal
+
                     Anim {}
                 }
 
                 Behavior on anchors.rightMargin {
                     enabled: isHorizontal
+
                     Anim {}
                 }
             }
@@ -149,6 +151,7 @@ StyledRect {
 
     Behavior on implicitHeight {
         enabled: !isHorizontal
+
         Anim {
             type: Anim.DefaultSpatial
         }
@@ -156,6 +159,7 @@ StyledRect {
 
     Behavior on implicitWidth {
         enabled: isHorizontal
+
         Anim {
             type: Anim.DefaultSpatial
         }

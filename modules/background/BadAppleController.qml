@@ -4,6 +4,10 @@ import QtQuick
 import QtMultimedia
 
 QtObject {
+    readonly property bool playing: video.playing
+
+    property var video: null
+
     function play(): void {
         video.play();
     }
@@ -11,8 +15,4 @@ QtObject {
     function stop(): void {
         video.stop();
     }
-
-    readonly property bool playing: video.playing
-
-    property var video: null
 }

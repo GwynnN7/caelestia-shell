@@ -4,10 +4,10 @@ import QtQuick
 import QtMultimedia
 
 Item {
-    signal toggleRequested
-
     property bool shouldPlay: false
     property var firstInstance: null
+
+    signal toggleRequested
 
     function play(): void {
         shouldPlay = true;

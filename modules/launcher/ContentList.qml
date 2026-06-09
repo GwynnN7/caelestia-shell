@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Caelestia.Config
 import Caelestia
+import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
@@ -24,16 +24,18 @@ Item {
     readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
     readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showKeybinds ? keybindsList.item : appList.item))
 
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.bottom
-
-    clip: true
-    state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
-
     // Color sorting state for launcher wallpaper picker
     property color launcherSortColor: "transparent"
     property var launcherColorDistances: ({})
     property var launcherWallpaperColors: ({})
+
+    readonly property list<color> launcherSortColors: ["#e53935" // Red
+        , "#1e88e5" // Blue
+        , "#43a047" // Green
+        , "#fdd835" // Yellow
+        , "#8e24aa" // Purple
+        , "#fb8c00"  // Orange
+    ]
 
     function launcherToggleSortColor(color: color) {
         if (launcherSortColor === color) {
@@ -67,13 +69,39 @@ Item {
         launcherColorDistances = newDistances;
     }
 
-    readonly property list<color> launcherSortColors: ["#e53935" // Red
-        , "#1e88e5" // Blue
-        , "#43a047" // Green
-        , "#fdd835" // Yellow
-        , "#8e24aa" // Purple
-        , "#fb8c00"  // Orange
-    ]
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+
+    clip: true
+    state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
+
+    Behavior on state {
+        SequentialAnimation {
+            Anim {
+                target: root
+                property: "opacity"
+                from: 1
+                to: 0
+                type: Anim.DefaultEffects
+            }
+            PropertyAction {}
+            Anim {
+                target: root
+                property: "opacity"
+                from: 0
+                to: 1
+                type: Anim.DefaultEffects
+            }
+        }
+    }
+
+    onStateChanged: {
+        if (state === "keybinds") {
+            keybindsList.active = true;
+        } else {
+            keybindsList.active = false;
+        }
+    }
 
     states: [
         State {
@@ -124,36 +152,9 @@ Item {
         }
     ]
 
-    Behavior on state {
-        SequentialAnimation {
-            Anim {
-                target: root
-                property: "opacity"
-                from: 1
-                to: 0
-                type: Anim.DefaultEffects
-            }
-            PropertyAction {}
-            Anim {
-                target: root
-                property: "opacity"
-                from: 0
-                to: 1
-                type: Anim.DefaultEffects
-            }
-        }
-    }
-
-    onStateChanged: {
-        if (state === "keybinds") {
-            keybindsList.active = true;
-        } else {
-            keybindsList.active = false;
-        }
-    }
-
     Timer {
         id: keybindsTimer
+
         interval: 50
         onTriggered: {
             if (state === "keybinds" && keybindsList.item) {

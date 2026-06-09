@@ -12,6 +12,15 @@ Item {
     required property var modelData
     required property var list
 
+    function clicked() {
+        if (!root.modelData)
+            return;
+        root.list.visibilities.launcher = false;
+        Quickshell.execDetached(["wl-copy", root.modelData.char]);
+        Emojis.recordUsage(root.modelData.char);
+        Toaster.toast(qsTr("Copied to clipboard"), root.modelData.char + " " + root.modelData.name, "emoji_emotions");
+    }
+
     implicitHeight: Tokens.sizes.launcher.itemHeight
 
     anchors.left: parent?.left
@@ -20,15 +29,6 @@ Item {
     StateLayer {
         radius: Tokens.rounding.large
         onClicked: root.clicked()
-    }
-
-    function clicked() {
-        if (!root.modelData)
-            return;
-        root.list.visibilities.launcher = false;
-        Quickshell.execDetached(["wl-copy", root.modelData.char]);
-        Emojis.recordUsage(root.modelData.char);
-        Toaster.toast(qsTr("Copied to clipboard"), root.modelData.char + " " + root.modelData.name, "emoji_emotions");
     }
 
     Item {
@@ -62,6 +62,7 @@ Item {
 
         MouseArea {
             id: favIcon
+
             width: 32
             height: 32
             anchors.verticalCenter: parent.verticalCenter

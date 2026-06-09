@@ -89,6 +89,7 @@ ColumnLayout {
 
                 StyledText {
                     id: pinLabel
+
                     anchors.left: parent.left
                     text: isPinned ? qsTr("Unpin from dock") : qsTr("Pin to dock")
                 }
@@ -131,6 +132,7 @@ ColumnLayout {
 
                 StyledText {
                     id: newWinLabel
+
                     anchors.left: parent.left
                     text: qsTr("Open new window")
                 }

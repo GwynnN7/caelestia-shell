@@ -15,31 +15,6 @@ Item {
     property alias playing: mediaPlayer.playing
     property alias playbackState: mediaPlayer.playbackState
 
-    AudioOutput {
-        id: audioOutput
-    }
-
-    MediaPlayer {
-        id: mediaPlayer
-
-        source: path || ""
-        videoOutput: videoOutput
-        loops: MediaPlayer.Infinite
-        autoPlay: true
-        audioOutput: audioOutput
-    }
-
-    VideoOutput {
-        id: videoOutput
-
-        anchors.fill: parent
-        fillMode: VideoOutput.PreserveAspectCrop
-
-        Component.onDestruction: {
-            mediaPlayer.stop();
-        }
-    }
-
     function checkPauseState() {
         if (!root.screen)
             return;
@@ -95,47 +70,6 @@ Item {
         audioOutput.muted = !root.isFirstInstance || !soundEnabled || (muteOnMedia && isPlaying);
     }
 
-    Timer {
-        id: mediaCheckTimer
-        interval: 500
-        running: GlobalConfig.background.videoWallpaperMuteOnMedia
-        repeat: true
-        onTriggered: checkMuteState()
-    }
-
-    Timer {
-        id: checkTimer
-        interval: 100
-        running: true
-        repeat: true
-        onTriggered: {
-            checkPauseState();
-            checkMuteState();
-        }
-    }
-
-    Connections {
-        target: GlobalConfig.background
-        function onVideoWallpaperPausedChanged() {
-            checkPauseState();
-        }
-        function onVideoWallpaperPauseOnAllDisplaysChanged() {
-            checkPauseState();
-        }
-        function onVideoWallpaperPauseOnFullscreenChanged() {
-            checkPauseState();
-        }
-        function onVideoWallpaperPauseOnTiledChanged() {
-            checkPauseState();
-        }
-        function onVideoWallpaperMuteOnMediaChanged() {
-            checkMuteState();
-        }
-        function onVideoWallpaperSoundEnabledChanged() {
-            checkMuteState();
-        }
-    }
-
     Component.onCompleted: {
         isFirstInstance = (VideoWallpaperPlayer.firstInstance === null);
         VideoWallpaperPlayer.firstInstance = root;
@@ -153,5 +87,81 @@ Item {
         mediaPlayer.source = path || "";
         if (path)
             mediaPlayer.play();
+    }
+
+    AudioOutput {
+        id: audioOutput
+    }
+
+    MediaPlayer {
+        id: mediaPlayer
+
+        source: path || ""
+        videoOutput: videoOutput
+        loops: MediaPlayer.Infinite
+        autoPlay: true
+        audioOutput: audioOutput
+    }
+
+    VideoOutput {
+        id: videoOutput
+
+        anchors.fill: parent
+        fillMode: VideoOutput.PreserveAspectCrop
+
+        Component.onDestruction: {
+            mediaPlayer.stop();
+        }
+    }
+
+    Timer {
+        id: mediaCheckTimer
+
+        interval: 500
+        running: GlobalConfig.background.videoWallpaperMuteOnMedia
+        repeat: true
+
+        onTriggered: checkMuteState()
+    }
+
+    Timer {
+        id: checkTimer
+
+        interval: 100
+        running: true
+        repeat: true
+
+        onTriggered: {
+            checkPauseState();
+            checkMuteState();
+        }
+    }
+
+    Connections {
+        function onVideoWallpaperPausedChanged() {
+            checkPauseState();
+        }
+
+        function onVideoWallpaperPauseOnAllDisplaysChanged() {
+            checkPauseState();
+        }
+
+        function onVideoWallpaperPauseOnFullscreenChanged() {
+            checkPauseState();
+        }
+
+        function onVideoWallpaperPauseOnTiledChanged() {
+            checkPauseState();
+        }
+
+        function onVideoWallpaperMuteOnMediaChanged() {
+            checkMuteState();
+        }
+
+        function onVideoWallpaperSoundEnabledChanged() {
+            checkMuteState();
+        }
+
+        target: GlobalConfig.background
     }
 }

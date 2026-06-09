@@ -8,10 +8,11 @@ import qs.services
 
 Column {
     id: root
+
     required property PopoutState popouts
+    property bool _isSidebarOpen: popouts.sidebarOpen
 
     spacing: Tokens.spacing.medium
-    property bool _isSidebarOpen: popouts.sidebarOpen
     width: Math.max(Tokens.sizes.bar.batteryWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
 
     StyledText {

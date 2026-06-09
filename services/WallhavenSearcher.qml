@@ -3,9 +3,9 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Notifications
 import Caelestia
 import Caelestia.Config
-import Quickshell.Services.Notifications
 import qs.utils
 
 Singleton {
@@ -23,6 +23,7 @@ Singleton {
     property int lastPage: 1
     property string lastSeed: ""
     property list<var> results
+    property var currentWallpaper: null
 
     // Filters
     property var filters: {
@@ -239,6 +240,43 @@ Singleton {
         };
     }
 
+    function downloadWallpaper(wallpaper: var): void {
+        if (!wallpaper || !wallpaper.path) {
+            console.error("Wallhaven: Invalid wallpaper data");
+            return;
+        }
+
+        // Extract extension from file path or URL, default to jpg
+        const fullPath = wallpaper.path || wallpaper.url || "";
+        const urlMatch = fullPath.match(/\.([a-zA-Z]{3,4})(?:\?|$)/);
+        let ext = urlMatch ? urlMatch[1] : "";
+        // Normalize to lowercase and handle jpeg -> jpg
+        if (ext) {
+            ext = ext.toLowerCase();
+            if (ext === "jpeg")
+                ext = "jpg";
+        } else {
+            ext = "jpg";
+        }
+
+        const tmpPath = `${Paths.cache}/wallhaven-${wallpaper.id}.tmp`;
+        const dstPath = `${Paths.wallsdir}/wallhaven-${wallpaper.id}.${ext}`;
+
+        currentWallpaper = {
+            id: wallpaper.id,
+            ext: ext
+        };
+        downloadProc.wallpaperId = wallpaper.id;
+        downloadProc.tmpPath = tmpPath;
+        downloadProc.dstPath = dstPath;
+
+        console.log("Wallhaven: Downloading", wallpaper.path, "to", tmpPath);
+        console.log("Wallhaven: Will move to", dstPath, "(ext:", ext, ")");
+
+        downloadProc.command = ["sh", "-c", "curl -L -s -o '" + tmpPath + "' '" + wallpaper.path + "'"];
+        downloadProc.running = true;
+    }
+
     IpcHandler {
         function doSearch(query: string): void {
             search(query);
@@ -277,8 +315,6 @@ Singleton {
         }
     }
 
-    property var currentWallpaper: null
-
     Process {
         id: moveProc
 
@@ -296,42 +332,5 @@ Singleton {
                 downloadFailed(id, "Failed to save wallpaper (exit " + code + ")");
             }
         }
-    }
-
-    function downloadWallpaper(wallpaper: var): void {
-        if (!wallpaper || !wallpaper.path) {
-            console.error("Wallhaven: Invalid wallpaper data");
-            return;
-        }
-
-        // Extract extension from file path or URL, default to jpg
-        const fullPath = wallpaper.path || wallpaper.url || "";
-        const urlMatch = fullPath.match(/\.([a-zA-Z]{3,4})(?:\?|$)/);
-        let ext = urlMatch ? urlMatch[1] : "";
-        // Normalize to lowercase and handle jpeg -> jpg
-        if (ext) {
-            ext = ext.toLowerCase();
-            if (ext === "jpeg")
-                ext = "jpg";
-        } else {
-            ext = "jpg";
-        }
-
-        const tmpPath = `${Paths.cache}/wallhaven-${wallpaper.id}.tmp`;
-        const dstPath = `${Paths.wallsdir}/wallhaven-${wallpaper.id}.${ext}`;
-
-        currentWallpaper = {
-            id: wallpaper.id,
-            ext: ext
-        };
-        downloadProc.wallpaperId = wallpaper.id;
-        downloadProc.tmpPath = tmpPath;
-        downloadProc.dstPath = dstPath;
-
-        console.log("Wallhaven: Downloading", wallpaper.path, "to", tmpPath);
-        console.log("Wallhaven: Will move to", dstPath, "(ext:", ext, ")");
-
-        downloadProc.command = ["sh", "-c", "curl -L -s -o '" + tmpPath + "' '" + wallpaper.path + "'"];
-        downloadProc.running = true;
     }
 }

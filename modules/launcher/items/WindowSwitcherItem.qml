@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
+import Caelestia
 import Caelestia.Config
 import Caelestia.Models
 import qs.components
@@ -15,14 +16,19 @@ Item {
     required property var modelData
     required property var list
 
-    scale: 0.5
-    opacity: 0
-    z: PathView.z ?? 0
+    function clicked(): void {
+        Hyprland.dispatch(`focuswindow address:0x${root.modelData.address}`);
+        root.list.visibilities.launcher = false;
+    }
 
     Component.onCompleted: {
         scale = Qt.binding(() => PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0);
         opacity = Qt.binding(() => PathView.onPath ? 1 : 0);
     }
+
+    scale: 0.5
+    opacity: 0
+    z: PathView.z ?? 0
 
     implicitWidth: previewBox.width + Tokens.padding.largeIncreased * 2
     implicitHeight: previewBox.height + label.height + Tokens.spacing.small / 2 + Tokens.padding.large + Tokens.padding.medium
@@ -30,11 +36,6 @@ Item {
     StateLayer {
         radius: Tokens.rounding.medium
         onClicked: root.clicked()
-    }
-
-    function clicked(): void {
-        Hyprland.dispatch(`focuswindow address:0x${root.modelData.address}`);
-        root.list.visibilities.launcher = false;
     }
 
     StyledRect {

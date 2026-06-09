@@ -87,6 +87,7 @@ Item {
 
     PopoutState {
         id: popoutState
+
         sidebarOpen: Visibilities.screens.get(Hypr.monitorFor(root.screen))?.sidebar ?? false
 
         onDetachRequested: mode => root.detach(mode)

@@ -58,6 +58,7 @@ Region {
 
     R {
         id: osdRegion
+
         panel: root.panels.osdWrapper
         x: root.Config.bar.position === "right" ? 0 : root.win.width - osdRegion.width
         width: panel.width * (1 - root.panels.osd.offsetScale) + root.borderThickness + sessionRegion.width

@@ -45,6 +45,12 @@ Item {
 
     anchors.fill: parent
 
+    onDetailPanelOpenChanged: {
+        if (!detailPanelOpen) {
+            clearWallpaperTimer.restart();
+        }
+    }
+
     ClippingRectangle {
         id: mainClippingRect
 
@@ -361,16 +367,11 @@ Item {
     // Timer to clear selectedWallpaper after close animation
     Timer {
         id: clearWallpaperTimer
+
         interval: Tokens.anim.durations.expressiveDefaultEffects
         onTriggered: {
             if (!detailPanelOpen)
                 root.selectedWallpaper = null;
-        }
-    }
-
-    onDetailPanelOpenChanged: {
-        if (!detailPanelOpen) {
-            clearWallpaperTimer.restart();
         }
     }
 

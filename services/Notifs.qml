@@ -37,6 +37,14 @@ Singleton {
         return true;
     }
 
+    function clear(): void {
+        const toClose = [];
+        for (let i = 0; i < root.list.length; i++)
+            toClose.push(root.list[i]);
+        for (let i = 0; i < toClose.length; i++)
+            toClose[i].close();
+    }
+
     onDndChanged: {
         if (!GlobalConfig.utilities.toasts.dndChanged)
             return;
@@ -123,14 +131,6 @@ Singleton {
                 Qt.callLater(() => setText("[]"));
             }
         }
-    }
-
-    function clear(): void {
-        const toClose = [];
-        for (let i = 0; i < root.list.length; i++)
-            toClose.push(root.list[i]);
-        for (let i = 0; i < toClose.length; i++)
-            toClose[i].close();
     }
 
     // qmllint disable unresolved-type

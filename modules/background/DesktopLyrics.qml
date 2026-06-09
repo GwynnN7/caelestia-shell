@@ -43,12 +43,41 @@ Item {
     property string previousLyricText: ""
     property string nextLyricText: ""
 
-    // Dynamic Spacing Math
     property real lyricSpacing: Tokens.spacing.large * root.lyricsScale
     property real targetCenterY: lyricsContainer.height > 0 ? (lyricsContainer.height - lyricContainer.height) / 2 : 0
     property real targetPrevY: targetCenterY - prevLyricItem.height - lyricSpacing
     property real targetNextY: targetCenterY + lyricContainer.height + lyricSpacing
     property real startNextY: targetNextY + nextLyricItem.height + lyricSpacing
+
+    function reloadTrack() {
+        const p = Players.active;
+        if (p) {
+            Lyrics.setTrack(p.trackArtist, p.trackTitle, p.trackAlbum, p.length);
+        } else {
+            Lyrics.clearTrack();
+        }
+    }
+
+    function forceUpdate() {
+        if (Lyrics.hasLyrics) {
+            currentLyricIndex = Lyrics.indexForTime(Players.active?.position ?? 0);
+            if (currentLyricIndex >= 0) {
+                displayedLyric = (Lyrics.lyrics[currentLyricIndex] ?? "").replace(/\u00A0/g, " ");
+                previousLyricText = currentLyricIndex > 0 ? (Lyrics.lyrics[currentLyricIndex - 1] ?? "").replace(/\u00A0/g, " ") : "";
+                nextLyricText = currentLyricIndex < Lyrics.lyrics.length - 1 ? (Lyrics.lyrics[currentLyricIndex + 1] ?? "").replace(/\u00A0/g, " ") : "";
+            } else {
+                displayedLyric = "";
+                previousLyricText = "";
+                nextLyricText = (Lyrics.lyrics[0] ?? "").replace(/\u00A0/g, " ");
+            }
+            lyricSlide.running = true;
+        } else {
+            currentLyricIndex = -1;
+            displayedLyric = "";
+            previousLyricText = "";
+            nextLyricText = "";
+        }
+    }
 
     onCurrentLyricIndexChanged: {
         if (Lyrics.hasLyrics) {
@@ -66,6 +95,32 @@ Item {
             displayedLyric = "";
             previousLyricText = "";
             nextLyricText = "";
+        }
+    }
+
+    Component.onCompleted: {
+        root.reloadTrack();
+    }
+
+    implicitWidth: 350 * root.lyricsScale
+    implicitHeight: 180 * root.lyricsScale
+
+    opacity: ((root.hasLyrics || Lyrics.loading) && !root.shouldHide) ? 1 : 0
+    visible: opacity > 0
+
+    Behavior on opacity {
+        Anim {}
+    }
+
+    Behavior on lyricsScale {
+        Anim {
+            type: Anim.DefaultSpatial
+        }
+    }
+
+    Behavior on implicitWidth {
+        Anim {
+            type: Anim.StandardSmall
         }
     }
 
@@ -125,53 +180,22 @@ Item {
         }
     }
 
-    function reloadTrack() {
-        const p = Players.active;
-        if (p) {
-            Lyrics.setTrack(p.trackArtist, p.trackTitle, p.trackAlbum, p.length);
-        } else {
-            Lyrics.clearTrack();
-        }
-    }
-
     Connections {
-        target: Players
         function onActiveChanged() {
             root.reloadTrack();
         }
+
+        target: Players
     }
 
     Connections {
-        target: Players.active
-        ignoreUnknownSignals: true
         function onPostTrackChanged() {
             root.reloadTrack();
         }
-    }
 
-    Component.onCompleted: {
-        root.reloadTrack();
-    }
+        ignoreUnknownSignals: true
 
-    function forceUpdate() {
-        if (Lyrics.hasLyrics) {
-            currentLyricIndex = Lyrics.indexForTime(Players.active?.position ?? 0);
-            if (currentLyricIndex >= 0) {
-                displayedLyric = (Lyrics.lyrics[currentLyricIndex] ?? "").replace(/\u00A0/g, " ");
-                previousLyricText = currentLyricIndex > 0 ? (Lyrics.lyrics[currentLyricIndex - 1] ?? "").replace(/\u00A0/g, " ") : "";
-                nextLyricText = currentLyricIndex < Lyrics.lyrics.length - 1 ? (Lyrics.lyrics[currentLyricIndex + 1] ?? "").replace(/\u00A0/g, " ") : "";
-            } else {
-                displayedLyric = "";
-                previousLyricText = "";
-                nextLyricText = (Lyrics.lyrics[0] ?? "").replace(/\u00A0/g, " ");
-            }
-            lyricSlide.running = true;
-        } else {
-            currentLyricIndex = -1;
-            displayedLyric = "";
-            previousLyricText = "";
-            nextLyricText = "";
-        }
+        target: Players.active
     }
 
     Connections {
@@ -179,17 +203,8 @@ Item {
             root.hasLyrics = Lyrics.hasLyrics;
             root.forceUpdate();
         }
+
         target: Lyrics
-    }
-
-    implicitWidth: 350 * root.lyricsScale
-    implicitHeight: 180 * root.lyricsScale
-
-    opacity: ((root.hasLyrics || Lyrics.loading) && !root.shouldHide) ? 1 : 0
-    visible: opacity > 0
-
-    Behavior on opacity {
-        Anim {}
     }
 
     Item {
@@ -208,6 +223,7 @@ Item {
 
         Loader {
             id: blurLoader
+
             asynchronous: true
             anchors.fill: parent
             active: root.blurEnabled
@@ -240,6 +256,7 @@ Item {
 
         Loader {
             id: loadingIndicator
+
             anchors.centerIn: parent
             asynchronous: true
             active: opacity > 0
@@ -284,9 +301,15 @@ Item {
         // --- NEW INNER CONTAINER FOR FADE MASK ---
         Item {
             id: fadeContainer
+
             anchors.fill: parent
             clip: true
             opacity: root.hasLyrics ? 1 : 0
+
+            layer.enabled: true
+            layer.effect: Mask {
+                maskSource: fadeMask
+            }
 
             Behavior on opacity {
                 Anim {
@@ -294,37 +317,32 @@ Item {
                 }
             }
 
-            layer.enabled: true
-            layer.effect: Mask {
-                maskSource: fadeMask
+            Rectangle {
+                id: fadeMask
 
-                Rectangle {
-                    id: fadeMask
+                layer.enabled: true
+                visible: false
+                implicitWidth: fadeContainer.width
+                implicitHeight: fadeContainer.height
 
-                    layer.enabled: true
-                    visible: false
-                    implicitWidth: fadeContainer.width
-                    implicitHeight: fadeContainer.height
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
 
-                    gradient: Gradient {
-                        orientation: Gradient.Vertical
-
-                        GradientStop {
-                            color: Qt.alpha("black", 0)
-                            position: 0
-                        }
-                        GradientStop {
-                            color: Qt.alpha("black", 1)
-                            position: 0.25 // fadeMargin
-                        }
-                        GradientStop {
-                            color: Qt.alpha("black", 1)
-                            position: 0.75 // 1 - fadeMargin
-                        }
-                        GradientStop {
-                            color: Qt.alpha("black", 0)
-                            position: 1
-                        }
+                    GradientStop {
+                        color: Qt.alpha("black", 0)
+                        position: 0
+                    }
+                    GradientStop {
+                        color: Qt.alpha("black", 1)
+                        position: 0.25 // fadeMargin
+                    }
+                    GradientStop {
+                        color: Qt.alpha("black", 1)
+                        position: 0.75 // 1 - fadeMargin
+                    }
+                    GradientStop {
+                        color: Qt.alpha("black", 0)
+                        position: 1
                     }
                 }
             }
@@ -453,18 +471,6 @@ Item {
                     }
                 }
             }
-        }
-    }
-
-    Behavior on lyricsScale {
-        Anim {
-            type: Anim.DefaultSpatial
-        }
-    }
-
-    Behavior on implicitWidth {
-        Anim {
-            type: Anim.StandardSmall
         }
     }
 }

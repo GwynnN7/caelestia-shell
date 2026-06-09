@@ -55,16 +55,16 @@ Searcher {
             Colours.showPreview = false;
     }
 
-    onPreviewColourLockChanged: {
-        if (!previewColourLock && pendingPreviewClear)
-            Colours.showPreview = false;
-    }
-
     function getThumbnailPath(path: string): string {
         if (Images.isVideo(path)) {
             return `${Paths.cache}/wallpapers/${CUtils.sha256(path)}/first_frame.png`;
         }
         return path;
+    }
+
+    onPreviewColourLockChanged: {
+        if (!previewColourLock && pendingPreviewClear)
+            Colours.showPreview = false;
     }
 
     list: wallpapers.entries
