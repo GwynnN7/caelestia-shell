@@ -136,8 +136,7 @@ Item {
                         MaterialShape.Ghostish, MaterialShape.Clover4Leaf, MaterialShape.Clover8Leaf,
                         MaterialShape.Burst, MaterialShape.SoftBurst, MaterialShape.Boom,
                         MaterialShape.SoftBoom, MaterialShape.Flower, MaterialShape.Puffy,
-                        MaterialShape.PuffyDiamond, MaterialShape.PixelCircle, MaterialShape.PixelTriangle,
-                        MaterialShape.Bun, MaterialShape.Heart
+                        MaterialShape.PuffyDiamond, MaterialShape.Bun, MaterialShape.Heart
                     ];
                     return shapes[Math.floor(Math.random() * shapes.length)];
                 }
@@ -155,7 +154,6 @@ Item {
                 SequentialAnimation {
                     id: spawnAnim
                     
-                    // 1. Expand the shape with an expressive pop
                     ParallelAnimation {
                         NumberAnimation { 
                             target: ch; property: "implicitSize"
@@ -167,10 +165,8 @@ Item {
                         }
                     }
 
-                    // 2. Pause for a split second
                     PauseAnimation { duration: 180 }
 
-                    // 3. Settle down into a standard masking PIN dot
                     ScriptAction {
                         script: ch.shape = MaterialShape.Circle
                     }
