@@ -85,19 +85,87 @@ GridLayout {
 
             readonly property bool active: root.activeWsId === root.ws
             property int randShape: MaterialShape.Slanted
+            // Track if this position was active (independent of which workspace)
+            property bool wasPositionActive: false
+            property int lastKnownWs: -1
             property int prevActiveWsId: -1
 
-            onActiveChanged: {
-                const wasActive = prevActiveWsId === root.ws;
-                if (active && !wasActive) {
+            // Track the previous workspace at this position (before current change)
+            property int prevWs: -1
+
+            // Function to handle activation state changes
+            function handleActivation() {
+                const wsChanged = lastKnownWs !== root.ws;
+                if (active && (!wasPositionActive || wsChanged)) {
                     const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.Clover8Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish];
                     const shuffled = [...shapes].sort(() => Math.random() - 0.5);
                     randShape = shuffled[0];
+                    // Set shape and scale immediately to avoid binding flicker
+                    wsShape.shape = randShape;
+                    wsShape.scale = 1 / 3;
+                    // Stop opposite animation and reset to ensure clean start
+                    deactivateAnim.stop();
+                    activateAnim.fromValue = 1 / 3;
+                    activateAnim.toValue = 2 / 3;
                     activateAnim.running = true;
-                } else if (!active && wasActive) {
-                    deactivateAnim.running = true;
+                } else if (!active && (wasPositionActive || wsChanged)) {
+                    const targetShape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
+                    // Set shape and scale immediately to avoid binding flicker
+                    wsShape.shape = targetShape;
+                    wsShape.scale = 1 / 3;
+                    // Stop opposite animation and reset to ensure clean start
+                    activateAnim.stop();
+                    deactivateAnim.stop();
                 }
+                wasPositionActive = active;
+                prevWs = lastKnownWs;
+                lastKnownWs = root.ws;
                 prevActiveWsId = root.activeWsId;
+            }
+
+            // Watch for workspace ID changes while inactive by using a binding
+            // This property will update whenever root.ws changes
+            property int watchedWs: root.ws
+
+            // Track the last watched ws separately for detecting changes
+            property int lastWatchedWs: -1
+
+            // Handle when the watched workspace changes while inactive
+            onWatchedWsChanged: {
+                // If workspace changed and we're not active, update shape
+                if (lastWatchedWs !== -1 && watchedWs !== lastWatchedWs && !active) {
+                    activateAnim.stop();
+                    deactivateAnim.stop();
+                    wsShape.shape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
+                    wsShape.scale = 1 / 3;
+                }
+                lastWatchedWs = watchedWs;
+            }
+
+            // Handle when activeWsId changes even if active state doesn't
+            onPrevActiveWsIdChanged: {
+                if (prevActiveWsId !== -1 && prevActiveWsId !== root.activeWsId && active) {
+                    handleActivation();
+                }
+            }
+
+            onActiveChanged: handleActivation()
+
+            // Initialize state when component is created
+            Component.onCompleted: {
+                // Manually trigger activation handling if already active
+                // since onActiveChanged won't fire for initial state
+                if (active) {
+                    handleActivation();
+                } else {
+                    // Set initial shape for inactive workspace
+                    wsShape.shape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
+                }
+                wasPositionActive = active;
+                prevWs = -1;
+                lastKnownWs = root.ws;
+                prevActiveWsId = root.activeWsId;
+                lastWatchedWs = root.ws;
             }
 
             MaterialShape {
@@ -106,7 +174,6 @@ GridLayout {
                 anchors.centerIn: parent
                 implicitSize: iconRoot.width
                 scale: iconRoot.active ? 2 / 3 : 1 / 3
-                shape: iconRoot.active ? iconRoot.randShape : (root.isOccupied ? MaterialShape.Square : MaterialShape.Circle)
                 color: Config.bar.workspaces.occupiedBg || root.isOccupied || root.activeWsId === root.ws ? Colours.palette.m3onSurface : Colours.layer(Colours.palette.m3outlineVariant, 2)
 
                 Behavior on color {
@@ -123,44 +190,30 @@ GridLayout {
                 SequentialAnimation {
                     id: activateAnim
 
+                    property real fromValue: 1 / 3
+                    property real toValue: 2 / 3
+
                     Anim {
                         target: wsShape
                         property: "scale"
-                        from: 1 / 3
-                        to: 2 / 3
+                        from: activateAnim.fromValue
+                        to: activateAnim.toValue
                         type: Anim.FastSpatial
-                    }
-                    PropertyAction {
-                        target: wsShape
-                        property: "shape"
-                        value: iconRoot.randShape
-                    }
-                    PropertyAction {
-                        targets: [activateAnim, deactivateAnim]
-                        property: "running"
-                        value: false
                     }
                 }
 
                 SequentialAnimation {
                     id: deactivateAnim
 
+                    property real fromValue: 2 / 3
+                    property real toValue: 1 / 3
+
                     Anim {
                         target: wsShape
                         property: "scale"
-                        from: 2 / 3
-                        to: 1 / 3
+                        from: deactivateAnim.fromValue
+                        to: deactivateAnim.toValue
                         type: Anim.FastSpatial
-                    }
-                    PropertyAction {
-                        target: wsShape
-                        property: "shape"
-                        value: root.isOccupied ? MaterialShape.Square : MaterialShape.Circle
-                    }
-                    PropertyAction {
-                        targets: [activateAnim, deactivateAnim]
-                        property: "running"
-                        value: false
                     }
                 }
             }
