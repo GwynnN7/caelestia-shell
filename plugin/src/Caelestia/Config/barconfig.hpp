@@ -49,9 +49,9 @@ class BarWorkspaces : public ConfigObject {
     CONFIG_PROPERTY(bool, activeTrail, false)
     CONFIG_GLOBAL_PROPERTY(bool, perMonitorWorkspaces, true)
     CONFIG_PROPERTY(bool, useIcon, true)
-    CONFIG_PROPERTY(QString, label, u"1"_s)
-    CONFIG_PROPERTY(QString, occupiedLabel, u"1"_s)
-    CONFIG_PROPERTY(QString, activeLabel, u"1"_s)
+    CONFIG_PROPERTY(QString, label, u"\uf184"_s)
+    CONFIG_PROPERTY(QString, occupiedLabel, u"\uf02e"_s)
+    CONFIG_PROPERTY(QString, activeLabel, u"\uf02e"_s)
     CONFIG_PROPERTY(QString, capitalisation, u"preserve"_s)
     CONFIG_GLOBAL_PROPERTY(QVariantList, specialWorkspaceIcons)
     CONFIG_GLOBAL_PROPERTY(QVariantList, windowIcons,
