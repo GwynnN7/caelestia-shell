@@ -37,26 +37,36 @@ Item {
         anchors.rightMargin: Tokens.padding.largeIncreased
         anchors.margins: Tokens.padding.extraSmall
 
-        StyledText {
-            id: emojiChar
+        Item {
+            id: iconContainer
 
-            text: root.modelData?.char ?? ""
-            font.pointSize: Tokens.fontSize.extraLarge
+            width: Math.max(1, parent.height * 0.8)
+            height: width
 
             anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+
+            StyledText {
+                id: emojiChar
+
+                text: root.modelData?.char ?? ""
+                font.pixelSize: iconContainer.height * 0.7
+
+                anchors.centerIn: parent
+            }
         }
 
         StyledText {
             id: name
 
-            anchors.left: emojiChar.right
+            anchors.left: iconContainer.right
             anchors.leftMargin: Tokens.spacing.medium
             anchors.right: parent.right
             anchors.rightMargin: 80
-            anchors.verticalCenter: emojiChar.verticalCenter
+            anchors.verticalCenter: parent.verticalCenter
 
             text: root.modelData?.name ?? ""
-            font.pointSize: Tokens.fontSize.normal
+            font: Tokens.font.body.medium
             elide: Text.ElideRight
         }
 
