@@ -11,6 +11,7 @@ Item {
     required property DrawerVisibilities visibilities
 
     property var popouts
+    property var utilities
 
     readonly property bool isBarHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property bool showPopoutSeparator: isBarHorizontal && root.visibilities.sidebar && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow"
@@ -38,9 +39,10 @@ Item {
 
         // Utilities Separator
         StyledRect {
+            visible: utilities && utilities.offsetScale < 1
             Layout.row: Config.bar.position === "bottom" ? 0 : (Config.bar.position === "top" ? 2 : 1)
-            Layout.topMargin: Config.bar.position === "bottom" ? 0 : 18
-            Layout.bottomMargin: Config.bar.position === "bottom" ? 18 : 0
+            Layout.topMargin: Config.bar.position === "bottom" ? 0 : (visible ? 18 : 0)
+            Layout.bottomMargin: Config.bar.position === "bottom" ? (visible ? 18 : 0) : 0
             Layout.fillWidth: true
             implicitHeight: 1
 

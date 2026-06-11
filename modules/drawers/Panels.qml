@@ -244,6 +244,7 @@ Item {
 
         visibilities: root.visibilities
         popouts: popoutsWrapper.content
+        utilities: utilities
 
         anchors.top: notifications.bottom
         anchors.bottom: utilities.top

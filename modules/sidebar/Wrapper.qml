@@ -10,6 +10,7 @@ Item {
 
     required property DrawerVisibilities visibilities
     property var popouts
+    property var utilities
     readonly property Props props: Props {}
 
     readonly property bool shouldBeActive: visibilities.sidebar && Config.sidebar.enabled
@@ -42,6 +43,7 @@ Item {
             props: root.props
             visibilities: root.visibilities
             popouts: root.popouts
+            utilities: root.utilities
         }
     }
 }
