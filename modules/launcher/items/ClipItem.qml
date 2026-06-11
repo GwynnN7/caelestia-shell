@@ -49,11 +49,10 @@ Item {
             id: icon
 
             text: (root.modelData?.isImage ?? false) ? "image" : "content_paste"
-            fontStyle: Tokens.font.icon.large
+            fontStyle: Tokens.font.icon.builders.large.scale(1.3).build()
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: Tokens.padding.extraSmall
         }
 
         Item {

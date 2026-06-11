@@ -38,7 +38,7 @@ Item {
             id: icon
 
             text: "keyboard"
-            fontStyle: Tokens.font.icon.large
+            fontStyle: Tokens.font.icon.builders.large.scale(1.3).build()
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
