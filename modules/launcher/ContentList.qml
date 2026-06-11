@@ -121,6 +121,7 @@ Item {
                 target: root
                 anchors.left: root.parent.left
                 anchors.right: root.parent.right
+                anchors.horizontalCenter: undefined
             }
         },
         State {
@@ -135,6 +136,12 @@ Item {
                 target: wallpaperList
                 active: true
             }
+            AnchorChanges {
+                target: root
+                anchors.left: undefined
+                anchors.right: undefined
+                anchors.horizontalCenter: root.parent.horizontalCenter
+            }
         },
         State {
             name: "windowSwitcher"
@@ -147,6 +154,12 @@ Item {
             PropertyChanges {
                 target: windowSwitcherList
                 active: true
+            }
+            AnchorChanges {
+                target: root
+                anchors.left: undefined
+                anchors.right: undefined
+                anchors.horizontalCenter: root.parent.horizontalCenter
             }
         },
         State {
@@ -166,6 +179,7 @@ Item {
                 target: root
                 anchors.left: root.parent.left
                 anchors.right: root.parent.right
+                anchors.horizontalCenter: undefined
             }
         }
     ]

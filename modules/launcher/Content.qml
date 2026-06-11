@@ -145,8 +145,6 @@ Item {
                             search.text = Visibilities.launcherInitialSearch;
                             Visibilities.launcherInitialSearch = "";
                         }
-                    } else {
-                        search.text = "";
                     }
                 }
 

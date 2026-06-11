@@ -54,9 +54,7 @@ Item {
 
             StyledText {
                 text: (modelData && modelData.bind) ? modelData.bind : qsTr("No keybinds")
-                font.pointSize: Tokens.font.body.medium.pointSize
-                font.weight: 500
-                font.family: "monospace"
+                font: Tokens.font.body.medium
                 color: Colours.palette.m3onSurface
                 elide: Text.ElideRight
             }
@@ -64,7 +62,7 @@ Item {
             StyledText {
                 text: (modelData && modelData.action) ? modelData.action : ""
                 font: Tokens.font.body.small
-                color: Colours.palette.m3onSurfaceVariant
+                color: Colours.palette.m3outline
                 elide: Text.ElideRight
             }
         }
