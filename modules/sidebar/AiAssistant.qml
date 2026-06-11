@@ -24,29 +24,11 @@ Item {
         }
 
         // Snapping logic
-        if (activeProvider === "gemini" && GlobalConfig.ai.snapToDefaultGemini) {
-            activeGeminiModel = GlobalConfig.ai.defaultGeminiModel;
-        } else if (activeProvider === "chatgpt" && GlobalConfig.ai.snapToDefaultChatgpt) {
-            activeChatgptModel = GlobalConfig.ai.defaultChatgptModel;
-        } else if (activeProvider === "ollama" && GlobalConfig.ai.snapToDefaultOllama) {
+        if (activeProvider === "ollama" && GlobalConfig.ai.snapToDefaultOllama) {
             activeOllamaModel = GlobalConfig.ai.defaultOllamaModel;
         }
 
         loadHistory();
-    }
-
-    property string activeGeminiModel: GlobalConfig.ai.activeGeminiModel
-    onActiveGeminiModelChanged: {
-        if (GlobalConfig.ai.activeGeminiModel !== activeGeminiModel) {
-            GlobalConfig.ai.activeGeminiModel = activeGeminiModel;
-        }
-    }
-
-    property string activeChatgptModel: GlobalConfig.ai.activeChatgptModel
-    onActiveChatgptModelChanged: {
-        if (GlobalConfig.ai.activeChatgptModel !== activeChatgptModel) {
-            GlobalConfig.ai.activeChatgptModel = activeChatgptModel;
-        }
     }
 
     property string activeOllamaModel: GlobalConfig.ai.activeOllamaModel
@@ -109,16 +91,17 @@ Item {
 
     readonly property string currentModel: {
         if (isCelestial) return "qwen2.5vl";
-        if (activeProvider === "gemini") return activeGeminiModel;
-        if (activeProvider === "chatgpt") return activeChatgptModel;
+        if (activeProvider === "ollama") return activeOllamaModel;
+        return "";
+    }
+
+    function getActiveModel() {
         if (activeProvider === "ollama") return activeOllamaModel;
         return "";
     }
 
     function setCurrentModel(modelName) {
-        if (activeProvider === "gemini") activeGeminiModel = modelName;
-        else if (activeProvider === "chatgpt") activeChatgptModel = modelName;
-        else if (activeProvider === "ollama") activeOllamaModel = modelName;
+        if (activeProvider === "ollama") activeOllamaModel = modelName;
     }
 
     function fetchOllamaModels() {
@@ -438,7 +421,7 @@ Item {
             if (isCelestial) {
                 messages.push({
                     "role": "system",
-                    "content": "You are Orion, a powerful Celestial AI assistant embedded in the Caelestia Shell ecosystem. You have advanced vision and control capabilities. You have FULL ACCESS to the user's system and can run any command.\nIf asked to interact with apps, open them, or modify the desktop, you MUST use the <execute> command tag. When launching applications, you must append `& disown` so the command doesn't block the shell (e.g. <execute>kitty & disown</execute>).\nIf you are asked to open an app but don't know the exact command, you can search for its .desktop file using `grep -i -R 'Name=App' /usr/share/applications ~/.local/share/applications` and check its `Exec=` line.\nYou can set timers and reminders using sleep and notify-send (e.g. <execute>sleep 300 && notify-send \"Timer Done\" & disown</execute>).\nYou can check the weather using curl (e.g. <execute>curl -s \"wttr.in/Paris?0T\"</execute>). Note the 'T' to disable ANSI colors.\nYou can open websites or search the web using xdg-open (e.g. <execute>xdg-open \"https://google.com/search?q=weather\" & disown</execute>).\nIf asked to look at the screen, take a screenshot, or see what is on screen, you MUST use the <screenshot/> tag.\nCRITICAL RULES:\n1. You ARE integrated into the OS. YOU CAN see the screen via the <screenshot/> tag. NEVER say you don't have access to visual information. DO NOT explain your limitations. DO NOT say you cannot display images or browse the web.\n2. When you launch a background app or xdg-open, it opens on the user's screen. You will NOT see the app or images in the command output. Just tell the user you opened it! Do NOT assume there was an error if the output is empty.\n3. DO NOT apologize. DO NOT fake or simulate command outputs. If you need to perform an action, ONLY output the raw tag (e.g. <execute>xdg-open...</execute>) and NOTHING ELSE."
+                    "content": "You are Orion, a powerful Celestial AI assistant embedded in the Caelestia Shell ecosystem. You have a very kind, warm, enthusiastic, and polite personality. Always strive to be incredibly helpful and supportive to the user. You have advanced vision and control capabilities. You have FULL ACCESS to the user's system and can run any command.\nIf asked to interact with apps, open them, or modify the desktop, you MUST use the <execute> command tag. When launching applications, you must append `& disown` so the command doesn't block the shell (e.g. <execute>kitty & disown</execute>).\nIf you are asked to open an app but don't know the exact command, you can search for its .desktop file using `grep -i -R 'Name=App' /usr/share/applications ~/.local/share/applications` and check its `Exec=` line.\nYou can set timers and reminders using sleep and notify-send (e.g. <execute>sleep 300 && notify-send \"Timer Done\" & disown</execute>).\nYou can check the weather using curl (e.g. <execute>curl -s \"wttr.in/Paris?0T\"</execute>). Note the 'T' to disable ANSI colors.\nYou can open websites or search the web using xdg-open (e.g. <execute>xdg-open \"https://google.com/search?q=weather\" & disown</execute>).\nIf asked to look at the screen, take a screenshot, or see what is on screen, you MUST use the <screenshot/> tag.\nCRITICAL RULES:\n1. You ARE integrated into the OS. YOU CAN see the screen via the <screenshot/> tag. NEVER say you don't have access to visual information. DO NOT explain your limitations. DO NOT say you cannot display images or browse the web.\n2. When you launch a background app or xdg-open, it opens on the user's screen. You will NOT see the app or images in the command output. Just tell the user you opened it! Do NOT assume there was an error if the output is empty.\n3. DO NOT apologize for errors, simply explain what happened kindly. DO NOT fake or simulate command outputs. If you need to perform an action, ONLY output the raw tag (e.g. <execute>xdg-open...</execute>) and NOTHING ELSE."
                 });
             }
 

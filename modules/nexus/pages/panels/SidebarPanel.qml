@@ -72,24 +72,6 @@ PageBase {
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
-            text: qsTr("Enable Gemini")
-            subtext: qsTr("Show Gemini in the provider selection tab")
-            checked: GlobalConfig.ai.enableGemini
-            onToggled: GlobalConfig.ai.enableGemini = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Enable ChatGPT")
-            subtext: qsTr("Show ChatGPT in the provider selection tab")
-            checked: GlobalConfig.ai.enableChatgpt
-            onToggled: GlobalConfig.ai.enableChatgpt = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
             text: qsTr("Enable Ollama")
             subtext: qsTr("Show Ollama in the provider selection tab")
             checked: GlobalConfig.ai.enableOllama
@@ -116,8 +98,6 @@ PageBase {
             Variants {
                 id: providerVariants
                 model: [
-                    { id: "gemini", label: "Gemini" },
-                    { id: "chatgpt", label: "ChatGPT" },
                     { id: "ollama", label: "Ollama" }
                 ]
                 delegate: MenuItem {
@@ -141,18 +121,10 @@ PageBase {
             enabled: !GlobalConfig.ai.enableCelestialMode
             opacity: enabled ? 1 : 0.5
             
-            active: menuItems.find(m => m.modelData === (
-                GlobalConfig.ai.defaultProvider === "gemini" ? GlobalConfig.ai.defaultGeminiModel :
-                GlobalConfig.ai.defaultProvider === "chatgpt" ? GlobalConfig.ai.defaultChatgptModel :
-                GlobalConfig.ai.defaultOllamaModel
-            )) ?? menuItems[0] ?? null
+            active: menuItems.find(m => m.modelData === GlobalConfig.ai.defaultOllamaModel) ?? menuItems[0] ?? null
 
             onSelected: item => {
-                if (GlobalConfig.ai.defaultProvider === "gemini") {
-                    GlobalConfig.ai.defaultGeminiModel = item.modelData;
-                } else if (GlobalConfig.ai.defaultProvider === "chatgpt") {
-                    GlobalConfig.ai.defaultChatgptModel = item.modelData;
-                } else if (GlobalConfig.ai.defaultProvider === "ollama") {
+                if (GlobalConfig.ai.defaultProvider === "ollama") {
                     GlobalConfig.ai.defaultOllamaModel = item.modelData;
                 }
             }
@@ -161,11 +133,7 @@ PageBase {
             Variants {
                 id: modelVariants
                 model: {
-                    if (GlobalConfig.ai.defaultProvider === "gemini") {
-                        return ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
-                    } else if (GlobalConfig.ai.defaultProvider === "chatgpt") {
-                        return ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"];
-                    } else if (GlobalConfig.ai.defaultProvider === "ollama") {
+                    if (GlobalConfig.ai.defaultProvider === "ollama") {
                         return ["llama3", "mistral", "phi3", "gemma"];
                     }
                     return [];

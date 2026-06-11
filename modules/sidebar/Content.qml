@@ -21,8 +21,6 @@ Item {
 
     Connections {
         target: GlobalConfig.ai
-        function onEnableGeminiChanged() { checkAiTab(); }
-        function onEnableChatgptChanged() { checkAiTab(); }
         function onEnableOllamaChanged() { checkAiTab(); }
     }
 
@@ -37,7 +35,7 @@ Item {
     }
 
     function checkAiTab() {
-        if (!GlobalConfig.ai.enableGemini && !GlobalConfig.ai.enableChatgpt && !GlobalConfig.ai.enableOllama) {
+        if (!GlobalConfig.ai.enableOllama) {
             if (root.activeTab === "ai") {
                 root.activeTab = "notifications";
             }
@@ -84,7 +82,7 @@ Item {
                                 var tabs = [
                                     { id: "notifications", label: qsTr("Notifications"), icon: "notifications" }
                                 ];
-                                if (GlobalConfig.ai.enableGemini || GlobalConfig.ai.enableChatgpt || GlobalConfig.ai.enableOllama) {
+                                if (GlobalConfig.ai.enableOllama) {
                                     tabs.push({ id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" });
                                 }
                                 return tabs;
