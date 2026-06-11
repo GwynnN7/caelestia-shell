@@ -13,7 +13,7 @@ ColumnLayout {
 
     required property PopoutState popouts
 
-    property bool _isSidebarOpen: popouts.sidebarOpen
+    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
     function refresh() {
         kb.refresh();

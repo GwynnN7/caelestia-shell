@@ -154,7 +154,7 @@ Item {
     Notifications.Wrapper {
         id: notifications
 
-        property bool shouldPush: popoutsWrapper.offsetScale < 1 && popoutsWrapper.content.currentName !== "dockcontext" && popoutsWrapper.content.currentName !== "dockhover" && !sidebar.visible
+        property bool shouldPush: popoutsWrapper.offsetScale < 1 && !popoutsWrapper.content.isDockPopout && !sidebar.visible
 
         visibilities: root.visibilities
         sidebarPanel: sidebar
@@ -217,6 +217,7 @@ Item {
         screen: root.screen
         bar: root.bar
         borderThickness: root.borderThickness
+        visibilities: root.visibilities
     }
 
     Utilities.Wrapper {
@@ -247,7 +248,9 @@ Item {
         anchors.top: notifications.bottom
         anchors.bottom: utilities.top
         anchors.right: parent.right
-        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : -notifications.anchors.topMargin
-        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
+        property bool shouldPush: popoutsWrapper.offsetScale < 1 && !popoutsWrapper.content.isDockPopout
+
+        anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : -notifications.anchors.topMargin
+        anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
     }
 }

@@ -10,7 +10,7 @@ Column {
     id: root
 
     required property PopoutState popouts
-    property bool _isSidebarOpen: popouts.sidebarOpen
+    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
     spacing: Tokens.spacing.medium
     width: Math.max(Tokens.sizes.bar.batteryWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)

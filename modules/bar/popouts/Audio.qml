@@ -14,7 +14,7 @@ Item {
 
     required property PopoutState popouts
 
-    property bool _isSidebarOpen: popouts.sidebarOpen
+    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
     implicitWidth: Math.max(layout.implicitWidth + Tokens.padding.medium * 2, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
     implicitHeight: layout.implicitHeight + Tokens.padding.medium * 2

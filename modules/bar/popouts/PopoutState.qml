@@ -6,6 +6,7 @@ QtObject {
     property var dockModel: null
     property string selectedClientAddress: ""
     property bool sidebarOpen: false
+    property bool isHorizontal: true
 
     signal detachRequested(mode: string)
 }

@@ -15,6 +15,7 @@ Item {
 
     required property ShellScreen screen
     required property real offsetScale
+    required property DrawerVisibilities visibilities
 
     readonly property alias content: content
     readonly property alias winfo: winfo
@@ -24,6 +25,8 @@ Item {
     readonly property real nonAnimHeight: content.shouldBeActive ? content.implicitHeight : winfo.shouldBeActive ? winfo.implicitHeight : nexus.shouldBeActive ? nexus.implicitHeight : content.implicitHeight
     readonly property Item current: (content.item as Content)?.current ?? null
     readonly property bool isDetached: detachedMode.length > 0
+    readonly property bool sidebarOpen: popoutState.sidebarOpen
+    readonly property bool isDockPopout: currentName === "dockhover" || currentName === "dockcontext" || currentName === "activewindow"
 
     property alias currentName: popoutState.currentName
     property alias hasCurrent: popoutState.hasCurrent
@@ -88,7 +91,8 @@ Item {
     PopoutState {
         id: popoutState
 
-        sidebarOpen: Visibilities.screens.get(Hypr.monitorFor(root.screen))?.sidebar ?? false
+        sidebarOpen: root.visibilities.sidebar
+        isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
         onDetachRequested: mode => root.detach(mode)
     }

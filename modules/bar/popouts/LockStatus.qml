@@ -6,7 +6,7 @@ import qs.services
 ColumnLayout {
     required property PopoutState popouts
 
-    property bool _isSidebarOpen: popouts.sidebarOpen
+    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
     spacing: Tokens.spacing.small
     implicitWidth: _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0

@@ -13,6 +13,7 @@ Item {
     Config.screen: screen.name
     required property var bar
     required property real borderThickness
+    required property DrawerVisibilities visibilities
 
     readonly property alias content: content
     readonly property bool isHorizontal: bar.isHorizontal
@@ -28,6 +29,9 @@ Item {
         if (content.isDetached)
             return (parent.width - content.nonAnimWidth) / 2;
         if (isHorizontal) {
+            if (content.sidebarOpen && !content.isDockPopout)
+                return parent.width - content.nonAnimWidth;
+
             const off = content.currentCenter - parent.leftMargin - content.nonAnimWidth / 2;
             const diff = parent.width - Math.floor(off + content.nonAnimWidth);
             if (diff < 0)
@@ -81,6 +85,7 @@ Item {
 
         screen: root.screen
         offsetScale: root.offsetScale
+        visibilities: root.visibilities
 
         // Apply slide animation margins based on edge
         anchors.leftMargin: bar.position === "left" ? (-implicitWidth - 5) * root.offsetScale : 0

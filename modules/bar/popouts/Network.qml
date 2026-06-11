@@ -18,7 +18,7 @@ ColumnLayout {
     property string view: "wireless" // "wireless" or "ethernet"
     property var passwordNetwork: null
     property bool showPasswordDialog: false
-    property bool _isSidebarOpen: popouts.sidebarOpen
+    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
     spacing: Tokens.spacing.small
     width: Math.max(Tokens.sizes.bar.networkWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)

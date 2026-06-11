@@ -196,9 +196,20 @@ StyledWindow {
             panel: panels.sidebar
             deformAmount: 0.03
             implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
-            exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
-            bottomLeftRadius: Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
-            bottomRightRadius: Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
+            
+            property bool connectedToPopout: (Config.bar.position === "top" || Config.bar.position === "bottom") && panels.popouts.sidebarOpen && panels.popouts.implicitWidth <= Tokens.sizes.sidebar.width + 1 && !panels.popouts.isDockPopout
+            
+            exclude: {
+                let arr = [];
+                if (panels.sidebar.offsetScale <= 0.08) arr.push(utilsBg);
+                if (connectedToPopout) arr.push(popoutBg);
+                return arr;
+            }
+            
+            topLeftRadius: (Config.bar.position === "top" && connectedToPopout) ? 0 : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
+            topRightRadius: (Config.bar.position === "top" && connectedToPopout) ? 0 : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
+            bottomLeftRadius: (Config.bar.position === "bottom" && connectedToPopout) ? 0 : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
+            bottomRightRadius: (Config.bar.position === "bottom" && connectedToPopout) ? 0 : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
         }
 
         PanelBg {
@@ -233,9 +244,12 @@ StyledWindow {
 
             // Extra width/height to prevent dynamic movement deformation partially detaching panel from bar
             property real extraShift: panels.popouts.isDetached ? 0 : 0.2
+            property bool connectedToSidebar: (bar.position === "top" || bar.position === "bottom") && panels.popouts.sidebarOpen && panels.popouts.implicitWidth <= Tokens.sizes.sidebar.width + 1 && !panels.popouts.isDockPopout
 
             panel: panels.popoutsWrapper
-            deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
+            deformAmount: connectedToSidebar ? 0.03 : (panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1)
+            exclude: connectedToSidebar ? [sidebarBg] : []
+            
             x: {
                 const baseX = panels.popoutsWrapper.x + panels.popouts.x + panels.leftMargin;
                 if (bar.position === "left")
@@ -247,15 +261,26 @@ StyledWindow {
                     return panels.popouts.implicitWidth * (1 + extraShift);
                 return panels.popouts.implicitWidth;
             }
+            
+            bottomLeftRadius: (bar.position === "top" && connectedToSidebar) ? 0 : radius
+            bottomRightRadius: (bar.position === "top" && connectedToSidebar) ? 0 : radius
+            topLeftRadius: (bar.position === "bottom" && connectedToSidebar) ? 0 : radius
+            topRightRadius: (bar.position === "bottom" && connectedToSidebar) ? 0 : radius
+
             y: {
                 const baseY = panels.popoutsWrapper.y + panels.popouts.y + panels.topMargin;
                 if (bar.position === "top")
                     return baseY - panels.popouts.implicitHeight * extraShift;
+                if (bar.position === "bottom" && connectedToSidebar)
+                    return baseY - Tokens.spacing.medium - 10;
                 return baseY;
             }
             implicitHeight: {
-                if (bar.position === "top" || bar.position === "bottom")
-                    return panels.popouts.implicitHeight * (1 + extraShift);
+                if (bar.position === "top" || bar.position === "bottom") {
+                    let h = panels.popouts.implicitHeight * (1 + extraShift);
+                    if (connectedToSidebar) h += Tokens.spacing.medium + 10;
+                    return h;
+                }
                 return panels.popouts.implicitHeight;
             }
 

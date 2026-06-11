@@ -39,8 +39,8 @@ Item {
         // Utilities Separator
         StyledRect {
             Layout.row: Config.bar.position === "bottom" ? 0 : (Config.bar.position === "top" ? 2 : 1)
-            Layout.topMargin: Config.bar.position === "bottom" ? 0 : (Tokens.padding.large - layout.rowSpacing)
-            Layout.bottomMargin: Config.bar.position === "bottom" ? (Tokens.padding.large - layout.rowSpacing) : 0
+            Layout.topMargin: Config.bar.position === "bottom" ? 0 : 18
+            Layout.bottomMargin: Config.bar.position === "bottom" ? 18 : 0
             Layout.fillWidth: true
             implicitHeight: 1
 
@@ -51,8 +51,8 @@ Item {
         StyledRect {
             visible: showPopoutSeparator
             Layout.row: Config.bar.position === "bottom" ? 2 : 0
-            Layout.topMargin: Config.bar.position === "top" ? 6 : (Tokens.padding.large - layout.rowSpacing)
-            Layout.bottomMargin: Config.bar.position === "top" ? (Tokens.padding.large - layout.rowSpacing) : 6
+            Layout.topMargin: Config.bar.position === "top" ? 0 : 12
+            Layout.bottomMargin: Config.bar.position === "top" ? 12 : 0
             Layout.fillWidth: true
             implicitHeight: 1
 
