@@ -92,7 +92,22 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const visibilities = Visibilities.getForActive();
+            Visibilities.initialSidebarTab = "notifications";
             visibilities.sidebar = !visibilities.sidebar;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "aiAssistant"
+        description: "Toggle AI Assistant"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const visibilities = Visibilities.getForActive();
+            Visibilities.initialSidebarTab = "ai";
+            visibilities.sidebar = true;
         }
     }
 
@@ -184,6 +199,23 @@ Scope {
             if (list().split("\n").includes(drawer)) {
                 if (root.hasFullscreen && ["launcher", "session", "dashboard"].includes(drawer))
                     return;
+                const visibilities = Visibilities.getForActive();
+                visibilities[drawer] = !visibilities[drawer];
+            } else {
+                console.warn(lc, `Drawer "${drawer}" does not exist`);
+            }
+        }
+
+        function toggleTab(drawer: string, tab: string): void {
+            if (list().split("\n").includes(drawer)) {
+                if (root.hasFullscreen && ["launcher", "session", "dashboard"].includes(drawer))
+                    return;
+                if (drawer === "sidebar" && tab !== "") {
+                    Visibilities.initialSidebarTab = tab;
+                    const visibilities = Visibilities.getForActive();
+                    visibilities.sidebar = true;
+                    return;
+                }
                 const visibilities = Visibilities.getForActive();
                 visibilities[drawer] = !visibilities[drawer];
             } else {

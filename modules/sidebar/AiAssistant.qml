@@ -57,8 +57,58 @@ Item {
     }
     property var ollamaModelsList: []
     property bool isTyping: false
+    onIsTypingChanged: {
+        if (isTyping) listView.positionViewAtEnd();
+    }
+    property bool inAgentLoop: false
+
+    function runAgentCommand(cmd, type) {
+        var processQml = "import QtQuick\n" +
+                         "import Quickshell.Io\n" +
+                         "Process {\n" +
+                         "    id: proc\n" +
+                         "    command: [\"sh\", \"-c\", " + JSON.stringify(cmd) + "]\n" +
+                         "    property string outStr: \"\"\n" +
+                         "    property string errStr: \"\"\n" +
+                         "    property bool hasExited: false\n" +
+                         "    property bool outFinished: false\n" +
+                         "    property bool errFinished: false\n" +
+                         "    function checkDone() {\n" +
+                         "        if (hasExited && outFinished && errFinished) {\n" +
+                         "            root.handleAgentProcessResult(" + JSON.stringify(type) + ", proc.outStr, proc.errStr, " + JSON.stringify(cmd) + ");\n" +
+                         "            proc.destroy();\n" +
+                         "        }\n" +
+                         "    }\n" +
+                         "    stdout: StdioCollector { onStreamFinished: { proc.outStr = text || \"\"; proc.outFinished = true; proc.checkDone(); } }\n" +
+                         "    stderr: StdioCollector { onStreamFinished: { proc.errStr = text || \"\"; proc.errFinished = true; proc.checkDone(); } }\n" +
+                         "    onExited: code => { proc.hasExited = true; proc.checkDone(); }\n" +
+                         "}";
+        var obj = Qt.createQmlObject(processQml, root, "agentProcess");
+        obj.running = true;
+    }
+
+    function handleAgentProcessResult(type, stdout, stderr, cmd) {
+        if (type === "screenshot_take") {
+            var convertCmd = "magick /tmp/orion_screenshot.png -resize '1024x1024>' -quality 85 /tmp/orion_screenshot.jpg && base64 /tmp/orion_screenshot.jpg";
+            runAgentCommand(convertCmd, "screenshot_encode");
+        } else if (type === "screenshot_encode") {
+            var b64 = stdout.replace(/\n/g, "").trim();
+            sendPrompt("Screenshot taken. Analyze the image.", true, b64);
+        } else if (type === "exec") {
+            var outText = stdout.trim();
+            var errText = stderr.trim();
+            if (!outText && !errText) {
+                outText = "(Command completed with no output. If it was a background task, it has been launched successfully.)";
+            }
+            var result = "Command executed: " + cmd + "\nOutput: " + outText + "\nError: " + errText;
+            sendPrompt(result, true);
+        }
+    }
+
+    readonly property bool isCelestial: GlobalConfig.ai.enableCelestialMode
 
     readonly property string currentModel: {
+        if (isCelestial) return "qwen2.5vl";
         if (activeProvider === "gemini") return activeGeminiModel;
         if (activeProvider === "chatgpt") return activeChatgptModel;
         if (activeProvider === "ollama") return activeOllamaModel;
@@ -75,7 +125,7 @@ Item {
         var ollamaUrl = GlobalConfig.ai.ollamaUrl || "http://localhost:11434";
         var xhr = new XMLHttpRequest();
         xhr.open("GET", ollamaUrl + "/api/tags", true);
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     try {
@@ -141,7 +191,8 @@ Item {
 
         try {
             var jsonStr = "[]";
-            if (activeProvider === "gemini") jsonStr = GlobalConfig.ai.geminiHistoryJson;
+            if (isCelestial) jsonStr = GlobalConfig.ai.ollamaHistoryJson; // Celestial shares Ollama history or we can isolate it, let's share
+            else if (activeProvider === "gemini") jsonStr = GlobalConfig.ai.geminiHistoryJson;
             else if (activeProvider === "chatgpt") jsonStr = GlobalConfig.ai.chatgptHistoryJson;
             else if (activeProvider === "ollama") jsonStr = GlobalConfig.ai.ollamaHistoryJson;
 
@@ -153,26 +204,25 @@ Item {
             } else {
                 chatHistory.append({
                     "isUser": false,
-                    "text": "Hello! I am your AI Assistant. How can I help you today?"
+                    "text": isCelestial ? "Greetings. I am Orion, your Celestial AI Assistant. How may I serve you today?" : "Hello! I am your AI Assistant. How can I help you today?"
                 });
             }
         } catch (e) {
             console.log("Error loading chat history: " + e.message);
             chatHistory.append({
                 "isUser": false,
-                "text": "Hello! I am your AI Assistant. How can I help you today?"
+                "text": isCelestial ? "Greetings. I am Orion, your Celestial AI Assistant. How may I serve you today?" : "Hello! I am your AI Assistant. How can I help you today?"
             });
         }
     }
 
     Connections {
         target: GlobalConfig.ai
-        function onSaveChatHistoryChanged() {
-            loadHistory();
-        }
+        function onSaveChatHistoryChanged() { loadHistory(); }
         function onEnableGeminiChanged() { checkActiveProvider(); }
         function onEnableChatgptChanged() { checkActiveProvider(); }
         function onEnableOllamaChanged() { checkActiveProvider(); }
+        function onEnableCelestialModeChanged() { loadHistory(); }
     }
 
     function checkActiveProvider() {
@@ -226,18 +276,21 @@ Item {
         saveHistory();
     }
 
-    function sendPrompt(promptText) {
-        if (!promptText.trim()) return;
+    function sendPrompt(promptText, isSystemToolResult = false, base64Image = null) {
+        if (!promptText.trim() && !base64Image) return;
 
-        chatHistory.append({
-            "isUser": true,
-            "text": promptText
-        });
-        listView.positionViewAtEnd();
-        saveHistory();
+        if (!isSystemToolResult) {
+            chatHistory.append({
+                "isUser": true,
+                "text": promptText
+            });
+            listView.positionViewAtEnd();
+            saveHistory();
+        }
 
         isTyping = true;
-        var provider = activeProvider;
+        inAgentLoop = true;
+        var provider = isCelestial ? "ollama" : activeProvider;
         var xhr = new XMLHttpRequest();
 
         if (provider === "gemini") {
@@ -251,7 +304,7 @@ Item {
             xhr.open("POST", url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
 
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     isTyping = false;
                     if (xhr.status === 200) {
@@ -290,7 +343,7 @@ Item {
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("Authorization", "Bearer " + openaiKey);
 
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     isTyping = false;
                     if (xhr.status === 200) {
@@ -322,29 +375,73 @@ Item {
 
         } else if (provider === "ollama") {
             var ollamaUrl = GlobalConfig.ai.ollamaUrl || "http://localhost:11434";
-            var ollamaModel = GlobalConfig.ai.ollamaModel || "llama3";
+            var ollamaModel = isCelestial ? "qwen2.5vl" : activeOllamaModel;
             var url = ollamaUrl + "/api/chat";
             xhr.open("POST", url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
 
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                    isTyping = false;
                     if (xhr.status === 200) {
                         try {
                             var response = JSON.parse(xhr.responseText);
                             var reply = response.message.content;
-                            addAiMessage(reply);
+
+                            if (isCelestial) {
+                                // Parse Orion Tool Tags
+                                var hasTool = false;
+                                var execMatch = reply.match(/<execute>([\s\S]*?)<\/execute>/);
+                                var screenshotMatch = reply.match(/<screenshot\s*\/>/);
+
+                                var cleanReply = reply.replace(/<execute>[\s\S]*?<\/execute>/g, "").replace(/<screenshot\s*\/>/g, "").trim();
+                                if (cleanReply) {
+                                    addAiMessage(cleanReply);
+                                }
+
+                                if (screenshotMatch) {
+                                    hasTool = true;
+                                    var screenCmd = 'grim -g "$(hyprctl monitors -j | jq -r \'.[] | select(.focused) | "\\(.x),\\(.y) \\(.width)x\\(.height)"\')" /tmp/orion_screenshot.png';
+                                    runAgentCommand(screenCmd, "screenshot_take");
+                                } else if (execMatch && execMatch[1]) {
+                                    hasTool = true;
+                                    var cmd = execMatch[1].trim();
+                                    runAgentCommand(cmd, "exec");
+                                }
+
+                                if (!hasTool) {
+                                    isTyping = false;
+                                    inAgentLoop = false;
+                                }
+                            } else {
+                                addAiMessage(reply);
+                                isTyping = false;
+                                inAgentLoop = false;
+                            }
                         } catch (e) {
                             addAiMessage("Error parsing Ollama response: " + e.message);
+                            isTyping = false;
+                            inAgentLoop = false;
                         }
+                    } else if (xhr.status === 404) {
+                        addAiMessage("Ollama request failed (404 Not Found): The requested model '" + ollamaModel + "' was not found. Please pull it first using 'ollama run " + ollamaModel + "'.");
+                        isTyping = false;
+                        inAgentLoop = false;
                     } else {
-                        addAiMessage("Ollama request failed (status " + xhr.status + "). Make sure Ollama is running at " + ollamaUrl);
+                        addAiMessage("Ollama request failed (status " + xhr.status + "). Make sure Ollama is running at " + ollamaUrl + "\nDetails: " + xhr.responseText);
+                        isTyping = false;
+                        inAgentLoop = false;
                     }
                 }
             };
 
             var messages = [];
+            if (isCelestial) {
+                messages.push({
+                    "role": "system",
+                    "content": "You are Orion, a powerful Celestial AI assistant embedded in the Caelestia Shell ecosystem. You have advanced vision and control capabilities. You have FULL ACCESS to the user's system and can run any command.\nIf asked to interact with apps, open them, or modify the desktop, you MUST use the <execute> command tag. When launching applications, you must append `& disown` so the command doesn't block the shell (e.g. <execute>kitty & disown</execute>).\nIf you are asked to open an app but don't know the exact command, you can search for its .desktop file using `grep -i -R 'Name=App' /usr/share/applications ~/.local/share/applications` and check its `Exec=` line.\nYou can set timers and reminders using sleep and notify-send (e.g. <execute>sleep 300 && notify-send \"Timer Done\" & disown</execute>).\nYou can check the weather using curl (e.g. <execute>curl -s \"wttr.in/Paris?0T\"</execute>). Note the 'T' to disable ANSI colors.\nYou can open websites or search the web using xdg-open (e.g. <execute>xdg-open \"https://google.com/search?q=weather\" & disown</execute>).\nIf asked to look at the screen, take a screenshot, or see what is on screen, you MUST use the <screenshot/> tag.\nCRITICAL RULES:\n1. You ARE integrated into the OS. YOU CAN see the screen via the <screenshot/> tag. NEVER say you don't have access to visual information. DO NOT explain your limitations. DO NOT say you cannot display images or browse the web.\n2. When you launch a background app or xdg-open, it opens on the user's screen. You will NOT see the app or images in the command output. Just tell the user you opened it! Do NOT assume there was an error if the output is empty.\n3. DO NOT apologize. DO NOT fake or simulate command outputs. If you need to perform an action, ONLY output the raw tag (e.g. <execute>xdg-open...</execute>) and NOTHING ELSE."
+                });
+            }
+
             for (var i = 0; i < chatHistory.count; i++) {
                 var msg = chatHistory.get(i);
                 messages.push({
@@ -352,8 +449,20 @@ Item {
                     "content": msg.text
                 });
             }
+
+            if (isSystemToolResult) {
+                var toolMsg = {
+                    "role": "user",
+                    "content": promptText
+                };
+                if (base64Image) {
+                    toolMsg["images"] = [base64Image];
+                }
+                messages.push(toolMsg);
+            }
+
             xhr.send(JSON.stringify({
-                "model": activeOllamaModel,
+                "model": ollamaModel,
                 "messages": messages,
                 "stream": false
             }));
@@ -368,7 +477,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: Tokens.spacing.small
-            visible: providerRepeater.count > 1
+            visible: providerRepeater.count > 1 && !isCelestial
 
             Repeater {
                 id: providerRepeater
@@ -423,18 +532,21 @@ Item {
             Layout.fillWidth: true
             spacing: Tokens.spacing.small
             z: 10
+            visible: !isCelestial
 
             StyledText {
                 text: qsTr("Model:")
                 color: Colours.palette.m3onSurface
                 font: Tokens.font.label.medium
                 Layout.alignment: Qt.AlignVCenter
+                visible: !isCelestial
             }
 
             SplitButton {
                 id: modelSelector
                 Layout.fillWidth: true
                 type: SplitButton.Tonal
+                visible: !isCelestial
 
                 active: menuItems.find(m => m.modelData === root.currentModel) ?? menuItems[0] ?? null
                 menu.onItemSelected: item => {
@@ -490,6 +602,56 @@ Item {
                     flickable: listView
                 }
 
+                footer: Item {
+                    width: listView.width
+                    height: isTyping ? bubbleBg.height + Tokens.spacing.medium : 0
+                    visible: opacity > 0
+                    opacity: isTyping ? 1 : 0
+                    clip: true
+
+                    Behavior on height { Anim { type: Anim.DefaultSpatial } }
+                    Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
+
+                    StyledRect {
+                        id: bubbleBg
+                        y: Tokens.spacing.medium / 2
+                        width: 60
+                        height: 32
+                        radius: Tokens.rounding.large
+                        color: Colours.tPalette.m3surfaceContainerHigh
+
+                        topLeftRadius: Tokens.rounding.large
+                        topRightRadius: Tokens.rounding.large
+                        bottomLeftRadius: 4
+                        bottomRightRadius: Tokens.rounding.large
+
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 4
+
+                            Repeater {
+                                model: 3
+                                delegate: StyledRect {
+                                    required property int index
+                                    width: 6
+                                    height: 6
+                                    radius: 3
+                                    color: Colours.palette.m3onSurfaceVariant
+
+                                    SequentialAnimation on y {
+                                        loops: Animation.Infinite
+                                        running: root.isTyping
+                                        PauseAnimation { duration: index * 200 }
+                                        NumberAnimation { from: 0; to: -4; duration: 400; easing.type: Easing.OutQuad }
+                                        NumberAnimation { from: -4; to: 0; duration: 400; easing.type: Easing.InQuad }
+                                        PauseAnimation { duration: (2 - index) * 200 + 400 }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 delegate: Item {
                     id: delegateItem
 
@@ -542,23 +704,6 @@ Item {
             }
         }
 
-        // Loading/Typing status
-        RowLayout {
-            Layout.fillWidth: true
-            visible: root.isTyping
-            spacing: Tokens.spacing.small
-
-            LoadingIndicator {
-                implicitWidth: 16
-                implicitHeight: 16
-            }
-
-            StyledText {
-                text: qsTr("AI is thinking...")
-                color: Colours.palette.m3outline
-                font: Tokens.font.body.small
-            }
-        }
 
         // Input Box Row
         RowLayout {

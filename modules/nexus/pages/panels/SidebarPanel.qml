@@ -54,6 +54,15 @@ PageBase {
         ToggleRow {
             Layout.fillWidth: true
             first: true
+            text: qsTr("Celestial AI Mode (Orion)")
+            subtext: qsTr("Enable advanced autonomous features using qwen2.5vl")
+            checked: GlobalConfig.ai.enableCelestialMode
+            onToggled: GlobalConfig.ai.enableCelestialMode = checked
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
             text: qsTr("Save chat history")
             subtext: qsTr("Persist conversations across shell restarts")
             checked: GlobalConfig.ai.saveChatHistory
@@ -95,6 +104,8 @@ PageBase {
             subtext: qsTr("AI Provider loaded on startup")
             fallbackIcon: "smart_toy"
             fallbackText: qsTr("Select Provider")
+            enabled: !GlobalConfig.ai.enableCelestialMode
+            opacity: enabled ? 1 : 0.5
             
             active: menuItems.find(m => m.providerId === GlobalConfig.ai.defaultProvider) ?? menuItems[0] ?? null
             onSelected: item => {
@@ -127,6 +138,8 @@ PageBase {
             fallbackIcon: "smart_toy"
             fallbackText: qsTr("Select Model")
             menuOnTop: true
+            enabled: !GlobalConfig.ai.enableCelestialMode
+            opacity: enabled ? 1 : 0.5
             
             active: menuItems.find(m => m.modelData === (
                 GlobalConfig.ai.defaultProvider === "gemini" ? GlobalConfig.ai.defaultGeminiModel :

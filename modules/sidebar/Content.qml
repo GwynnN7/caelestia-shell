@@ -26,6 +26,16 @@ Item {
         function onEnableOllamaChanged() { checkAiTab(); }
     }
 
+    Connections {
+        target: root.visibilities
+        function onSidebarChanged() {
+            if (root.visibilities.sidebar) {
+                root.activeTab = Visibilities.initialSidebarTab;
+                checkAiTab();
+            }
+        }
+    }
+
     function checkAiTab() {
         if (!GlobalConfig.ai.enableGemini && !GlobalConfig.ai.enableChatgpt && !GlobalConfig.ai.enableOllama) {
             if (root.activeTab === "ai") {
@@ -156,17 +166,32 @@ Item {
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    clip: true
 
                     NotifDock {
-                        anchors.fill: parent
-                        visible: root.activeTab === "notifications"
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        x: root.activeTab === "notifications" ? 0 : -width
+                        opacity: root.activeTab === "notifications" ? 1 : 0
+                        visible: opacity > 0
                         props: root.props
                         visibilities: root.visibilities
+                        
+                        Behavior on x { Anim { type: Anim.DefaultSpatial } }
+                        Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
                     }
 
                     AiAssistant {
-                        anchors.fill: parent
-                        visible: root.activeTab === "ai"
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        x: root.activeTab === "ai" ? 0 : width
+                        opacity: root.activeTab === "ai" ? 1 : 0
+                        visible: opacity > 0
+                        
+                        Behavior on x { Anim { type: Anim.DefaultSpatial } }
+                        Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
                     }
                 }
             }
