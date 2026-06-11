@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell
 import Quickshell.Services.Notifications
+import Caelestia
 import Caelestia.Components
 import Caelestia.Config
 import qs.components
@@ -434,7 +435,8 @@ StyledRect {
                     if (!root.expanded)
                         return;
 
-                    Quickshell.execDetached(["app2unit", "-O", "--", link]);
+                    const cmd = CUtils.isSystemd ? ["app2unit", "-O", "--", link] : ["xdg-open", link];
+                    Quickshell.execDetached(cmd);
                     root.modelData.popup = false;
                 }
 

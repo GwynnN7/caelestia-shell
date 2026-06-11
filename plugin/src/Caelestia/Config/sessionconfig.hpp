@@ -2,8 +2,7 @@
 
 #include "configobject.hpp"
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <qfileinfo.h>
 
 namespace caelestia::config {
 
@@ -34,7 +33,14 @@ class SessionCommands : public ConfigObject {
 
 public:
     explicit SessionCommands(QObject* parent = nullptr)
-        : ConfigObject(parent) {}
+        : ConfigObject(parent) {
+        if (!QFileInfo::exists(QStringLiteral("/run/systemd/system"))) {
+            m_logout = { u"hyprctl"_s, u"dispatch"_s, u"exit"_s };
+            m_shutdown = { u"loginctl"_s, u"poweroff"_s };
+            m_hibernate = { u"loginctl"_s, u"hibernate"_s };
+            m_reboot = { u"loginctl"_s, u"reboot"_s };
+        }
+    }
 };
 
 class SessionConfig : public ConfigObject {

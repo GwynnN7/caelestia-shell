@@ -2,9 +2,7 @@
 
 #include "configobject.hpp"
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qvariant.h>
+#include <qfileinfo.h>
 
 namespace caelestia::config {
 
@@ -49,7 +47,17 @@ class GeneralIdle : public ConfigObject {
 
 public:
     explicit GeneralIdle(QObject* parent = nullptr)
-        : ConfigObject(parent) {}
+        : ConfigObject(parent) {
+        if (!QFileInfo::exists(QStringLiteral("/run/systemd/system"))) {
+            for (auto& timeoutVal : m_timeouts) {
+                QVariantMap timeout = timeoutVal.toMap();
+                if (timeout.value(u"idleAction"_s).toStringList() == QStringList{ u"systemctl"_s, u"suspend-then-hibernate"_s }) {
+                    timeout[u"idleAction"_s] = QStringList{ u"loginctl"_s, u"suspend"_s };
+                    timeoutVal = timeout;
+                }
+            }
+        }
+    }
 };
 
 class GeneralBattery : public ConfigObject {

@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.services
@@ -141,7 +142,8 @@ StyledRect {
             wrapMode: Text.WordWrap
 
             onLinkActivated: link => {
-                Quickshell.execDetached(["app2unit", "-O", "--", link]);
+                const cmd = CUtils.isSystemd ? ["app2unit", "-O", "--", link] : ["xdg-open", link];
+                Quickshell.execDetached(cmd);
                 root.visibilities.sidebar = false;
             }
         }

@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.components.controls
@@ -114,17 +115,14 @@ ColumnLayout {
 
                     onClicked: {
                         if (model.entry) {
-                            if (model.entry.runInTerminal) {
-                                Quickshell.execDetached({
-                                    command: ["app2unit", "--", ...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...model.entry.command],
-                                    workingDirectory: model.entry.workingDirectory
-                                });
-                            } else {
-                                Quickshell.execDetached({
-                                    command: ["app2unit", "--", ...model.entry.command],
-                                    workingDirectory: model.entry.workingDirectory
-                                });
-                            }
+                            const subCmd = model.entry.runInTerminal
+                                ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...model.entry.command]
+                                : model.entry.command;
+                            const finalCmd = CUtils.isSystemd ? ["app2unit", "--", ...subCmd] : subCmd;
+                            Quickshell.execDetached({
+                                command: finalCmd,
+                                workingDirectory: model.entry.workingDirectory
+                            });
                         }
                         root.popouts.hasCurrent = false;
                     }

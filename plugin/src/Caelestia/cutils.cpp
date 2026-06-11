@@ -170,4 +170,8 @@ QString CUtils::qtVersion() const {
     return QStringLiteral(QT_VERSION_STR);
 }
 
+bool CUtils::isSystemd() const {
+    return QFileInfo::exists(QStringLiteral("/run/systemd/system"));
+}
+
 } // namespace caelestia

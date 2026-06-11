@@ -2,13 +2,12 @@
 
 #include "configobject.hpp"
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qvariant.h>
+#include <qfileinfo.h>
 
 namespace caelestia::config {
 
 using Qt::StringLiterals::operator""_s;
+
 
 class LauncherUseFuzzy : public ConfigObject {
     Q_OBJECT
@@ -158,7 +157,24 @@ class LauncherConfig : public ConfigObject {
 public:
     explicit LauncherConfig(QObject* parent = nullptr)
         : ConfigObject(parent)
-        , m_useFuzzy(new LauncherUseFuzzy(this)) {}
+        , m_useFuzzy(new LauncherUseFuzzy(this)) {
+        if (!QFileInfo::exists(QStringLiteral("/run/systemd/system"))) {
+            for (auto& actionVal : m_actions) {
+                QVariantMap action = actionVal.toMap();
+                QString name = action.value(u"name"_s).toString();
+                if (name == u"Shutdown"_s) {
+                    action[u"command"_s] = QStringList{ u"loginctl"_s, u"poweroff"_s };
+                } else if (name == u"Reboot"_s) {
+                    action[u"command"_s] = QStringList{ u"loginctl"_s, u"reboot"_s };
+                } else if (name == u"Logout"_s) {
+                    action[u"command"_s] = QStringList{ u"hyprctl"_s, u"dispatch"_s, u"exit"_s };
+                } else if (name == u"Sleep"_s) {
+                    action[u"command"_s] = QStringList{ u"loginctl"_s, u"suspend"_s };
+                }
+                actionVal = action;
+            }
+        }
+    }
 };
 
 } // namespace caelestia::config

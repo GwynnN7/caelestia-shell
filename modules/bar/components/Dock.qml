@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Widgets
+import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.components.effects
@@ -234,17 +235,14 @@ Item {
                                     newLaunching[modelData.appClass || modelData.id] = true;
                                     root.launchingApps = newLaunching;
                                     
-                                    if (modelData.entry.runInTerminal) {
-                                        Quickshell.execDetached({
-                                            command: ["app2unit", "--", ...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData.entry.command],
-                                            workingDirectory: modelData.entry.workingDirectory
-                                        });
-                                    } else {
-                                        Quickshell.execDetached({
-                                            command: ["app2unit", "--", ...modelData.entry.command],
-                                            workingDirectory: modelData.entry.workingDirectory
-                                        });
-                                    }
+                                    const subCmd = modelData.entry.runInTerminal
+                                        ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData.entry.command]
+                                        : modelData.entry.command;
+                                    const finalCmd = CUtils.isSystemd ? ["app2unit", "--", ...subCmd] : subCmd;
+                                    Quickshell.execDetached({
+                                        command: finalCmd,
+                                        workingDirectory: modelData.entry.workingDirectory
+                                    });
                                 }
                             } else if (mouse.button === Qt.RightButton) {
                                 bar.popouts.currentName = "dockcontext";
