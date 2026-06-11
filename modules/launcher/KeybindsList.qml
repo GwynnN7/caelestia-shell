@@ -72,7 +72,7 @@ StyledListView {
 
     spacing: Tokens.spacing.small
     orientation: Qt.Vertical
-    implicitHeight: (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(Config.launcher.maxShown, count) - spacing
+    implicitHeight: Math.max(0, (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(Config.launcher.maxShown, count) - spacing)
 
     preferredHighlightBegin: 0
     preferredHighlightEnd: height
@@ -100,18 +100,18 @@ StyledListView {
     }
 
     Connections {
-        target: Keybinds
-
         function onLoaded() {
             handleKeybindsLoaded();
         }
+
+        target: Keybinds
     }
 
     Connections {
-        target: search
-
         function onTextChanged() {
             handleSearchTextChanged();
         }
+
+        target: search
     }
 }

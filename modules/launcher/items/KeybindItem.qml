@@ -11,6 +11,13 @@ Item {
     required property var list
     required property var modelData
 
+    function clicked() {
+        if (!root.modelData || !root.modelData.action)
+            return;
+        root.list.visibilities.launcher = false;
+        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch " + root.modelData.action]);
+    }
+
     implicitHeight: Tokens.sizes.launcher.itemHeight
 
     anchors.left: parent?.left
@@ -18,6 +25,7 @@ Item {
 
     StateLayer {
         radius: Tokens.rounding.large
+        onClicked: root.clicked()
     }
 
     Item {
@@ -46,15 +54,16 @@ Item {
 
             StyledText {
                 text: (modelData && modelData.bind) ? modelData.bind : qsTr("No keybinds")
+                font.pointSize: Tokens.font.body.medium.pointSize
                 font.weight: 500
-                font.family: Config.appearance.font.family.mono || "monospace"
+                font.family: "monospace"
                 color: Colours.palette.m3onSurface
                 elide: Text.ElideRight
             }
 
             StyledText {
                 text: (modelData && modelData.action) ? modelData.action : ""
-                font.pointSize: Tokens.fontSize.small
+                font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
                 elide: Text.ElideRight
             }

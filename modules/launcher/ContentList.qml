@@ -108,12 +108,17 @@ Item {
             name: "apps"
 
             PropertyChanges {
-                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth
-                root.implicitHeight: Math.min(root.maxHeight, appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight)
-                appList.active: true
+                target: root
+                implicitWidth: root.Tokens.sizes.launcher.itemWidth
+                implicitHeight: Math.min(root.maxHeight, appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight)
+            }
+            PropertyChanges {
+                target: appList
+                active: true
             }
 
             AnchorChanges {
+                target: root
                 anchors.left: root.parent.left
                 anchors.right: root.parent.right
             }
@@ -122,30 +127,43 @@ Item {
             name: "wallpapers"
 
             PropertyChanges {
-                root.implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, wallpaperList.implicitWidth)
-                root.implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56 // Extra space for color buttons
-                wallpaperList.active: true
+                target: root
+                implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, wallpaperList.implicitWidth)
+                implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56 // Extra space for color buttons
+            }
+            PropertyChanges {
+                target: wallpaperList
+                active: true
             }
         },
         State {
             name: "windowSwitcher"
 
             PropertyChanges {
-                root.implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, windowSwitcherList.implicitWidth)
-                root.implicitHeight: root.Tokens.sizes.launcher.windowSwitcherHeight
-                windowSwitcherList.active: true
+                target: root
+                implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, windowSwitcherList.implicitWidth)
+                implicitHeight: root.Tokens.sizes.launcher.windowSwitcherHeight
+            }
+            PropertyChanges {
+                target: windowSwitcherList
+                active: true
             }
         },
         State {
             name: "keybinds"
 
             PropertyChanges {
-                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth
-                root.implicitHeight: Math.min(root.maxHeight, root.Tokens.sizes.launcher.itemHeight * 7)
-                keybindsList.active: true
+                target: root
+                implicitWidth: root.Tokens.sizes.launcher.itemWidth
+                implicitHeight: Math.min(root.maxHeight, root.Tokens.sizes.launcher.itemHeight * 7)
+            }
+            PropertyChanges {
+                target: keybindsList
+                active: true
             }
 
             AnchorChanges {
+                target: root
                 anchors.left: root.parent.left
                 anchors.right: root.parent.right
             }

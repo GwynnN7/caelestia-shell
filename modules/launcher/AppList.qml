@@ -24,7 +24,7 @@ StyledListView {
 
     spacing: Tokens.spacing.small
     orientation: Qt.Vertical
-    implicitHeight: (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(Config.launcher.maxShown, count) - spacing
+    implicitHeight: Math.max(0, (Tokens.sizes.launcher.itemHeight + spacing) * Math.min(Config.launcher.maxShown, count) - spacing)
 
     preferredHighlightBegin: 0
     preferredHighlightEnd: height
@@ -74,47 +74,68 @@ StyledListView {
             name: "apps"
 
             PropertyChanges {
-                model.values: Apps.search(search.text)
-                root.delegate: appItem
+                target: model
+                values: Apps.search(search.text)
+            }
+            PropertyChanges {
+                target: root
+                delegate: appItem
             }
         },
         State {
             name: "actions"
 
             PropertyChanges {
-                model.values: Actions.query(search.text)
-                root.delegate: actionItem
+                target: model
+                values: Actions.query(search.text)
+            }
+            PropertyChanges {
+                target: root
+                delegate: actionItem
             }
         },
         State {
             name: "calc"
 
             PropertyChanges {
-                model.values: [0]
-                root.delegate: calcItem
+                target: model
+                values: [0]
+            }
+            PropertyChanges {
+                target: root
+                delegate: calcItem
             }
         },
         State {
             name: "scheme"
 
             PropertyChanges {
-                model.values: Schemes.query(search.text)
-                root.delegate: schemeItem
+                target: model
+                values: Schemes.query(search.text)
+            }
+            PropertyChanges {
+                target: root
+                delegate: schemeItem
             }
         },
         State {
             name: "variant"
 
             PropertyChanges {
-                model.values: M3Variants.query(search.text)
-                root.delegate: variantItem
+                target: model
+                values: M3Variants.query(search.text)
+            }
+            PropertyChanges {
+                target: root
+                delegate: variantItem
             }
         },
         State {
             name: "emoji"
 
             PropertyChanges {
-                model.values: {
+                target: model
+                values: {
                     const prefix = GlobalConfig.launcher.actionPrefix;
                     const text = root.search.text.slice((prefix + "emoji ").length).toLowerCase();
                     if (!text)
@@ -123,14 +144,18 @@ StyledListView {
                         return item.name.toLowerCase().includes(text);
                     });
                 }
-                root.delegate: emojiItem
+            }
+            PropertyChanges {
+                target: root
+                delegate: emojiItem
             }
         },
         State {
             name: "clipboard"
 
             PropertyChanges {
-                model.values: {
+                target: model
+                values: {
                     const prefix = GlobalConfig.launcher.actionPrefix;
                     const text = root.search.text.slice((prefix + "clipboard ").length).toLowerCase();
                     if (!text)
@@ -139,15 +164,22 @@ StyledListView {
                         return item.preview.toLowerCase().includes(text);
                     });
                 }
-                root.delegate: clipItem
+            }
+            PropertyChanges {
+                target: root
+                delegate: clipItem
             }
         },
         State {
             name: "windows"
 
             PropertyChanges {
-                model.values: Windows.items
-                root.delegate: windowsItem
+                target: model
+                values: Windows.items
+            }
+            PropertyChanges {
+                target: root
+                delegate: windowsItem
             }
         }
     ]
