@@ -222,10 +222,10 @@ Singleton {
             return "forum";
         if (name === "music")
             return "music_cast";
-        if (name === "todo")
-            return "checklist";
+        if (name === "gaming")
+            return "stadia_controller";
         if (name === "sysmon")
-            return "list_alt";
+            return "browse_activity";
         return name[0].toUpperCase();
     }
 
@@ -242,10 +242,10 @@ Singleton {
             return "chat_bubble";
         if (name === "music")
             return "music_note_2";
-        if (name === "todo")
-            return "checklist";
+        if (name === "gaming")
+            return "stadia_controller";
         if (name === "sysmon")
-            return "list_alt";
+            return "browse_activity";
         return name[0].toUpperCase();
     }
 
