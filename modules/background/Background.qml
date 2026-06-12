@@ -79,11 +79,13 @@ Variants {
             anchors.topMargin: Config.bar.position === "top" ? clockBaseMargin + clockBarZone : clockBaseMargin
             anchors.bottomMargin: Config.bar.position === "bottom" ? clockBaseMargin + clockBarZone : clockBaseMargin
 
+            anchors.horizontalCenterOffset: Config.bar.position === "left" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "right" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
+            anchors.verticalCenterOffset: Config.bar.position === "top" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "bottom" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
+
             state: Config.background.desktopClock.position
             states: [
                 State {
                     name: "top-left"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.top: parent.top
@@ -92,7 +94,6 @@ Variants {
                 },
                 State {
                     name: "top-center"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.top: parent.top
@@ -101,7 +102,6 @@ Variants {
                 },
                 State {
                     name: "top-right"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.top: parent.top
@@ -110,7 +110,6 @@ Variants {
                 },
                 State {
                     name: "middle-left"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.verticalCenter: parent.verticalCenter
@@ -119,7 +118,6 @@ Variants {
                 },
                 State {
                     name: "middle-center"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.verticalCenter: parent.verticalCenter
@@ -128,7 +126,6 @@ Variants {
                 },
                 State {
                     name: "middle-right"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.verticalCenter: parent.verticalCenter
@@ -137,7 +134,6 @@ Variants {
                 },
                 State {
                     name: "bottom-left"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.bottom: parent.bottom
@@ -146,7 +142,6 @@ Variants {
                 },
                 State {
                     name: "bottom-center"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.bottom: parent.bottom
@@ -155,7 +150,6 @@ Variants {
                 },
                 State {
                     name: "bottom-right"
-
                     AnchorChanges {
                         target: clockLoader
                         anchors.bottom: parent.bottom
@@ -179,7 +173,7 @@ Variants {
             id: lyricsLoader
 
             readonly property int lyricsBarZone: Visibilities.bars.get(win.modelData.name)?.exclusiveZone ?? (Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness))
-            readonly property int lyricsBaseMargin: Tokens.padding.large * 2
+            readonly property int lyricsBaseMargin: Tokens.padding.extraLarge * 2
 
             asynchronous: true
             active: Config.background.desktopLyrics.enabled
@@ -190,11 +184,13 @@ Variants {
             anchors.topMargin: Config.bar.position === "top" ? lyricsBaseMargin + lyricsBarZone : lyricsBaseMargin
             anchors.bottomMargin: Config.bar.position === "bottom" ? lyricsBaseMargin + lyricsBarZone : lyricsBaseMargin
 
+            anchors.horizontalCenterOffset: Config.bar.position === "left" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "right" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
+            anchors.verticalCenterOffset: Config.bar.position === "top" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "bottom" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
+
             state: Config.background.desktopLyrics.position
             states: [
                 State {
                     name: "top-left"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.top: parent.top
@@ -203,7 +199,6 @@ Variants {
                 },
                 State {
                     name: "top-center"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.top: parent.top
@@ -212,7 +207,6 @@ Variants {
                 },
                 State {
                     name: "top-right"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.top: parent.top
@@ -221,7 +215,6 @@ Variants {
                 },
                 State {
                     name: "middle-left"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.verticalCenter: parent.verticalCenter
@@ -230,7 +223,6 @@ Variants {
                 },
                 State {
                     name: "middle-center"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.verticalCenter: parent.verticalCenter
@@ -239,7 +231,6 @@ Variants {
                 },
                 State {
                     name: "middle-right"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.verticalCenter: parent.verticalCenter
@@ -248,7 +239,6 @@ Variants {
                 },
                 State {
                     name: "bottom-left"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.bottom: parent.bottom
@@ -257,7 +247,6 @@ Variants {
                 },
                 State {
                     name: "bottom-center"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.bottom: parent.bottom
@@ -266,7 +255,6 @@ Variants {
                 },
                 State {
                     name: "bottom-right"
-
                     AnchorChanges {
                         target: lyricsLoader
                         anchors.bottom: parent.bottom
