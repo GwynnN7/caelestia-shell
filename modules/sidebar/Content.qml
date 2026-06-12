@@ -67,7 +67,7 @@ Item {
                 Item {
                     id: headerContainer
                     Layout.fillWidth: true
-                    implicitHeight: 48
+                    implicitHeight: 64
                     clip: true
 
                     RowLayout {
@@ -85,6 +85,7 @@ Item {
                                 if (GlobalConfig.ai.enableOllama) {
                                     tabs.push({ id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" });
                                 }
+                                tabs.push({ id: "news", label: qsTr("News"), icon: "newspaper" });
                                 return tabs;
                             }
 
@@ -107,11 +108,12 @@ Item {
                                     onClicked: root.activeTab = tabBtn.modelData.id
                                 }
 
-                                RowLayout {
+                                ColumnLayout {
                                     anchors.centerIn: parent
-                                    spacing: Tokens.spacing.extraSmall
+                                    spacing: Tokens.spacing.extraSmall - 2
 
                                     MaterialIcon {
+                                        Layout.alignment: Qt.AlignHCenter
                                         text: tabBtn.modelData.icon
                                         color: tabBtn.active ? Colours.palette.m3primary : stateLayer.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                                         fontStyle: Tokens.font.icon.small
@@ -120,6 +122,7 @@ Item {
                                     }
 
                                     StyledText {
+                                        Layout.alignment: Qt.AlignHCenter
                                         text: tabBtn.modelData.label
                                         color: tabBtn.active ? Colours.palette.m3primary : stateLayer.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                                         font: Tokens.font.label.medium
@@ -135,9 +138,16 @@ Item {
                         anchors.verticalCenter: parent.bottom
                         implicitHeight: 6
                         
+                        property int activeIndex: {
+                            var arr = tabRepeater.model;
+                            for (var i = 0; i < arr.length; i++) {
+                                if (arr[i].id === root.activeTab) return i;
+                            }
+                            return 0;
+                        }
                         readonly property real tabWidth: (headerContainer.width - Tokens.padding.medium * 2) / tabRepeater.count
                         width: tabWidth - Tokens.padding.medium * 2
-                        x: Tokens.padding.medium + (root.activeTab === "notifications" ? 0 : tabWidth) + (tabWidth - width) / 2
+                        x: Tokens.padding.medium + activeIndex * tabWidth + (tabWidth - width) / 2
 
                         clip: true
 
@@ -166,6 +176,8 @@ Item {
                     Layout.fillHeight: true
                     clip: true
 
+                    property int activeIndex: indicator.activeIndex
+
                     NotifDock {
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
@@ -184,8 +196,20 @@ Item {
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         width: parent.width
-                        x: root.activeTab === "ai" ? 0 : width
+                        x: root.activeTab === "ai" ? 0 : (indicator.activeIndex < 1 ? width : -width)
                         opacity: root.activeTab === "ai" ? 1 : 0
+                        visible: opacity > 0
+                        
+                        Behavior on x { Anim { type: Anim.DefaultSpatial } }
+                        Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
+                    }
+
+                    News {
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        x: root.activeTab === "news" ? 0 : width
+                        opacity: root.activeTab === "news" ? 1 : 0
                         visible: opacity > 0
                         
                         Behavior on x { Anim { type: Anim.DefaultSpatial } }
