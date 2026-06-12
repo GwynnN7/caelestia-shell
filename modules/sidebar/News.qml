@@ -1,18 +1,27 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
+import Quickshell
+import Caelestia
+import Caelestia.Config
 import qs.components
 import qs.components.controls
-import Caelestia.Config
+import qs.services
 
 Item {
     id: root
 
     property bool isFetching: false
     property string errorMessage: ""
+    
+    // Bind colors at the root to avoid delegate scope resolution issues
+    readonly property color cBgHigh: Colours.tPalette.m3surfaceContainerHigh
+    readonly property color cBgHighest: Colours.tPalette.m3surfaceContainerHighest
+    readonly property color cOnSurface: Colours.palette.m3onSurface
+    readonly property color cOnSurfaceVariant: Colours.palette.m3onSurfaceVariant
+    readonly property color cError: Colours.palette.m3error
 
-    ListModel {
-        id: newsModel
-    }
+    Component.onCompleted: fetchNews()
 
     function fetchNews() {
         if (isFetching) return;
@@ -73,7 +82,9 @@ Item {
         }
     }
 
-    Component.onCompleted: fetchNews()
+    ListModel {
+        id: newsModel
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -89,12 +100,11 @@ Item {
                 Layout.fillWidth: true
                 text: qsTr("Arch Linux News")
                 font: Tokens.font.title.medium
-                color: Colours.palette.m3onSurface
+                color: root.cOnSurface
             }
             
-            StyledIconButton {
+            IconButton {
                 icon: "refresh"
-                tooltip: qsTr("Refresh")
                 onClicked: fetchNews()
             }
         }
@@ -104,7 +114,7 @@ Item {
             Layout.fillWidth: true
             visible: root.errorMessage !== ""
             text: root.errorMessage
-            color: Colours.palette.m3error
+            color: root.cError
             wrapMode: Text.WordWrap
         }
 
@@ -117,12 +127,14 @@ Item {
             StyledText {
                 anchors.centerIn: parent
                 text: qsTr("Fetching latest news...")
-                color: Colours.palette.m3onSurfaceVariant
+                color: root.cOnSurfaceVariant
             }
         }
 
         // List
         ListView {
+            id: newsListView
+
             Layout.fillWidth: true
             Layout.fillHeight: true
             model: newsModel
@@ -130,44 +142,50 @@ Item {
             clip: true
             visible: !root.isFetching || newsModel.count > 0
             
-            ScrollBar.vertical: StyledScrollBar {}
+            ScrollBar.vertical: StyledScrollBar { flickable: newsListView }
 
             delegate: StyledRect {
+                id: delegateItem
+
+                required property string title
+                required property string link
+                required property string date
+
                 width: ListView.view.width
                 implicitHeight: col.implicitHeight + Tokens.padding.medium * 2
                 radius: Tokens.rounding.medium
                 
-                color: ma.containsMouse ? Colours.tPalette.m3surfaceContainerHighest : Colours.tPalette.m3surfaceContainerHigh
-
-                Behavior on color { Anim { type: Anim.DefaultColor } }
+                color: ma.containsMouse ? root.cBgHighest : root.cBgHigh
 
                 MouseArea {
                     id: ma
+
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Qt.openUrlExternally(model.link)
+                    onClicked: Qt.openUrlExternally(delegateItem.link)
                 }
 
                 ColumnLayout {
                     id: col
+
                     anchors.fill: parent
                     anchors.margins: Tokens.padding.medium
                     spacing: Tokens.spacing.extraSmall
 
                     StyledText {
                         Layout.fillWidth: true
-                        text: model.title
+                        text: delegateItem.title
                         font: Tokens.font.label.large
-                        color: Colours.palette.m3onSurface
+                        color: root.cOnSurface
                         wrapMode: Text.WordWrap
                     }
 
                     StyledText {
                         Layout.fillWidth: true
-                        text: model.date
+                        text: delegateItem.date
                         font: Tokens.font.body.small
-                        color: Colours.palette.m3onSurfaceVariant
+                        color: root.cOnSurfaceVariant
                     }
                 }
             }

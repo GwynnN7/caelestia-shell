@@ -67,7 +67,7 @@ Item {
                 Item {
                     id: headerContainer
                     Layout.fillWidth: true
-                    implicitHeight: 48
+                    implicitHeight: 64
                     clip: true
 
                     RowLayout {
@@ -108,11 +108,12 @@ Item {
                                     onClicked: root.activeTab = tabBtn.modelData.id
                                 }
 
-                                RowLayout {
+                                ColumnLayout {
                                     anchors.centerIn: parent
-                                    spacing: Tokens.spacing.extraSmall
+                                    spacing: Tokens.spacing.extraSmall - 2
 
                                     MaterialIcon {
+                                        Layout.alignment: Qt.AlignHCenter
                                         text: tabBtn.modelData.icon
                                         color: tabBtn.active ? Colours.palette.m3primary : stateLayer.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                                         fontStyle: Tokens.font.icon.small
@@ -121,6 +122,7 @@ Item {
                                     }
 
                                     StyledText {
+                                        Layout.alignment: Qt.AlignHCenter
                                         text: tabBtn.modelData.label
                                         color: tabBtn.active ? Colours.palette.m3primary : stateLayer.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                                         font: Tokens.font.label.medium
