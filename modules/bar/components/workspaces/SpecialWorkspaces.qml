@@ -111,6 +111,23 @@ Item {
 
         model: ScriptModel {
             values: Hypr.workspaces.values.filter(w => w.name.startsWith("special:") && (!GlobalConfig.bar.workspaces.perMonitorWorkspaces || w.monitor === root.monitor))
+            values: (function() {
+                const specials = Hypr.workspaces.values.filter(w => w.name.startsWith("special:") && (!GlobalConfig.bar.workspaces.perMonitorWorkspaces || w.monitor === root.monitor));
+                const ordered = [];
+
+                const commIdx = specials.findIndex(w => w.name === "special:communication");
+                if (commIdx !== -1)
+                    ordered.push(specials.splice(commIdx, 1)[0]);
+
+                const musicIdx = specials.findIndex(w => w.name === "special:music");
+                if (musicIdx !== -1)
+                    ordered.push(specials.splice(musicIdx, 1)[0]);
+
+                for (const s of specials)
+                    ordered.push(s);
+
+                return ordered;
+            })()
         }
 
         preferredHighlightBegin: 0

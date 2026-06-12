@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Caelestia.Config
 import qs.components
 import qs.services
@@ -107,6 +108,48 @@ StyledClippingRect {
                     Hypr.dispatch(`workspace ${ws}`);
                 else
                     Hypr.dispatch("togglespecialworkspace special");
+                    hyprClientsProc.running = true;
+            }
+        }
+
+        Process {
+            id: hyprClientsProc
+
+            running: false
+            command: ["hyprctl", "clients", "-j"]
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    try {
+                        const clients = JSON.parse(text || "[]");
+
+                        let foundComm = false;
+                        let foundMusic = false;
+
+                        for (const c of clients) {
+                            const cls = (c.class ?? "").toLowerCase();
+
+                            if (cls === "org.telegram.desktop" || cls === "vesktop") {
+                                foundComm = true;
+                                break;
+                            }
+
+                            if (cls === "tidal-hifi") {
+                                foundMusic = true;
+                            }
+                        }
+
+                        if (foundComm)
+                            Hypr.dispatch("togglespecialworkspace communication");
+                        else if (foundMusic)
+                            Hypr.dispatch("togglespecialworkspace music");
+                        else
+                            Hypr.dispatch("togglespecialworkspace special");
+                    } catch (e) {
+                        Hypr.dispatch("togglespecialworkspace special");
+                    } finally {
+                        hyprClientsProc.running = false;
+                    }
+                }
             }
         }
 
@@ -115,9 +158,7 @@ StyledClippingRect {
         }
 
         Behavior on opacity {
-            Anim {
-                type: Anim.DefaultEffects
-            }
+            Anim {}
         }
     }
 
