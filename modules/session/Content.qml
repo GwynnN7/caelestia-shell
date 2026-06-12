@@ -19,12 +19,13 @@ Column {
     spacing: Tokens.spacing.large
 
     SessionButton {
-        id: logout
+        id: shutdown
 
-        icon: Config.session.icons.logout
-        command: Config.session.commands.logout
+        icon: Config.session.icons.shutdown
+        command: Config.session.commands.shutdown
 
-        KeyNavigation.down: shutdown
+        KeyNavigation.up: bios
+        KeyNavigation.down: reboot
 
         Component.onCompleted: forceActiveFocus()
 
@@ -39,45 +40,80 @@ Column {
     }
 
     SessionButton {
-        id: shutdown
-
-        icon: Config.session.icons.shutdown
-        command: Config.session.commands.shutdown
-
-        KeyNavigation.up: logout
-        KeyNavigation.down: hibernate
-    }
-
-    AnimatedImage {
-        width: Tokens.sizes.session.button
-        height: Tokens.sizes.session.button
-        sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
-
-        playing: visible
-        asynchronous: true
-        speed: Config.general.sessionGifSpeed
-        source: Config.paths.sessionGif !== "" ? Paths.absolutePath(Config.paths.sessionGif) : ""
-        fillMode: AnimatedImage.PreserveAspectFit
-        visible: Config.paths.sessionGif !== ""
-    }
-
-    SessionButton {
-        id: hibernate
-
-        icon: Config.session.icons.hibernate
-        command: Config.session.commands.hibernate
-
-        KeyNavigation.up: shutdown
-        KeyNavigation.down: reboot
-    }
-
-    SessionButton {
         id: reboot
 
         icon: Config.session.icons.reboot
         command: Config.session.commands.reboot
 
-        KeyNavigation.up: hibernate
+        KeyNavigation.up: shutdown
+        KeyNavigation.down: suspend
+    }
+
+
+    SessionButton {
+        id: suspend
+
+        icon: Config.session.icons.suspend
+        command: Config.session.commands.suspend
+
+        KeyNavigation.up: reboot
+        KeyNavigation.down: logout
+    }
+
+    Image {
+        width: Tokens.sizes.session.button
+        height: Tokens.sizes.session.button
+        sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
+
+        source: Config.paths.sessionGif !== "" ? Paths.absolutePath(Config.paths.sessionGif) : ""
+        fillMode: AnimatedImage.PreserveAspectFit
+        visible: Config.paths.sessionGif !== ""
+
+        StateLayer {
+            radius: width / 2
+            
+            onClicked: (mouse) => {
+                if (mouse.button === Qt.RightButton) {
+                    Quickshell.execDetached(Config.session.commands.generic);
+                } else if(mouse.button === Qt.MiddleButton) {
+                    Quickshell.execDetached(Config.session.commands.automode);
+                }
+                else {
+                    Quickshell.execDetached(Config.session.commands.lamp);
+                }
+                mouse.accepted = true;
+            }
+        }
+    }
+
+    SessionButton {
+        id: logout
+
+        icon: Config.session.icons.logout
+        command: Config.session.commands.logout
+
+        KeyNavigation.up: suspend
+        KeyNavigation.down: windows
+    }    
+
+    SessionButton {
+        id: windows
+
+        icon: Config.session.icons.windows
+        command: Config.session.commands.windows
+
+        KeyNavigation.up: logout
+        KeyNavigation.down: bios
+    }
+
+    SessionButton {
+        id: bios
+
+        icon: Config.session.icons.bios
+        command: Config.session.commands.bios
+
+        KeyNavigation.up: windows
+        KeyNavigation.down: shutdown
     }
 
     component SessionButton: IconButton {
