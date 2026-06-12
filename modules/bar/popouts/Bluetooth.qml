@@ -123,10 +123,21 @@ ColumnLayout {
                 elide: Text.ElideRight
             }
 
-            MaterialIcon {
+            RowLayout {
                 visible: device.modelData.state === BluetoothDeviceState.Connected  // qmllint disable unresolved-type
-                text: device.modelData.batteryAvailable ? Icons.getBatteryIcon(device.modelData.battery) : "battery_alert"
-                color: device.modelData.batteryAvailable && device.modelData.battery < 0.2 ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
+                spacing: Tokens.spacing.extraSmall
+
+                MaterialIcon {
+                    text: device.modelData.batteryAvailable ? Icons.getBatteryIcon(device.modelData.battery) : "battery_alert"
+                    color: device.modelData.batteryAvailable && device.modelData.battery < 0.2 ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
+                }
+
+                StyledText {
+                    visible: device.modelData.batteryAvailable // qmllint disable unresolved-type
+                    text: device.modelData.batteryAvailable ? qsTr("%1%").arg(Math.round(device.modelData.battery * 100)) : "" // qmllint disable unresolved-type
+                    font: Tokens.font.body.small
+                    color: device.modelData.batteryAvailable && device.modelData.battery < 0.2 ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
+                }
             }
 
             StyledRect {

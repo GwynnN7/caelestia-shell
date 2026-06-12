@@ -218,13 +218,14 @@ StyledRect {
                 columnSpacing: Tokens.spacing.medium / 2
                 rowSpacing: Tokens.spacing.medium / 2
 
-                // Bluetooth icon (only shown when no devices are connected)
+                // Bluetooth icon
                 MaterialIcon {
-                    visible: connectedDevicesRepeater.count === 0
                     animate: true
                     text: {
                         if (!Bluetooth.defaultAdapter?.enabled) // qmllint disable unresolved-type
                             return "bluetooth_disabled";
+                        if (Bluetooth.devices.values.some(d => d.connected)) // qmllint disable unresolved-type
+                            return "bluetooth_connected";
                         return "bluetooth";
                     }
                     color: root.colour
@@ -232,27 +233,22 @@ StyledRect {
 
                 // Connected bluetooth devices
                 Repeater {
-                    id: connectedDevicesRepeater
                     model: ScriptModel {
                         values: Bluetooth.devices.values.filter(d => d.state !== BluetoothDeviceState.Disconnected) // qmllint disable unresolved-type
                     }
 
                     MaterialIcon {
-                        id: deviceIcon
+                        id: device
 
                         required property BluetoothDevice modelData
 
                         animate: true
-                        text: {
-                            if (deviceIcon.modelData?.batteryAvailable) // qmllint disable unresolved-type
-                                return "headphones_battery";
-                            return Icons.getBluetoothIcon(deviceIcon.modelData?.icon);
-                        }
-                        color: (deviceIcon.modelData?.batteryAvailable && deviceIcon.modelData.battery < 0.2) ? Colours.palette.m3error : root.colour // qmllint disable unresolved-type
-                        fill: deviceIcon.modelData?.batteryAvailable ? deviceIcon.modelData.battery : 1 // qmllint disable unresolved-type
+                        text: Icons.getBluetoothIcon(modelData?.icon)
+                        color: root.colour
+                        fill: 1
 
                         SequentialAnimation on opacity {
-                            running: deviceIcon.modelData?.state !== BluetoothDeviceState.Connected // qmllint disable unresolved-type
+                            running: device.modelData?.state !== BluetoothDeviceState.Connected // qmllint disable unresolved-type
                             alwaysRunToEnd: true
                             loops: Animation.Infinite
 
