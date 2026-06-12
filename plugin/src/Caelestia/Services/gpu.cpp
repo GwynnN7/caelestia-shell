@@ -168,22 +168,72 @@ void Gpu::readGenericUsage() {
     const QStringList paths =
         QDir(QStringLiteral("/sys/class/drm"))
             .entryList(QStringList() << QStringLiteral("card*"), QDir::Dirs | QDir::NoDotAndDotDot);
+    
     qreal sum = 0.0;
     int count = 0;
+    
     for (const QString& card : paths) {
-        QFile f(QStringLiteral("/sys/class/drm/%1/device/gpu_busy_percent").arg(card));
-        if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        const QString baseDevicePath = QStringLiteral("/sys/class/drm/%1/device").arg(card);
+
+        QFile fUtil(baseDevicePath + QStringLiteral("/gpu_busy_percent"));
+        if (!fUtil.open(QIODevice::ReadOnly | QIODevice::Text)) {
             continue;
         }
-        bool ok = false;
-        const qreal v = f.readAll().trimmed().toDouble(&ok);
-        f.close();
-        if (ok) {
-            sum += v;
-            ++count;
+        bool okUtil = false;
+        const qreal util = fUtil.readAll().trimmed().toDouble(&okUtil);
+        fUtil.close();
+        
+        if (!okUtil) {
+            continue;
         }
+
+        qreal effectiveLoad = util; 
+
+        QDir hwmonBase(baseDevicePath + QStringLiteral("/hwmon"));
+        const QStringList hwmonDirs = hwmonBase.entryList(QStringList() << QStringLiteral("hwmon*"), QDir::Dirs | QDir::NoDotAndDotDot);
+
+        if (!hwmonDirs.isEmpty()) {
+            const QString hwmonPath = hwmonBase.absoluteFilePath(hwmonDirs.first());
+
+            qreal powerCur = 0.0;
+            bool okCur = false;
+            QFile fPowerAvg(hwmonPath + QStringLiteral("/power1_average"));
+            if (fPowerAvg.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                powerCur = fPowerAvg.readAll().trimmed().toDouble(&okCur);
+                fPowerAvg.close();
+            }
+            if (!okCur) {
+                QFile fPowerInput(hwmonPath + QStringLiteral("/power1_input"));
+                if (fPowerInput.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    powerCur = fPowerInput.readAll().trimmed().toDouble(&okCur);
+                    fPowerInput.close();
+                }
+            }
+
+            qreal powerMax = 0.0;
+            bool okMax = false;
+            QFile fPowerCap(hwmonPath + QStringLiteral("/power1_cap"));
+            if (fPowerCap.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                powerMax = fPowerCap.readAll().trimmed().toDouble(&okMax);
+                fPowerCap.close();
+            }
+
+            if (okCur && okMax && powerMax > 0.0) {
+                const qreal powerFactor = powerCur / powerMax;
+                effectiveLoad = util * powerFactor;
+                
+                if (effectiveLoad > 100.0) {
+                    effectiveLoad = 100.0;
+                }
+            }
+        }
+
+        sum += effectiveLoad;
+        ++count;
     }
+    
     const qreal newPerc = count > 0 ? sum / count / 100.0 : 0.0;
+    
     if (std::abs(newPerc - m_percentage) > 0.0001) {
         m_percentage = newPerc;
         Q_EMIT percentageChanged();
