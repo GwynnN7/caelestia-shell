@@ -107,7 +107,6 @@ StyledClippingRect {
                 if (Hypr.activeWsId !== ws)
                     Hypr.dispatch(`workspace ${ws}`);
                 else
-                    Hypr.dispatch("togglespecialworkspace special");
                     hyprClientsProc.running = true;
             }
         }
@@ -124,6 +123,7 @@ StyledClippingRect {
 
                         let foundComm = false;
                         let foundMusic = false;
+                        let foundGaming = false;
 
                         for (const c of clients) {
                             const cls = (c.class ?? "").toLowerCase();
@@ -135,6 +135,12 @@ StyledClippingRect {
 
                             if (cls === "tidal-hifi") {
                                 foundMusic = true;
+                                break;
+                            }
+
+                            if (cls === "steam") {
+                                foundGaming = true;
+                                break;
                             }
                         }
 
@@ -142,6 +148,8 @@ StyledClippingRect {
                             Hypr.dispatch("togglespecialworkspace communication");
                         else if (foundMusic)
                             Hypr.dispatch("togglespecialworkspace music");
+                        else if (foundGaming)
+                            Hypr.dispatch("togglespecialworkspace gaming");
                         else
                             Hypr.dispatch("togglespecialworkspace special");
                     } catch (e) {
