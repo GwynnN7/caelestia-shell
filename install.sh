@@ -69,28 +69,6 @@ cmake -B build "${CMAKE_ARGS[@]}"
 echo -e "${BLUE}[3/4] Compiling QML and C++ plugins...${NC}"
 cmake --build build
 
-# 5. Clean up hijacked legacy dynamic libraries from /usr/lib
-echo -e "${BLUE}[4/4] Cleaning legacy libs and installing system-wide...${NC}"
-# In old versions, backing .so libraries were installed directly to component dirs,
-# which hijacks the loading of the newly compiled libraries located under Caelestia/lib.
-legacy_libs=(
-    "/usr/lib/qt6/qml/Caelestia/Components/libcaelestia-components.so"
-    "/usr/lib/qt6/qml/Caelestia/Config/libcaelestia-config.so"
-    "/usr/lib/qt6/qml/Caelestia/Internal/libcaelestia-internal.so"
-    "/usr/lib/qt6/qml/Caelestia/Models/libcaelestia-models.so"
-    "/usr/lib/qt6/qml/Caelestia/Services/libcaelestia-services.so"
-    "/usr/lib/qt6/qml/Caelestia/Blobs/libcaelestia-blobs.so"
-    "/usr/lib/qt6/qml/Caelestia/Images/libcaelestia-images.so"
-    "/usr/lib/qt6/qml/Caelestia/libcaelestia.so"
-)
-
-for lib in "${legacy_libs[@]}"; do
-    if [ -f "$lib" ]; then
-        echo -e "${YELLOW}Removing leftover library: $lib${NC}"
-        sudo rm -f "$lib"
-    fi
-done
-
 sudo cmake --install "$(pwd)/build"
 
 echo -e "${GREEN}===================================================${NC}"
