@@ -12,10 +12,12 @@ class SessionIcons : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
 
-    CONFIG_PROPERTY(QString, logout, u"logout"_s)
     CONFIG_PROPERTY(QString, shutdown, u"power_settings_new"_s)
-    CONFIG_PROPERTY(QString, hibernate, u"downloading"_s)
+    CONFIG_PROPERTY(QString, logout, u"logout"_s)
+    CONFIG_PROPERTY(QString, suspend, u"bedtime"_s)
     CONFIG_PROPERTY(QString, reboot, u"cached"_s)
+    CONFIG_PROPERTY(QString, windows, u"window"_s)
+    CONFIG_PROPERTY(QString, bios, u"memory"_s)
 
 public:
     explicit SessionIcons(QObject* parent = nullptr)
@@ -26,20 +28,19 @@ class SessionCommands : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
 
-    CONFIG_PROPERTY(QStringList, logout, { u"loginctl"_s, u"terminate-user"_s, u""_s })
     CONFIG_PROPERTY(QStringList, shutdown, { u"systemctl"_s, u"poweroff"_s })
-    CONFIG_PROPERTY(QStringList, hibernate, { u"systemctl"_s, u"hibernate"_s })
+    CONFIG_PROPERTY(QStringList, logout, { u"loginctl"_s, u"terminate-user"_s, u""_s })
+    CONFIG_PROPERTY(QStringList, suspend, { u"systemctl"_s, u"suspend"_s })
     CONFIG_PROPERTY(QStringList, reboot, { u"systemctl"_s, u"reboot"_s })
+    CONFIG_PROPERTY(QStringList, windows, { u"systemctl"_s, u"reboot"_s })
+    CONFIG_PROPERTY(QStringList, lamp, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
+    CONFIG_PROPERTY(QStringList, generic, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
+    CONFIG_PROPERTY(QStringList, automode, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
+    CONFIG_PROPERTY(QStringList, bios, { u"systemctl"_s, u"reboot"_s, u"--firmware-setup"_s })
 
 public:
     explicit SessionCommands(QObject* parent = nullptr)
         : ConfigObject(parent) {
-        if (!QFileInfo::exists(QStringLiteral("/run/systemd/system"))) {
-            m_logout = { u"hyprctl"_s, u"dispatch"_s, u"exit"_s };
-            m_shutdown = { u"loginctl"_s, u"poweroff"_s };
-            m_hibernate = { u"loginctl"_s, u"hibernate"_s };
-            m_reboot = { u"loginctl"_s, u"reboot"_s };
-        }
     }
 };
 
