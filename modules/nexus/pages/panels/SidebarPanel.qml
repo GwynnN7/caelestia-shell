@@ -55,7 +55,7 @@ PageBase {
             Layout.fillWidth: true
             first: true
             text: qsTr("Celestial AI Mode (Orion)")
-            subtext: qsTr("Enable advanced autonomous features using qwen2.5vl")
+            subtext: qsTr("Enable advanced autonomous features using qwen3.5:9b")
             checked: GlobalConfig.ai.enableCelestialMode
             onToggled: GlobalConfig.ai.enableCelestialMode = checked
         }

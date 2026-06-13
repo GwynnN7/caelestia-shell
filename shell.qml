@@ -16,6 +16,7 @@ import "modules/background"
 import "modules/shimeji"
 import "modules/areapicker"
 import "modules/lock"
+import "modules/polkit"
 
 ShellRoot {
     settings.watchFiles: true
@@ -29,6 +30,7 @@ ShellRoot {
     Lock {
         id: lock
     }
+    PolkitModule {}
 
     Variants {
         model: Quickshell.screens.filter(s => (GlobalConfig.shimeji?.enabled ?? false) && (GlobalConfig.shimeji?.path?.length ?? 0) > 0 && !Strings.testRegexList(GlobalConfig.shimeji?.excludedScreens ?? [], s.name))

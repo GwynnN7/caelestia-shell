@@ -1050,6 +1050,14 @@ misc {
 }
 ```
 
+### How do I enable blur for the Polkit dialog?
+
+Add the following layer rule to your `~/.config/caelestia/hypr-user.conf`:
+
+```conf
+layerrule = no_anim true, match:namespace caelestia-polkit, blur true, ignore_alpha 0.1
+```
+
 ### I want to make my own changes to the hyprland config!
 
 You can add your custom hyprland configs to `~/.config/caelestia/hypr-user.conf`.
