@@ -15,12 +15,7 @@ WlSessionLockSurface {
 
     readonly property alias unlocking: unlockAnim.running
     readonly property real lockHeight: Math.min(root.screen?.width ?? 0, root.screen?.height ?? 0)
-
-    readonly property bool isPortrait: {
-        const monitor = Hypr.monitors.values.find(m => m.name === root.screen?.name);
-        const transform = monitor?.lastIpcObject?.transform ?? 0;
-        return transform === 1 || transform === 3 || transform === 5 || transform === 7;
-    }
+    readonly property bool isPortrait: (root.screen?.width ?? 0) < (root.screen?.height ?? 0)
 
     contentItem.Config.screen: screen.name
     contentItem.Tokens.screen: screen.name
@@ -150,12 +145,12 @@ WlSessionLockSurface {
                 Anim {
                     target: lockContent
                     property: "implicitWidth"
-                    to: root.isPortrait ? root.lockHeight * lockContent.Tokens.sizes.lock.heightMult : root.lockHeight * lockContent.Tokens.sizes.lock.heightMult * lockContent.Tokens.sizes.lock.ratio
+                    to: root.isPortrait ? lockContent.lockShort : lockContent.lockLong
                 }
                 Anim {
                     target: lockContent
                     property: "implicitHeight"
-                    to: root.isPortrait ? root.lockHeight * lockContent.Tokens.sizes.lock.heightMult * lockContent.Tokens.sizes.lock.ratio : root.lockHeight * lockContent.Tokens.sizes.lock.heightMult
+                    to: root.isPortrait ? lockContent.lockLong : lockContent.lockShort
                 }
             }
         }
@@ -183,6 +178,11 @@ WlSessionLockSurface {
 
         readonly property int size: lockIcon.implicitHeight + Tokens.padding.large * 4
         readonly property int radius: size / 4 * Tokens.rounding.scale
+
+        // Long/short axis of the lock surface relative to the monitor's short edge.
+        // Portrait swaps which axis maps to width/height.
+        readonly property real lockLong: root.lockHeight * Tokens.sizes.lock.heightMult * Tokens.sizes.lock.ratio
+        readonly property real lockShort: root.lockHeight * Tokens.sizes.lock.heightMult
 
         anchors.centerIn: parent
         implicitWidth: size
@@ -223,8 +223,8 @@ WlSessionLockSurface {
             lockHeight: root.lockHeight
 
             anchors.centerIn: parent
-            width: root.isPortrait ? root.lockHeight * Tokens.sizes.lock.heightMult - Tokens.padding.extraLargeIncreased : root.lockHeight * Tokens.sizes.lock.heightMult * Tokens.sizes.lock.ratio - Tokens.padding.extraLargeIncreased
-            height: root.isPortrait ? root.lockHeight * Tokens.sizes.lock.heightMult * Tokens.sizes.lock.ratio - Tokens.padding.extraLargeIncreased : root.lockHeight * Tokens.sizes.lock.heightMult - Tokens.padding.extraLargeIncreased
+            width: (root.isPortrait ? lockContent.lockShort : lockContent.lockLong) - Tokens.padding.extraLargeIncreased
+            height: (root.isPortrait ? lockContent.lockLong : lockContent.lockShort) - Tokens.padding.extraLargeIncreased
 
             lock: root
             opacity: 0
