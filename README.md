@@ -145,7 +145,7 @@ If you're migrating from the official caelestia shell to this fork, you may need
 > [!NOTE]
 > This repo is for the desktop shell of the caelestia dots. If you want installation instructions
 > for the entire dots, head to [the main repo](https://github.com/caelestia-dots/caelestia) instead.
-> This fork is available at [dim-ghub/shell](https://github.com/dim-ghub/shell).
+> This fork is available at [dim-ghub/caelestia-shell](https://github.com/dim-ghub/caelestia-shell).
 
 ### Arch linux
 
@@ -228,6 +228,8 @@ To install the shell manually, install all dependencies and clone **this fork** 
 Then simply run the install script:
 
 ```sh
+sudo pacman -Rdd caelestia-shell
+
 cd $XDG_CONFIG_HOME/quickshell
 git clone https://github.com/dim-ghub/caelestia-shell.git caelestia
 
