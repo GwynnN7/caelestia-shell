@@ -375,612 +375,842 @@ For example, to disable the bar on DP-1:
 
 ```json
 {
-    "enabled": true,
+    "ai": {
+        "activeOllamaModel": "llama3",
+        "activeProvider": "ollama",
+        "defaultOllamaModel": "llama3",
+        "defaultProvider": "ollama",
+        "enableCelestialMode": false,
+        "enableOllama": true,
+        "ollamaHistoryJson": "[]",
+        "ollamaModel": "llama3",
+        "ollamaUrl": "http://localhost:11434",
+        "saveChatHistory": true,
+        "snapToDefaultOllama": true
+    },
     "appearance": {
+        "anim": {
+            "durations": {
+                "scale": 1
+            }
+        },
         "deformScale": 1,
+        "font": {
+            "body": {
+                "family": "GoogleSansFlex",
+                "large": {
+                    "family": "",
+                    "italic": false,
+                    "size": 16,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 400
+                },
+                "medium": {
+                    "family": "",
+                    "italic": false,
+                    "size": 14,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 400
+                },
+                "small": {
+                    "family": "",
+                    "italic": false,
+                    "size": 12,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 400
+                }
+            },
+            "clock": "Rubik",
+            "headline": {
+                "family": "GoogleSansFlex",
+                "large": {
+                    "family": "",
+                    "italic": false,
+                    "size": 32,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                },
+                "medium": {
+                    "family": "",
+                    "italic": false,
+                    "size": 28,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                },
+                "small": {
+                    "family": "",
+                    "italic": false,
+                    "size": 24,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                }
+            },
+            "icon": {
+                "extraLarge": {
+                    "family": "",
+                    "italic": false,
+                    "size": 36,
+                    "vaxes": {},
+                    "weight": 400
+                },
+                "family": "Material Symbols Rounded",
+                "large": {
+                    "family": "",
+                    "italic": false,
+                    "size": 24,
+                    "vaxes": {},
+                    "weight": 400
+                },
+                "medium": {
+                    "family": "",
+                    "italic": false,
+                    "size": 18,
+                    "vaxes": {},
+                    "weight": 400
+                },
+                "small": {
+                    "family": "",
+                    "italic": false,
+                    "size": 15,
+                    "vaxes": {},
+                    "weight": 400
+                }
+            },
+            "label": {
+                "family": "GoogleSansFlex",
+                "large": {
+                    "family": "",
+                    "italic": false,
+                    "size": 14,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                },
+                "medium": {
+                    "family": "",
+                    "italic": false,
+                    "size": 12,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                },
+                "small": {
+                    "family": "",
+                    "italic": false,
+                    "size": 11,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 400
+                }
+            },
+            "mono": {
+                "family": "CaskaydiaCove NF",
+                "large": {
+                    "family": "",
+                    "italic": false,
+                    "size": 16,
+                    "vaxes": {},
+                    "weight": 400
+                },
+                "medium": {
+                    "family": "",
+                    "italic": false,
+                    "size": 14,
+                    "vaxes": {},
+                    "weight": 400
+                },
+                "small": {
+                    "family": "",
+                    "italic": false,
+                    "size": 12,
+                    "vaxes": {},
+                    "weight": 400
+                }
+            },
+            "scale": 1,
+            "title": {
+                "family": "GoogleSansFlex",
+                "large": {
+                    "family": "",
+                    "italic": false,
+                    "size": 22,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                },
+                "medium": {
+                    "family": "",
+                    "italic": false,
+                    "size": 16,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                },
+                "small": {
+                    "family": "",
+                    "italic": false,
+                    "size": 14,
+                    "vaxes": {
+                        "ROND": 25
+                    },
+                    "weight": 500
+                }
+            },
+            "workspaces": "Rubik"
+        },
+        "padding": {
+            "scale": 1
+        },
+        "pitchBlack": false,
         "rounding": {
             "scale": 1
         },
         "spacing": {
             "scale": 1
         },
-        "padding": {
-            "scale": 1
-        },
-        "font": {
-            "scale": 1,
-            "clock": "Rubik",
-            "workspaces": "Rubik",
-            "headline": {
-                "family": "GoogleSansFlex",
-                "large": { "size": 32, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } },
-                "medium": { "size": 28, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } },
-                "small": { "size": 24, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } }
-            },
-            "title": {
-                "family": "GoogleSansFlex",
-                "large": { "size": 22, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } },
-                "medium": { "size": 16, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } },
-                "small": { "size": 14, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } }
-            },
-            "body": {
-                "family": "GoogleSansFlex",
-                "large": { "size": 16, "weight": 400, "italic": false, "vaxes": { "ROND": 25 } },
-                "medium": { "size": 14, "weight": 400, "italic": false, "vaxes": { "ROND": 25 } },
-                "small": { "size": 12, "weight": 400, "italic": false, "vaxes": { "ROND": 25 } }
-            },
-            "label": {
-                "family": "GoogleSansFlex",
-                "large": { "size": 14, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } },
-                "medium": { "size": 12, "weight": 500, "italic": false, "vaxes": { "ROND": 25 } },
-                "small": { "size": 11, "weight": 400, "italic": false, "vaxes": { "ROND": 25 } }
-            },
-            "mono": {
-                "family": "CaskaydiaCove NF",
-                "large": { "size": 16, "weight": 400, "italic": false, "vaxes": {} },
-                "medium": { "size": 14, "weight": 400, "italic": false, "vaxes": {} },
-                "small": { "size": 12, "weight": 400, "italic": false, "vaxes": {} }
-            },
-            "icon": {
-                "family": "Material Symbols Rounded",
-                "extraLarge": { "size": 36, "weight": 400, "italic": false, "vaxes": {} },
-                "large": { "size": 24, "weight": 400, "italic": false, "vaxes": {} },
-                "medium": { "size": 18, "weight": 400, "italic": false, "vaxes": {} },
-                "small": { "size": 15, "weight": 400, "italic": false, "vaxes": {} }
-            }
-        },
-        "anim": {
-            "durations": {
-                "scale": 1
-            }
-        },
         "transparency": {
-            "enabled": false,
             "base": 0.85,
+            "enabled": false,
             "layers": 0.4
         }
     },
-    "general": {
-        "logo": "",
-        "showOverFullscreen": false,
-        "mediaGifSpeedAdjustment": 300,
-        "sessionGifSpeed": 0.7,
-        "apps": {
-            "terminal": ["foot"],
-            "audio": ["pavucontrol"],
-            "playback": ["mpv"],
-            "explorer": ["thunar"]
-        },
-        "idle": {
-            "lockBeforeSleep": true,
-            "inhibitWhenAudio": true,
-            "timeouts": [
-                {
-                    "timeout": 180,
-                    "idleAction": "lock"
-                },
-                {
-                    "timeout": 300,
-                    "idleAction": "dpms off",
-                    "returnAction": "dpms on"
-                },
-                {
-                    "timeout": 600,
-                    "idleAction": ["systemctl", "suspend-then-hibernate"]
-                }
-            ]
-        },
-        "battery": {
-            "warnLevels": [
-                {
-                    "level": 20,
-                    "title": "Low battery",
-                    "message": "You might want to plug in a charger",
-                    "icon": "battery_android_frame_2"
-                },
-                {
-                    "level": 10,
-                    "title": "Did you see the previous message?",
-                    "message": "You should probably plug in a charger <b>now</b>",
-                    "icon": "battery_android_frame_1"
-                },
-                {
-                    "level": 5,
-                    "title": "Critical battery level",
-                    "message": "PLUG THE CHARGER RIGHT NOW!!",
-                    "icon": "battery_android_alert",
-                    "critical": true
-                }
-            ],
-            "criticalLevel": 3
+    "audio": {
+        "sounds": {
+            "cameraClick": true,
+            "chargingStarted": true,
+            "disabledNotifApps": [],
+            "effectTick": true,
+            "enabled": true,
+            "lock": true,
+            "lowBattery": true,
+            "notificationSound": "Iapetus.wav",
+            "notificationVolume": 1,
+            "screenRecord": true,
+            "sfxVolume": 1,
+            "unlock": true
         }
     },
     "background": {
-        "enabled": true,
-        "wallpaperEnabled": true,
-        "videoWallpaperPaused": false,
-        "videoWallpaperSoundEnabled": false,
-        "videoWallpaperPauseOnFullscreen": false,
-        "videoWallpaperPauseOnTiled": false,
-        "videoWallpaperPauseOnAllDisplays": false,
-        "videoWallpaperMuteOnMedia": false,
-        "visualiser": {
-            "enabled": false,
-            "autoHide": true,
-            "blur": false,
-            "rounding": 1,
-            "spacing": 1
-        },
         "desktopClock": {
-            "enabled": false,
-            "scale": 1.0,
-            "position": "bottom-right",
-            "invertColors": false,
             "background": {
+                "blur": true,
                 "enabled": false,
-                "opacity": 0.7,
-                "blur": true
+                "opacity": 0.7
             },
+            "enabled": false,
+            "invertColors": false,
+            "position": "bottom-right",
+            "scale": 1,
             "shadow": {
+                "blur": 0.4,
                 "enabled": true,
-                "opacity": 0.7,
-                "blur": 0.4
+                "opacity": 0.7
             }
         },
         "desktopLyrics": {
-            "enabled": false,
-            "autoHide": true,
-            "scale": 1.0,
-            "position": "bottom-center",
             "alignment": 1,
-            "invertColors": false,
+            "autoHide": true,
             "background": {
+                "blur": true,
                 "enabled": false,
-                "opacity": 0.7,
-                "blur": true
+                "opacity": 0.7
             },
+            "enabled": false,
+            "invertColors": false,
+            "position": "bottom-center",
+            "scale": 1,
             "shadow": {
+                "blur": 0.4,
                 "enabled": true,
-                "opacity": 0.7,
-                "blur": 0.4
+                "opacity": 0.7
             }
-        }
+        },
+        "enabled": true,
+        "videoWallpaperMuteOnMedia": false,
+        "videoWallpaperPauseOnAllDisplays": false,
+        "videoWallpaperPauseOnFullscreen": false,
+        "videoWallpaperPauseOnTiled": false,
+        "videoWallpaperPaused": false,
+        "videoWallpaperSoundEnabled": false,
+        "visualiser": {
+            "autoHide": true,
+            "blur": false,
+            "enabled": false,
+            "rounding": 1,
+            "spacing": 1
+        },
+        "wallpaperEnabled": true
     },
     "bar": {
-        "persistent": true,
-        "showOnHover": true,
-        "dragThreshold": 20,
-        "scrollActions": {
-            "workspaces": true,
-            "volume": true,
-            "brightness": true
-        },
-        "popouts": {
-            "activeWindow": true,
-            "tray": true,
-            "statusIcons": true
-        },
-        "workspaces": {
-            "shown": 5,
-            "activeIndicator": true,
-            "occupiedBg": false,
-            "showWindows": true,
-            "showWindowsOnSpecialWorkspaces": true,
-            "maxWindowIcons": 5,
-            "activeTrail": false,
-            "perMonitorWorkspaces": true,
-            "label": "  ",
-            "occupiedLabel": "󰮯",
-            "activeLabel": "󰮯",
-            "capitalisation": "preserve",
-            "specialWorkspaceIcons": [
-                {
-                    "name": "steam",
-                    "icon": "sports_esports"
-                }
-            ],
-            "windowIcons": [
-                {
-                    "regex": "steam(_app_(default|[0-9]+))?",
-                    "icon": "sports_esports"
-                }
-            ]
-        },
         "activeWindow": {
             "compact": false,
             "inverted": false,
             "showOnHover": true
-        },
-        "tray": {
-            "background": false,
-            "recolour": false,
-            "compact": false,
-            "iconSubs": [],
-            "hiddenIcons": []
-        },
-        "status": {
-            "showAudio": false,
-            "showMicrophone": false,
-            "showKbLayout": false,
-            "showNetwork": true,
-            "showWifi": true,
-            "showBluetooth": true,
-            "showBattery": true,
-            "showLockStatus": true
         },
         "clock": {
             "background": false,
             "showDate": false,
             "showIcon": true
         },
+        "dock": {
+            "monitorCenter": true,
+            "recolourIcons": false
+        },
+        "dragThreshold": 20,
         "entries": [
             {
-                "id": "logo",
-                "enabled": true
+                "enabled": true,
+                "id": "logo"
             },
             {
-                "id": "workspaces",
-                "enabled": true
+                "enabled": true,
+                "id": "workspaces"
             },
             {
-                "id": "spacer",
-                "enabled": true
+                "enabled": true,
+                "id": "spacer"
             },
             {
-                "id": "activeWindow",
-                "enabled": true
+                "enabled": true,
+                "id": "activeWindow"
             },
             {
-                "id": "spacer",
-                "enabled": true
+                "enabled": true,
+                "id": "spacer"
             },
             {
-                "id": "tray",
-                "enabled": true
+                "enabled": true,
+                "id": "tray"
             },
             {
-                "id": "clock",
-                "enabled": true
+                "enabled": true,
+                "id": "clock"
             },
             {
-                "id": "statusIcons",
-                "enabled": true
+                "enabled": true,
+                "id": "statusIcons"
             },
             {
-                "id": "power",
-                "enabled": true
+                "enabled": true,
+                "id": "power"
             }
         ],
-        "excludedScreens": []
-    },
-    "border": {
-        "thickness": 10,
-        "rounding": 25,
-        "smoothing": 20
-    },
-    "dashboard": {
-        "enabled": true,
+        "excludedScreens": [],
+        "persistent": true,
+        "popouts": {
+            "activeWindow": true,
+            "statusIcons": true,
+            "tray": true
+        },
+        "position": "left",
+        "scrollActions": {
+            "brightness": true,
+            "volume": true,
+            "workspaces": true
+        },
         "showOnHover": true,
-        "showDashboard": true,
-        "showMedia": true,
-        "showPerformance": true,
-        "showWeather": true,
-        "mediaUpdateInterval": 500,
-        "resourceUpdateInterval": 1000,
-        "dragThreshold": 50,
-        "performance": {
+        "status": {
+            "showAudio": false,
             "showBattery": true,
-            "showGpu": true,
-            "showCpu": true,
-            "showMemory": true,
-            "showStorage": true,
-            "showNetwork": true
+            "showBluetooth": true,
+            "showKbLayout": false,
+            "showLockStatus": true,
+            "showMicrophone": false,
+            "showNetwork": true,
+            "showNotifications": true,
+            "showWifi": true
+        },
+        "tray": {
+            "background": false,
+            "compact": false,
+            "hiddenIcons": [],
+            "iconSubs": [],
+            "recolour": false
+        },
+        "workspaces": {
+            "activeIndicator": true,
+            "activeLabel": " \udb82\udfaf",
+            "activeTrail": false,
+            "capitalisation": "preserve",
+            "label": "\uf444 ",
+            "maxWindowIcons": 5,
+            "occupiedBg": false,
+            "occupiedLabel": " \udb82\udfaf",
+            "perMonitorWorkspaces": true,
+            "showWindows": true,
+            "showWindowsOnSpecialWorkspaces": true,
+            "shown": 5,
+            "specialWorkspaceIcons": [],
+            "useIcon": true,
+            "windowIcons": [
+                {
+                    "icon": "sports_esports",
+                    "regex": "steam(_app_(default|[0-9]+))?"
+                }
+            ],
+            "wsIcons": []
         }
     },
-    "launcher": {
-        "enabled": true,
-        "showOnHover": false,
-        "maxShown": 7,
-        "maxWallpapers": 9,
-        "specialPrefix": "@",
-        "actionPrefix": ">",
-        "enableDangerousActions": false,
+    "border": {
+        "rounding": 25,
+        "smoothing": 20,
+        "thickness": 10
+    },
+    "dashboard": {
+        "circleProfilePic": true,
+        "colorizeMediaGif": true,
         "dragThreshold": 50,
-        "vimKeybinds": false,
-        "favouriteApps": [],
-        "hiddenApps": [],
-        "useFuzzy": {
-            "apps": false,
-            "actions": false,
-            "schemes": false,
-            "variants": false,
-            "wallpapers": false
+        "enabled": true,
+        "mediaUpdateInterval": 500,
+        "performance": {
+            "showBattery": true,
+            "showCpu": true,
+            "showGpu": true,
+            "showMemory": true,
+            "showNetwork": true,
+            "showStorage": true
         },
+        "resourceUpdateInterval": 1000,
+        "showDashboard": true,
+        "showHyprlandSplash": false,
+        "showMedia": true,
+        "showOnHover": true,
+        "showPerformance": true,
+        "showTerminal": true,
+        "showWeather": true
+    },
+    "enabled": true,
+    "general": {
+        "apps": {
+            "audio": [
+                "pavucontrol"
+            ],
+            "explorer": [
+                "thunar"
+            ],
+            "playback": [
+                "mpv"
+            ],
+            "terminal": [
+                "foot"
+            ]
+        },
+        "battery": {
+            "criticalLevel": 3,
+            "warnLevels": [
+                {
+                    "icon": "battery_android_frame_2",
+                    "level": 20,
+                    "message": "You might want to plug in a charger",
+                    "title": "Low battery"
+                },
+                {
+                    "icon": "battery_android_frame_1",
+                    "level": 10,
+                    "message": "You should probably plug in a charger <b>now</b>",
+                    "title": "Did you see the previous message?"
+                },
+                {
+                    "critical": true,
+                    "icon": "battery_android_alert",
+                    "level": 5,
+                    "message": "PLUG THE CHARGER RIGHT NOW!!",
+                    "title": "Critical battery level"
+                }
+            ]
+        },
+        "idle": {
+            "inhibitWhenAudio": true,
+            "lockBeforeSleep": true,
+            "timeouts": [
+                {
+                    "idleAction": "lock",
+                    "timeout": 180
+                },
+                {
+                    "idleAction": "dpms off",
+                    "returnAction": "dpms on",
+                    "timeout": 300
+                },
+                {
+                    "idleAction": [
+                        "loginctl",
+                        "suspend"
+                    ],
+                    "timeout": 600
+                }
+            ]
+        },
+        "logo": "",
+        "mediaGifSpeedAdjustment": 300,
+        "sessionGifSpeed": 0.7,
+        "showOverFullscreen": false
+    },
+    "launcher": {
+        "actionPrefix": ">",
         "actions": [
             {
-                "name": "Calculator",
-                "icon": "calculate",
+                "command": [
+                    "autocomplete",
+                    "calc"
+                ],
                 "description": "Do simple math equations (powered by Qalc)",
-                "command": ["autocomplete", "calc"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "calculate",
+                "name": "Calculator"
             },
             {
-                "name": "Scheme",
-                "icon": "palette",
+                "command": [
+                    "autocomplete",
+                    "scheme"
+                ],
                 "description": "Change the current colour scheme",
-                "command": ["autocomplete", "scheme"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "palette",
+                "name": "Scheme"
             },
             {
-                "name": "Wallpaper",
-                "icon": "image",
+                "command": [
+                    "autocomplete",
+                    "wallpaper"
+                ],
                 "description": "Change the current wallpaper",
-                "command": ["autocomplete", "wallpaper"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "image",
+                "name": "Wallpaper"
             },
             {
-                "name": "Keybinds",
-                "icon": "keyboard",
-                "description": "Browse and search Hyprland keybinds",
-                "command": ["autocomplete", "keybinds"],
-                "enabled": true,
-                "dangerous": false
-            },
-            {
-                "name": "Variant",
-                "icon": "colors",
+                "command": [
+                    "autocomplete",
+                    "variant"
+                ],
                 "description": "Change the current scheme variant",
-                "command": ["autocomplete", "variant"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "colors",
+                "name": "Variant"
             },
             {
-                "name": "Random",
-                "icon": "casino",
+                "command": [
+                    "caelestia",
+                    "wallpaper",
+                    "-r"
+                ],
                 "description": "Switch to a random wallpaper",
-                "command": ["caelestia", "wallpaper", "-r"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "casino",
+                "name": "Random"
             },
             {
-                "name": "Light",
-                "icon": "light_mode",
+                "command": [
+                    "setMode",
+                    "light"
+                ],
                 "description": "Change the scheme to light mode",
-                "command": ["setMode", "light"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "light_mode",
+                "name": "Light"
             },
             {
-                "name": "Dark",
-                "icon": "dark_mode",
+                "command": [
+                    "setMode",
+                    "dark"
+                ],
                 "description": "Change the scheme to dark mode",
-                "command": ["setMode", "dark"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "dark_mode",
+                "name": "Dark"
             },
             {
-                "name": "Shutdown",
-                "icon": "power_settings_new",
+                "command": [
+                    "loginctl",
+                    "poweroff"
+                ],
+                "dangerous": true,
                 "description": "Shutdown the system",
-                "command": ["systemctl", "poweroff"],
-                "enabled": true,
-                "dangerous": true
+                "icon": "power_settings_new",
+                "name": "Shutdown"
             },
             {
-                "name": "Reboot",
-                "icon": "cached",
+                "command": [
+                    "loginctl",
+                    "reboot"
+                ],
+                "dangerous": true,
                 "description": "Reboot the system",
-                "command": ["systemctl", "reboot"],
-                "enabled": true,
-                "dangerous": true
+                "icon": "cached",
+                "name": "Reboot"
             },
             {
-                "name": "Logout",
-                "icon": "exit_to_app",
+                "command": [
+                    "hyprctl",
+                    "dispatch",
+                    "exit"
+                ],
+                "dangerous": true,
                 "description": "Log out of the current session",
-                "command": ["loginctl", "terminate-user", ""],
-                "enabled": true,
-                "dangerous": true
+                "icon": "exit_to_app",
+                "name": "Logout"
             },
             {
-                "name": "Lock",
-                "icon": "lock",
+                "command": [
+                    "loginctl",
+                    "lock-session"
+                ],
                 "description": "Lock the current session",
-                "command": ["loginctl", "lock-session"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "lock",
+                "name": "Lock"
             },
             {
-                "name": "Sleep",
-                "icon": "bedtime",
+                "command": [
+                    "loginctl",
+                    "suspend"
+                ],
                 "description": "Suspend then hibernate",
-                "command": ["systemctl", "suspend-then-hibernate"],
-                "enabled": true,
-                "dangerous": false
+                "icon": "bedtime",
+                "name": "Sleep"
             },
             {
-                "name": "Settings",
-                "icon": "settings",
+                "command": [
+                    "caelestia",
+                    "shell",
+                    "nexus",
+                    "open"
+                ],
                 "description": "Configure the shell",
-                "command": ["caelestia", "shell", "nexus", "open"],
+                "icon": "settings",
+                "name": "Settings"
+            },
+            {
+                "command": [
+                    "autocomplete",
+                    "emoji"
+                ],
+                "description": "Pick an emoji to copy",
+                "icon": "emoji_emotions",
+                "name": "Emoji"
+            },
+            {
+                "command": [
+                    "autocomplete",
+                    "clipboard"
+                ],
+                "description": "View clipboard history",
+                "icon": "content_paste",
+                "name": "Clipboard"
+            },
+            {
+                "command": [
+                    "autocomplete",
+                    "windows"
+                ],
+                "description": "Switch to another window",
                 "enabled": true,
-                "dangerous": false
+                "icon": "apps",
+                "name": "Windows"
+            },
+            {
+                "command": [
+                    "autocomplete",
+                    "keybinds"
+                ],
+                "description": "View all keybinds",
+                "icon": "keyboard",
+                "name": "Keybinds"
             }
         ],
         "dragThreshold": 50,
-        "vimKeybinds": false,
         "enableDangerousActions": false,
+        "enabled": true,
+        "favouriteApps": [],
+        "favouriteClips": [],
+        "favouriteEmojis": [],
+        "hiddenApps": [],
         "maxShown": 7,
         "maxWallpapers": 9,
+        "showOnHover": false,
         "specialPrefix": "@",
         "useFuzzy": {
-            "apps": false,
             "actions": false,
+            "apps": false,
+            "clipboard": false,
+            "emoji": false,
             "schemes": false,
             "variants": false,
             "wallpapers": false
         },
-        "showOnHover": false,
-        "favouriteApps": [],
-        "favouriteEmojis": [],
-        "favouriteClips": [],
-        "hiddenApps": []
-    },
-    "shimeji": {
-        "enabled": false,
-        "path": "root:/assets/shimeji/pusheen/",
-        "count": 1,
-        "autoHide": true,
-        "excludedScreens": [],
-        "screenCounts": {}
+        "vimKeybinds": false
     },
     "lock": {
-        "recolourLogo": true,
+        "circleProfilePic": true,
         "enableFprint": true,
+        "hideNotifs": false,
         "maxFprintTries": 3,
-        "hideNotifs": false
+        "recolourLogo": true
     },
     "nexus": {
-        "wallpapersPerRow": 4,
-        "networkRescanInterval": 15000
+        "networkRescanInterval": 15000,
+        "wallpapersPerRow": 4
     },
     "notifs": {
+        "actionOnClick": false,
+        "clearThreshold": 0.3,
+        "defaultExpireTimeout": 5000,
+        "expandThreshold": 20,
         "expire": true,
         "fullscreen": "on",
-        "defaultExpireTimeout": 5000,
         "fullscreenExpireTimeout": 2000,
-        "clearThreshold": 0.3,
-        "expandThreshold": 20,
-        "actionOnClick": false,
         "groupPreviewNum": 3,
         "openExpanded": false
     },
     "osd": {
-        "enabled": true,
-        "hideDelay": 2000,
         "enableBrightness": true,
-        "enableMicrophone": false
+        "enableMicrophone": false,
+        "enabled": true,
+        "hideDelay": 2000
+    },
+    "paths": {
+        "cacheDir": "/home/dim/.cache/caelestia",
+        "lockNoNotifsPic": "root:/assets/dino.png",
+        "lyricsDir": "/home/dim/Music/Lyrics/",
+        "mediaGif": "root:/assets/bongocat.gif",
+        "noNotifsPic": "root:/assets/dino.png",
+        "sessionGif": "root:/assets/kurukuru.gif",
+        "wallpaperDir": "/home/dim/Pictures/Wallpapers"
     },
     "services": {
-        "weatherLocation": "",
-        "useFahrenheit": false,
-        "useFahrenheitPerformance": false,
-        "useTwelveHourClock": false,
-        "gpuType": "",
-        "visualiserBars": 60,
         "audioIncrement": 0.1,
         "brightnessIncrement": 0.1,
-        "maxVolume": 1.0,
-        "smartScheme": true,
-        "visualiserBars": 45,
         "defaultPlayer": "Spotify",
-        "playerAliases": [{ "from": "com.github.th_ch.youtube_music", "to": "YT Music" }],
-        "lyricsBackend": "Auto"
+        "gpuType": "",
+        "lyricsBackend": "Auto",
+        "maxVolume": 1,
+        "playerAliases": [
+            {
+                "from": "com.github.th_ch.youtube_music",
+                "to": "YT Music"
+            }
+        ],
+        "smartScheme": true,
+        "useFahrenheit": true,
+        "useFahrenheitPerformance": false,
+        "useTwelveHourClock": true,
+        "visualiserBars": 60,
+        "weatherLocation": ""
     },
     "session": {
-        "enabled": true,
-        "dragThreshold": 30,
-        "vimKeybinds": false,
-        "icons": {
-            "logout": "logout",
-            "shutdown": "power_settings_new",
-            "hibernate": "downloading",
-            "reboot": "cached"
-        },
         "commands": {
-            "logout": ["loginctl", "terminate-user", ""],
-            "shutdown": ["systemctl", "poweroff"],
-            "hibernate": ["systemctl", "hibernate"],
-            "reboot": ["systemctl", "reboot"]
-        }
+            "hibernate": [
+                "loginctl",
+                "hibernate"
+            ],
+            "logout": [
+                "hyprctl",
+                "dispatch",
+                "exit"
+            ],
+            "reboot": [
+                "loginctl",
+                "reboot"
+            ],
+            "shutdown": [
+                "loginctl",
+                "poweroff"
+            ]
+        },
+        "dragThreshold": 30,
+        "enabled": true,
+        "icons": {
+            "hibernate": "downloading",
+            "logout": "logout",
+            "reboot": "cached",
+            "shutdown": "power_settings_new"
+        },
+        "vimKeybinds": false
+    },
+    "shimeji": {
+        "autoHide": true,
+        "count": 1,
+        "enabled": true,
+        "excludedScreens": [],
+        "path": "root:/assets/shimeji/pusheen/",
+        "screenCounts": {}
     },
     "sidebar": {
-        "enabled": true,
-        "dragThreshold": 80
+        "dragThreshold": 80,
+        "enabled": true
     },
     "utilities": {
         "enabled": true,
         "maxToasts": 4,
+        "quickToggles": [
+            {
+                "enabled": true,
+                "id": "wifi"
+            },
+            {
+                "enabled": true,
+                "id": "bluetooth"
+            },
+            {
+                "enabled": true,
+                "id": "mic"
+            },
+            {
+                "enabled": true,
+                "id": "settings"
+            },
+            {
+                "enabled": true,
+                "id": "gameMode"
+            },
+            {
+                "enabled": true,
+                "id": "dnd"
+            },
+            {
+                "enabled": false,
+                "id": "vpn"
+            },
+            {
+                "enabled": true,
+                "id": "wallpaper"
+            },
+            {
+                "enabled": true,
+                "id": "badapple"
+            }
+        ],
         "toasts": {
-            "fullscreen": "off",
-            "configLoaded": true,
-            "chargingChanged": true,
-            "gameModeChanged": true,
-            "dndChanged": true,
-            "audioOutputChanged": true,
             "audioInputChanged": true,
+            "audioOutputChanged": true,
             "capsLockChanged": true,
-            "numLockChanged": true,
+            "chargingChanged": true,
+            "configLoaded": true,
+            "dndChanged": true,
+            "fullscreen": "off",
+            "gameModeChanged": true,
             "kbLayoutChanged": true,
             "kbLimit": true,
-            "vpnChanged": true,
-            "nowPlaying": false
+            "nowPlaying": false,
+            "numLockChanged": true,
+            "vpnChanged": true
         },
         "vpn": {
             "enabled": false,
-            "provider": [
-                {
-                    "name": "wireguard",
-                    "interface": "your-connection-name",
-                    "displayName": "Wireguard (Your VPN)",
-                    "enabled": false
-                }
-            ]
-        },
-        "quickToggles": [
-            {
-                "id": "wifi",
-                "enabled": true
-            },
-            {
-                "id": "bluetooth",
-                "enabled": true
-            },
-            {
-                "id": "mic",
-                "enabled": true
-            },
-            {
-                "id": "settings",
-                "enabled": true
-            },
-            {
-                "id": "gameMode",
-                "enabled": true
-            },
-            {
-                "id": "dnd",
-                "enabled": true
-            },
-            {
-                "id": "vpn",
-                "enabled": false
-            },
-            {
-                "id": "wallpaper",
-                "enabled": true
-            },
-            {
-                "id": "badapple",
-                "enabled": true
-            },
-            {
-                "id": "pauseWallpaper",
-                "enabled": true
-            }
-        ]
+            "provider": []
+        }
     },
-    "paths": {
-        "wallpaperDir": "~/Pictures/Wallpapers",
-        "lyricsDir": "~/Music/lyrics/",
-        "sessionGif": "root:/assets/kurukuru.gif",
-        "mediaGif": "root:/assets/bongocat.gif",
-        "noNotifsPic": "root:/assets/dino.png",
-        "lockNoNotifsPic": "root:/assets/dino.png"
-    }
+    "winfo": {}
 }
 ```
 
