@@ -32,7 +32,7 @@ StyledWindow {
         let pkexecMatch = msg.match(/Authentication is needed to run `(.+?)' as the super user/);
         if (pkexecMatch) {
             cmd = pkexecMatch[1];
-            msg = "Authentication is needed to run the following command as super-user:";
+            msg = "Superuser privileges are required to execute:";
         } else if (msg.includes('\n')) {
             let parts = msg.split('\n').filter(s => s.trim().length > 0);
             if (parts.length > 1) {
@@ -90,20 +90,18 @@ StyledWindow {
 
     ParallelAnimation {
         id: openAnim
-
         SequentialAnimation {
             ParallelAnimation {
                 Anim { target: dialogContainer; property: "opacity"; to: 1; duration: Tokens.anim.durations.small }
-                Anim { target: dialogContainer; property: "scale"; to: 1; type: Anim.FastSpatial }
-                Anim { target: dialogContainer; property: "rotation"; to: 360; duration: Tokens.anim.durations.expressiveFastSpatial; easing: Tokens.anim.standardAccel }
+                Anim { target: dialogContainer; property: "scale"; to: 1; type: Anim.BounceEffects }
             }
             // Delegate size expansion to Behaviors so they constantly evaluate layout recalculations
             PropertyAction { target: dialogContainer; property: "isExpanded"; value: true }
             ParallelAnimation {
-                Anim { target: lockIcon; property: "rotation"; to: 360; easing: Tokens.anim.standardDecel }
+                Anim { target: lockIcon; property: "scale"; to: 0; type: Anim.BounceEffects }
                 Anim { type: Anim.DefaultEffects; target: lockIcon; property: "opacity"; to: 0 }
                 Anim { type: Anim.DefaultEffects; target: dialogContent; property: "opacity"; to: 1 }
-                Anim { target: dialogContent; property: "scale"; to: 1 }
+                Anim { target: dialogContent; property: "scale"; to: 1; type: Anim.BounceEffects }
                 Anim { target: dialogBg; property: "radius"; to: Tokens.rounding.large }
             }
         }
@@ -126,13 +124,12 @@ StyledWindow {
             Anim { target: dialogContent; property: "scale"; to: 0 }
             Anim { target: dialogContent; property: "opacity"; to: 0; type: Anim.StandardSmall }
             Anim { target: lockIcon; property: "opacity"; to: 1; type: Anim.StandardLarge }
-            
+            Anim { target: lockIcon; property: "scale"; to: 1; type: Anim.StandardLarge }
+
             SequentialAnimation {
                 PauseAnimation { duration: Tokens.anim.durations.small }
                 Anim { target: dialogContainer; property: "opacity"; to: 0; type: Anim.Standard }
-                PropertyAction { target: dialogContainer; property: "rotation"; value: 180 }
                 PropertyAction { target: dialogContainer; property: "scale"; value: 0 }
-                PropertyAction { target: lockIcon; property: "rotation"; value: 180 }
             }
         }
     }
@@ -155,7 +152,6 @@ StyledWindow {
         anchors.centerIn: parent
         implicitWidth: isExpanded ? targetWidth : iconSize
         implicitHeight: isExpanded ? targetHeight : iconSize
-        rotation: 180
         scale: 0
 
         // This prevents the snapshotting issue by persistently interpolating dynamically updating bindings
@@ -181,10 +177,10 @@ StyledWindow {
             id: lockIcon
 
             anchors.centerIn: parent
-            text: "lock"
+            text: "shield_person"
+            fill: 1
             fontStyle: Tokens.font.icon.builders.extraLarge.scale(2).weight(Font.Medium).build()
             color: Colours.palette.m3secondary
-            rotation: 180
         }
 
         ColumnLayout {
@@ -195,7 +191,7 @@ StyledWindow {
 
             opacity: 0
             scale: 0
-            spacing: Tokens.spacing.extraLarge
+            spacing: Tokens.spacing.large
 
             // Title Container
             StyledRect {
