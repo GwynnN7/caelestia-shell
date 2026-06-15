@@ -80,13 +80,13 @@ Variants {
             anchors.bottomMargin: Config.bar.position === "bottom" ? clockBaseMargin + clockBarZone : clockBaseMargin
 
             anchors.horizontalCenterOffset: {
-                if (Config.bar.position === "left") return clockBarZone / 2;
-                if (Config.bar.position === "right") return -clockBarZone / 2;
+                if (Config.bar.position === "left") return Tokens.sizes.bar.innerWidth / 2;
+                if (Config.bar.position === "right") return -Tokens.sizes.bar.innerWidth / 2;
                 return 0;
             }
             anchors.verticalCenterOffset: {
-                if (Config.bar.position === "top") return clockBarZone / 2;
-                if (Config.bar.position === "bottom") return -clockBarZone / 2;
+                if (Config.bar.position === "top") return Tokens.sizes.bar.innerWidth / 2;
+                if (Config.bar.position === "bottom") return -Tokens.sizes.bar.innerWidth / 2;
                 return 0;
             }
 
@@ -193,13 +193,13 @@ Variants {
             anchors.bottomMargin: Config.bar.position === "bottom" ? lyricsBaseMargin + lyricsBarZone : lyricsBaseMargin
 
             anchors.horizontalCenterOffset: {
-                if (Config.bar.position === "left") return lyricsBarZone / 2;
-                if (Config.bar.position === "right") return -lyricsBarZone / 2;
+                if (Config.bar.position === "left") return Tokens.sizes.bar.innerWidth / 2;
+                if (Config.bar.position === "right") return -Tokens.sizes.bar.innerWidth / 2;
                 return 0;
             }
             anchors.verticalCenterOffset: {
-                if (Config.bar.position === "top") return lyricsBarZone / 2;
-                if (Config.bar.position === "bottom") return -lyricsBarZone / 2;
+                if (Config.bar.position === "top") return Tokens.sizes.bar.innerWidth / 2;
+                if (Config.bar.position === "bottom") return -Tokens.sizes.bar.innerWidth / 2;
                 return 0;
             }
 
