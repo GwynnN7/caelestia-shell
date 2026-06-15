@@ -135,12 +135,10 @@ StyledClippingRect {
 
                             if (cls === "tidal-hifi") {
                                 foundMusic = true;
-                                break;
                             }
 
                             if (cls === "steam") {
                                 foundGaming = true;
-                                break;
                             }
                         }
 
