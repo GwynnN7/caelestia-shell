@@ -111,6 +111,13 @@ PageBase {
         }
 
         NavRow {
+            icon: "dock"
+            label: qsTr("Dock")
+            status: qsTr("Positioning, recoloring")
+            onClicked: root.nState.openSubPage(10)
+        }
+
+        NavRow {
             icon: "widgets"
             label: qsTr("Tray")
             status: qsTr("System tray icons")

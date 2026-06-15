@@ -7,7 +7,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: qsTr("Active window")
+    title: qsTr("Dock")
     isSubPage: true
 
     ColumnLayout {
@@ -22,7 +22,7 @@ PageBase {
             text: qsTr("Enable component")
             checked: {
                 for (let i = 0; i < Config.bar.entries.length; i++) {
-                    if (Config.bar.entries[i].id === "activeWindow")
+                    if (Config.bar.entries[i].id === "dock")
                         return Config.bar.entries[i].enabled;
                 }
                 return false;
@@ -30,7 +30,7 @@ PageBase {
             onToggled: {
                 let entries = GlobalConfig.bar.entries;
                 for (let i = 0; i < entries.length; i++) {
-                    if (entries[i].id === "activeWindow") {
+                    if (entries[i].id === "dock") {
                         entries[i].enabled = checked;
                         GlobalConfig.bar.entries = entries;
                         break;
@@ -41,33 +41,19 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
-            text: qsTr("Compact")
-            checked: Config.bar.activeWindow.compact
-            onToggled: GlobalConfig.bar.activeWindow.compact = checked
-        }
-
-        ToggleRow {
-            Layout.fillWidth: true
-            text: qsTr("Inverted")
-            checked: Config.bar.activeWindow.inverted
-            onToggled: GlobalConfig.bar.activeWindow.inverted = checked
-        }
-
-        ToggleRow {
-            Layout.fillWidth: true
-            text: qsTr("Show on hover")
-            subtext: qsTr("Only show the active window title while hovering")
-            checked: Config.bar.activeWindow.showOnHover
-            onToggled: GlobalConfig.bar.activeWindow.showOnHover = checked
+            text: qsTr("Monitor center")
+            subtext: qsTr("Center the dock relative to the physical monitor")
+            checked: Config.bar.dock.monitorCenter
+            onToggled: GlobalConfig.bar.dock.monitorCenter = checked
         }
 
         ToggleRow {
             Layout.fillWidth: true
             last: true
-            text: qsTr("Popout on hover")
-            subtext: qsTr("Show a window details popout when hovering")
-            checked: Config.bar.popouts.activeWindow
-            onToggled: GlobalConfig.bar.popouts.activeWindow = checked
+            text: qsTr("Recolour icons")
+            subtext: qsTr("Recolour application icons using the system theme")
+            checked: Config.bar.dock.recolourIcons
+            onToggled: GlobalConfig.bar.dock.recolourIcons = checked
         }
     }
 }

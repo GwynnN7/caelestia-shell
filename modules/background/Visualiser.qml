@@ -72,8 +72,8 @@ Item {
 
                     anchors.fill: parent
                     anchors.margins: Config.border.thickness
-                    anchors.leftMargin: Config.bar.position === "left" ? (root.barExclusiveZone + root.visualiserSpacing) : root.fallbackMargin
-                    anchors.rightMargin: Config.bar.position === "right" ? (root.barExclusiveZone + root.visualiserSpacing) : root.fallbackMargin
+                    anchors.leftMargin: Config.bar.position === "left" ? (root.barExclusiveZone + root.fallbackMargin) : root.fallbackMargin
+                    anchors.rightMargin: Config.bar.position === "right" ? (root.barExclusiveZone + root.fallbackMargin) : root.fallbackMargin
                     anchors.topMargin: Config.bar.position === "top" ? root.barExclusiveZone : Config.border.thickness
                     anchors.bottomMargin: Config.bar.position === "bottom" ? root.barExclusiveZone : Config.border.thickness
 

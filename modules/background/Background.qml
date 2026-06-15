@@ -79,8 +79,16 @@ Variants {
             anchors.topMargin: Config.bar.position === "top" ? clockBaseMargin + clockBarZone : clockBaseMargin
             anchors.bottomMargin: Config.bar.position === "bottom" ? clockBaseMargin + clockBarZone : clockBaseMargin
 
-            anchors.horizontalCenterOffset: Config.bar.position === "left" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "right" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
-            anchors.verticalCenterOffset: Config.bar.position === "top" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "bottom" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
+            anchors.horizontalCenterOffset: {
+                if (Config.bar.position === "left") return clockBarZone / 2;
+                if (Config.bar.position === "right") return -clockBarZone / 2;
+                return 0;
+            }
+            anchors.verticalCenterOffset: {
+                if (Config.bar.position === "top") return clockBarZone / 2;
+                if (Config.bar.position === "bottom") return -clockBarZone / 2;
+                return 0;
+            }
 
             state: Config.background.desktopClock.position
             states: [
@@ -184,8 +192,16 @@ Variants {
             anchors.topMargin: Config.bar.position === "top" ? lyricsBaseMargin + lyricsBarZone : lyricsBaseMargin
             anchors.bottomMargin: Config.bar.position === "bottom" ? lyricsBaseMargin + lyricsBarZone : lyricsBaseMargin
 
-            anchors.horizontalCenterOffset: Config.bar.position === "left" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "right" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
-            anchors.verticalCenterOffset: Config.bar.position === "top" ? Tokens.sizes.bar.innerWidth / 2 : (Config.bar.position === "bottom" ? -Tokens.sizes.bar.innerWidth / 2 : 0)
+            anchors.horizontalCenterOffset: {
+                if (Config.bar.position === "left") return lyricsBarZone / 2;
+                if (Config.bar.position === "right") return -lyricsBarZone / 2;
+                return 0;
+            }
+            anchors.verticalCenterOffset: {
+                if (Config.bar.position === "top") return lyricsBarZone / 2;
+                if (Config.bar.position === "bottom") return -lyricsBarZone / 2;
+                return 0;
+            }
 
             state: Config.background.desktopLyrics.position
             states: [
