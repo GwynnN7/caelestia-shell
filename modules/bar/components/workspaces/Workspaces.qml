@@ -145,13 +145,13 @@ StyledClippingRect {
                         }
 
                         if (foundComm)
-                            Hypr.dispatch("togglespecialworkspace communication");
+                            Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("communication")' : "togglespecialworkspace communication");
                         else if (foundMusic)
-                            Hypr.dispatch("togglespecialworkspace music");
+                            Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("music")' : "togglespecialworkspace music");
                         else if (foundGaming)
-                            Hypr.dispatch("togglespecialworkspace gaming");
+                            Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("gaming")' : "togglespecialworkspace gaming");
                         else
-                            Hypr.dispatch("togglespecialworkspace special");
+                            Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("special")' : "togglespecialworkspace special");
                     } catch (e) {
                         Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("special")' : "togglespecialworkspace special");
                     } finally {
