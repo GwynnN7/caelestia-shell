@@ -305,6 +305,15 @@ PageBase {
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
+            text: qsTr("Toast transparency")
+            subtext: qsTr("Apply transparency and blur to toast notifications")
+            checked: GlobalConfig.utilities.toasts.transparency
+            onToggled: GlobalConfig.utilities.toasts.transparency = checked
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
             last: true
             text: qsTr("Dark theme")
             checked: !Colours.light

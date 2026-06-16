@@ -3,7 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
+import M3Shapes
 import qs.components
+import qs.components.controls
 import qs.modules.nexus.common
 
 PageBase {
@@ -11,6 +13,108 @@ PageBase {
 
     title: qsTr("Dashboard")
     isSubPage: true
+
+    readonly property list<MenuItem> dashboardShapeItems: [
+        MenuItem {
+            property int value: MaterialShape.Circle
+            text: qsTr("Circle")
+        },
+        MenuItem {
+            property int value: MaterialShape.Square
+            text: qsTr("Square")
+        },
+        MenuItem {
+            property int value: MaterialShape.Pill
+            text: qsTr("Pill")
+        },
+        MenuItem {
+            property int value: MaterialShape.Diamond
+            text: qsTr("Diamond")
+        },
+        MenuItem {
+            property int value: MaterialShape.ClamShell
+            text: qsTr("Clam Shell")
+        },
+        MenuItem {
+            property int value: MaterialShape.Pentagon
+            text: qsTr("Pentagon")
+        },
+        MenuItem {
+            property int value: MaterialShape.Gem
+            text: qsTr("Gem")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie4Sided
+            text: qsTr("Cookie 4-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie6Sided
+            text: qsTr("Cookie 6-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie7Sided
+            text: qsTr("Cookie 7-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie9Sided
+            text: qsTr("Cookie 9-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie12Sided
+            text: qsTr("Cookie 12-Sided")
+        }
+    ]
+
+    readonly property list<MenuItem> lockShapeItems: [
+        MenuItem {
+            property int value: MaterialShape.Circle
+            text: qsTr("Circle")
+        },
+        MenuItem {
+            property int value: MaterialShape.Square
+            text: qsTr("Square")
+        },
+        MenuItem {
+            property int value: MaterialShape.Pill
+            text: qsTr("Pill")
+        },
+        MenuItem {
+            property int value: MaterialShape.Diamond
+            text: qsTr("Diamond")
+        },
+        MenuItem {
+            property int value: MaterialShape.ClamShell
+            text: qsTr("Clam Shell")
+        },
+        MenuItem {
+            property int value: MaterialShape.Pentagon
+            text: qsTr("Pentagon")
+        },
+        MenuItem {
+            property int value: MaterialShape.Gem
+            text: qsTr("Gem")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie4Sided
+            text: qsTr("Cookie 4-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie6Sided
+            text: qsTr("Cookie 6-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie7Sided
+            text: qsTr("Cookie 7-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie9Sided
+            text: qsTr("Cookie 9-Sided")
+        },
+        MenuItem {
+            property int value: MaterialShape.Cookie12Sided
+            text: qsTr("Cookie 12-Sided")
+        }
+    ]
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -40,14 +144,42 @@ PageBase {
             onToggled: GlobalConfig.dashboard.showOnHover = checked
         }
 
-        ToggleRow {
+        SelectRow {
+            Layout.fillWidth: true
+            label: qsTr("Dashboard profile picture shape")
+            subtext: qsTr("Choose the shape of the profile picture on the dashboard")
+            fallbackIcon: "person"
+            fallbackText: qsTr("Pill")
+            active: {
+                for (let i = 0; i < dashboardShapeItems.length; i++) {
+                    if (dashboardShapeItems[i].value === GlobalConfig.dashboard.profilePicShape)
+                        return dashboardShapeItems[i];
+                }
+                return dashboardShapeItems[0];
+            }
+            menuItems: dashboardShapeItems
+            onSelected: item => {
+                GlobalConfig.dashboard.profilePicShape = item.value
+            }
+        }
+
+        SelectRow {
             Layout.fillWidth: true
             last: true
-            text: qsTr("Circular profile picture")
-            checked: GlobalConfig.dashboard.circleProfilePic
-            onToggled: {
-                GlobalConfig.dashboard.circleProfilePic = checked
-                GlobalConfig.lock.circleProfilePic = checked
+            label: qsTr("Lock screen profile picture shape")
+            subtext: qsTr("Choose the shape of the profile picture on the lock screen")
+            fallbackIcon: "lock"
+            fallbackText: qsTr("Clam Shell")
+            active: {
+                for (let i = 0; i < lockShapeItems.length; i++) {
+                    if (lockShapeItems[i].value === GlobalConfig.lock.profilePicShape)
+                        return lockShapeItems[i];
+                }
+                return lockShapeItems[0];
+            }
+            menuItems: lockShapeItems
+            onSelected: item => {
+                GlobalConfig.lock.profilePicShape = item.value
             }
         }
 

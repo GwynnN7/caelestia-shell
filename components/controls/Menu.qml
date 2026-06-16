@@ -1,10 +1,12 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Caelestia.Config
 import qs.components
+import qs.components.controls
 import qs.components.effects
 import qs.services
 import qs.modules.drawers
@@ -30,6 +32,7 @@ MouseArea {
     property list<MenuItem> items
     property MenuItem active: items[0] ?? null
     property bool expanded
+    property real maxHeight: 320
 
     signal itemSelected(item: MenuItem)
 
@@ -82,8 +85,8 @@ MouseArea {
         radius: Tokens.rounding.large
         level: 2
 
-        implicitWidth: Math.max(200, column.implicitWidth + column.anchors.margins * 2)
-        implicitHeight: column.implicitHeight + column.anchors.margins * 2
+        implicitWidth: Math.max(200, column.implicitWidth + Tokens.padding.extraSmall * 2)
+        implicitHeight: Math.min(root.maxHeight, column.implicitHeight + Tokens.padding.extraSmall * 2)
 
         transform: Scale {
             yScale: root.expanded ? 1 : 0.1
@@ -105,17 +108,31 @@ MouseArea {
             radius: parent.radius
             color: Colours.palette.m3surfaceContainerLow
 
-            ColumnLayout {
-                id: column
+            Flickable {
+                id: flickable
 
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.extraSmall
-                spacing: 0
+                contentWidth: width
+                contentHeight: column.implicitHeight
+                clip: true
 
-                Repeater {
-                    id: repeater
+                interactive: contentHeight > height
 
-                    model: root.items
+                ScrollBar.vertical: StyledScrollBar {
+                    flickable: flickable
+                }
+
+                ColumnLayout {
+                    id: column
+
+                    width: parent.width
+                    spacing: 0
+
+                    Repeater {
+                        id: repeater
+
+                        model: root.items
 
                     StyledRect {
                         id: item
@@ -191,6 +208,7 @@ MouseArea {
                     }
                 }
             }
+        }
         }
     }
 }

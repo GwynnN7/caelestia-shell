@@ -83,19 +83,23 @@ Singleton {
     }
 
     function reloadHyprRules(): void {
+        const drawersBlur = transparency.enabled || GlobalConfig.utilities.toasts.transparency;
+        const drawersBase = transparency.enabled ? (GlobalConfig.utilities.toasts.transparency ? Math.min(transparency.base, GlobalConfig.utilities.toasts.transparencyBase) : transparency.base) : GlobalConfig.utilities.toasts.transparencyBase;
+        const drawersIgnoreAlpha = drawersBase - 0.03;
+
         if (Hypr.usingLua) {
             const rule = `eval hl.layer_rule({ match = { namespace = "%1" }, %2 })`;
             Hypr.extras.batchMessage([
-                rule.arg("caelestia-drawers").arg(`blur = ${transparency.enabled}`),
-                rule.arg("caelestia-drawers").arg(`ignore_alpha = ${transparency.base - 0.03}`),
+                rule.arg("caelestia-drawers").arg(`blur = ${drawersBlur}`),
+                rule.arg("caelestia-drawers").arg(`ignore_alpha = ${drawersIgnoreAlpha}`),
                 rule.arg("caelestia-polkit").arg(`blur = ${transparency.enabled}`),
                 rule.arg("caelestia-polkit").arg(`ignore_alpha = ${transparency.base - 0.03}`)
             ]);
         } else {
             const str = "keyword layerrule %1 %2, match:namespace %3";
             Hypr.extras.batchMessage([
-                str.arg("blur").arg(transparency.enabled ? 1 : 0).arg("caelestia-drawers"),
-                str.arg("ignore_alpha").arg(transparency.base - 0.03).arg("caelestia-drawers"),
+                str.arg("blur").arg(drawersBlur ? 1 : 0).arg("caelestia-drawers"),
+                str.arg("ignore_alpha").arg(drawersIgnoreAlpha).arg("caelestia-drawers"),
                 str.arg("blur").arg(transparency.enabled ? 1 : 0).arg("caelestia-polkit"),
                 str.arg("ignore_alpha").arg(transparency.base - 0.03).arg("caelestia-polkit")
             ]);
@@ -119,6 +123,17 @@ Singleton {
         }
 
         target: Hypr
+    }
+
+    Connections {
+        target: GlobalConfig.utilities.toasts
+        ignoreUnknownSignals: true
+        function onTransparencyChanged(): void {
+            root.requestReloadHyprRules();
+        }
+        function onTransparencyBaseChanged(): void {
+            root.requestReloadHyprRules();
+        }
     }
 
     FileView {

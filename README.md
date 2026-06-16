@@ -774,7 +774,6 @@ For example, to disable the bar on DP-1:
         "thickness": 10
     },
     "dashboard": {
-        "circleProfilePic": true,
         "colorizeMediaGif": true,
         "dragThreshold": 50,
         "enabled": true,
@@ -787,6 +786,7 @@ For example, to disable the bar on DP-1:
             "showNetwork": true,
             "showStorage": true
         },
+        "profilePicShape": 9,
         "resourceUpdateInterval": 1000,
         "showDashboard": true,
         "showHyprlandSplash": false,
@@ -1051,10 +1051,10 @@ For example, to disable the bar on DP-1:
         "vimKeybinds": false
     },
     "lock": {
-        "circleProfilePic": true,
         "enableFprint": true,
         "hideNotifs": false,
         "maxFprintTries": 3,
+        "profilePicShape": 12,
         "recolourLogo": true
     },
     "nexus": {
@@ -1203,6 +1203,8 @@ For example, to disable the bar on DP-1:
             "kbLimit": true,
             "nowPlaying": false,
             "numLockChanged": true,
+            "transparency": false,
+            "transparencyBase": 0.85,
             "vpnChanged": true
         },
         "vpn": {

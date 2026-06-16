@@ -17,13 +17,18 @@ StyledRect {
 
     radius: Tokens.rounding.large
     color: {
+        let baseColor = Colours.palette.m3surface;
         if (root.modelData.type === Toast.Success)
-            return Colours.palette.m3successContainer;
-        if (root.modelData.type === Toast.Warning)
-            return Colours.palette.m3secondary;
-        if (root.modelData.type === Toast.Error)
-            return Colours.palette.m3errorContainer;
-        return Colours.palette.m3surface;
+            baseColor = Colours.palette.m3successContainer;
+        else if (root.modelData.type === Toast.Warning)
+            baseColor = Colours.palette.m3secondary;
+        else if (root.modelData.type === Toast.Error)
+            baseColor = Colours.palette.m3errorContainer;
+
+        if (GlobalConfig.utilities.toasts.transparency) {
+            return Qt.alpha(baseColor, GlobalConfig.utilities.toasts.transparencyBase);
+        }
+        return baseColor;
     }
 
     border.width: 1
