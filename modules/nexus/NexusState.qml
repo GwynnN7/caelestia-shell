@@ -10,6 +10,7 @@ QtObject {
     property bool searchOpen
 
     property string selectedWallpaperCategory
+    property string wallpaperFilterType: "all"
     property BluetoothDevice selectedBtDevice
 
     signal close
