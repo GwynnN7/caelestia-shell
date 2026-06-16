@@ -46,4 +46,5 @@ ShellRoot {
     IdleMonitors {
         lock: lock
     }
+    BluetoothReconnect {}
 }

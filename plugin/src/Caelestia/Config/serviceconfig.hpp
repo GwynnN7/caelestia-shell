@@ -3,6 +3,7 @@
 #include "configobject.hpp"
 
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qvariant.h>
 
 namespace caelestia::config {
@@ -33,6 +34,7 @@ class ServiceConfig : public ConfigObject {
     CONFIG_GLOBAL_PROPERTY(QVariantList, playerAliases,
         { vmap({ { u"from"_s, u"com.github.th_ch.youtube_music"_s }, { u"to"_s, u"YT Music"_s } }) })
     CONFIG_GLOBAL_PROPERTY(QString, lyricsBackend, u"Auto"_s)
+    CONFIG_GLOBAL_PROPERTY(QStringList, bluetoothAutoReconnectDevices)
 
 public:
     explicit ServiceConfig(QObject* parent = nullptr)
