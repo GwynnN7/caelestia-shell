@@ -84,11 +84,21 @@ Singleton {
 
     function reloadHyprRules(): void {
         if (Hypr.usingLua) {
-            const rule = `eval hl.layer_rule({ match = { namespace = "caelestia-drawers" }, %1 })`;
-            Hypr.extras.batchMessage([rule.arg(`blur = ${transparency.enabled}`), rule.arg(`ignore_alpha = ${transparency.base - 0.03}`)]);
+            const rule = `eval hl.layer_rule({ match = { namespace = "%1" }, %2 })`;
+            Hypr.extras.batchMessage([
+                rule.arg("caelestia-drawers").arg(`blur = ${transparency.enabled}`),
+                rule.arg("caelestia-drawers").arg(`ignore_alpha = ${transparency.base - 0.03}`),
+                rule.arg("caelestia-polkit").arg(`blur = ${transparency.enabled}`),
+                rule.arg("caelestia-polkit").arg(`ignore_alpha = ${transparency.base - 0.03}`)
+            ]);
         } else {
-            const str = "keyword layerrule %1 %2, match:namespace caelestia-drawers";
-            Hypr.extras.batchMessage([str.arg("blur").arg(transparency.enabled ? 1 : 0), str.arg("ignore_alpha").arg(transparency.base - 0.03)]);
+            const str = "keyword layerrule %1 %2, match:namespace %3";
+            Hypr.extras.batchMessage([
+                str.arg("blur").arg(transparency.enabled ? 1 : 0).arg("caelestia-drawers"),
+                str.arg("ignore_alpha").arg(transparency.base - 0.03).arg("caelestia-drawers"),
+                str.arg("blur").arg(transparency.enabled ? 1 : 0).arg("caelestia-polkit"),
+                str.arg("ignore_alpha").arg(transparency.base - 0.03).arg("caelestia-polkit")
+            ]);
         }
     }
 
