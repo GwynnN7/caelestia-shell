@@ -2,7 +2,8 @@
 
 #include "configobject.hpp"
 
-#include <qfileinfo.h>
+#include <QFileInfo>
+#include <QStandardPaths>
 
 namespace caelestia::config {
 
@@ -48,7 +49,7 @@ class GeneralIdle : public ConfigObject {
 public:
     explicit GeneralIdle(QObject* parent = nullptr)
         : ConfigObject(parent) {
-        if (!QFileInfo::exists(QStringLiteral("/run/systemd/system"))) {
+        if (QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty()) {
             for (auto& timeoutVal : m_timeouts) {
                 QVariantMap timeout = timeoutVal.toMap();
                 if (timeout.value(u"idleAction"_s).toStringList() == QStringList{ u"systemctl"_s, u"suspend-then-hibernate"_s }) {

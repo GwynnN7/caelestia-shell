@@ -14,126 +14,6 @@
 
 https://github.com/user-attachments/assets/0840f496-575c-4ca6-83a8-87bb01a85c5f
 
-## Fork Features
-
-This fork adds the following features on top of the official caelestia shell:
-
-- **Emoji Picker** - Browse and search emojis, with usage frequency tracking and favorites support. Trigger with `>emoji ` or the global shortcut.
-- **Clipboard History** - Access clipboard history with image preview support and favorites. Trigger with `>clipboard ` or the global shortcut.
-- **Window Switcher** - Quickly switch between windows with live previews. Trigger with `>windows ` or the global shortcut.
-- **Keybinds** - Browse and search your Hyprland keybinds. Trigger with `>keybinds ` or the global shortcut.
-- **Shimeji Desktop Characters** - Animated desktop characters (like Pusheen) with per-screen configuration.
-- **GIF Wallpaper Support** - Use animated images as wallpapers .
-- **Video Wallpaper Support** - Use video files as animated wallpapers with configurable pause options.
-- **Wallpaper Quick Toggle** - Quick toggle for wallpaper picker.
-- **Pause Video Wallpapers Toggle** - Quick toggle to pause all video wallpapers with configurable auto-pause on fullscreen/tiled windows.
-- **Background Clock** - Desktop clock now follows fonts defined in user's shell.json.
-- **Desktop Lyrics** - Display lyrics on the desktop with customizable positioning, scale, text alignment, colors, animations, and auto-hide when fullscreen windows are present.
-- **Bezel Mode** - Makes the shell background pitch black and fully opaque, creating a seamless look where the shell blends with display bezels.
-- **Wallhaven Wallpaper Searcher** - Browse and search wallpapers from wallhaven.cc with filters, pagination, and direct download to your wallpaper folder.
-- **Premium Developer Console (Terminal Tab)** - Beautifully enhanced dashboard terminal tab with zsh/fish-style inline ghost autocomplete, Up/Down arrow-key scrollback history, dynamic path resolver (`cd`), smooth auto-scrolling, monospace whitespace preservation (Cowsay/ASCII art support), and a dedicated global toggle shortcut (`caelestia:terminal`).
-- **Workspace Material Icons** - Use Material Design icons for workspace indicators instead of unicode symbols. Active workspaces show `radio_button_checked`, inactive show `radio_button_unchecked`. Special workspaces use `star` (scratchpad), `chat_bubble` (communication), `music_note_2` (music). Enable via `useIcon` option, with custom icons configurable per workspace via `wsIcons`.
-- **Notifications Status Icon** - Notification bell in status icons with DND support, sidebar toggle on click, and popout with DND toggle and clear all button.
-- **Bar Dock Module** - MacOS-style application dock for the taskbar, replacing the active window title. Features dynamic layout integration, absolute monitor centering options, matching icon colorizations, and animated popouts.
-
-## Global Shortcuts
-
-All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hyprland.org/Configuring/Binds/#dbus-global-shortcuts).
-
-### Available Shortcuts
-
-| Shortcut Name | Description |
-|---------------|-------------|
-| `caelestia:controlCenter` | Open control center |
-| `caelestia:launcher` | Toggle launcher |
-| `caelestia:dashboard` | Toggle dashboard |
-| `caelestia:session` | Toggle session menu |
-| `caelestia:sidebar` | Toggle sidebar |
-| `caelestia:utilities` | Toggle utilities panel |
-| `caelestia:emoji` | Open emoji picker |
-| `caelestia:clipboard` | Open clipboard history |
-| `caelestia:windowSwitcher` | Open window switcher |
-| `caelestia:keybinds` | Open keybinds list |
-| `caelestia:wallpaper` | Open wallpaper picker |
-| `caelestia:showall` | Toggle all UI elements |
-| `caelestia:terminal` | Toggle terminal drawer |
-
-### Hyprland Keybind Examples
-
-To bind these shortcuts in Hyprland, add to your config:
-
-```conf
-# Launcher and UI elements
-bind = SUPER, SPACE, global, caelestia:launcher
-bind = SUPER, RETURN, global, caelestia:launcher
-bind = SUPER, S, global, caelestia:controlCenter
-
-# New features in this fork
-bind = SUPER, E, global, caelestia:emoji
-bind = SUPER, V, global, caelestia:clipboard
-bind = SUPER, W, global, caelestia:windowSwitcher
-bind = SUPER, K, global, caelestia:keybinds
-bind = SUPER, B, global, caelestia:wallpaper
-bind = SUPER, T, global, caelestia:terminal
-
-# Other toggles
-bind = SUPER, D, global, caelestia:dashboard
-bind = SUPER, N, global, caelestia:sidebar
-bind = SUPER, M, global, caelestia:utilities
-```
-
-## Migration from Official Caelestia
-
-If you're migrating from the official caelestia shell to this fork, you may need to update your `shell.json` to include the new configuration options:
-
-```json
-"launcher": {
-    "favouriteEmojis": [],
-    "favouriteClips": []
-},
-"shimeji": {
-    "enabled": false,
-    "path": "root:/assets/shimeji/pusheen/",
-    "count": 1,
-    "autoHide": true,
-    "excludedScreens": [],
-    "screenCounts": {}
-},
-"background": {
-    "videoWallpaperPaused": false,
-    "videoWallpaperSoundEnabled": false,
-    "videoWallpaperPauseOnFullscreen": false,
-    "videoWallpaperPauseOnTiled": false,
-    "videoWallpaperPauseOnAllDisplays": false,
-    "videoWallpaperMuteOnMedia": false,
-    "desktopLyrics": {
-        "enabled": false,
-        "autoHide": true,
-        "scale": 1.0,
-        "position": "bottom-center",
-        "alignment": 1,
-        "invertColors": false,
-        "background": {
-            "enabled": false,
-            "opacity": 0.7,
-            "blur": true
-        },
-        "shadow": {
-            "enabled": true,
-            "opacity": 0.7,
-            "blur": 0.4
-        }
-    }
-},
-"utilities": {
-    "quickToggles": [
-        { "id": "wallpaper", "enabled": true },
-        { "id": "badapple", "enabled": true },
-        { "id": "pauseWallpaper", "enabled": true }
-    ]
-}
-```
-
 ## Components
 
 -   Widgets: [`Quickshell`](https://quickshell.outfoxxed.me)
@@ -239,6 +119,115 @@ cd caelestia
 
 > [!TIP]
 > By default, the script will use the latest version tag from [upstream](https://github.com/caelestia-dots/shell) to set the version number for the build. It does not download anything from upstream - it builds your local fork. You can also specify a version manually: `./install.sh 2.0.2`
+
+## Fork Features
+
+This fork adds the following features on top of the official caelestia shell:
+
+- **Enhanced Launchers**: Emoji Picker, Clipboard History, Window Switcher, and Hyprland Keybinds (with favorites support).
+- **Dynamic Wallpapers**: Support for GIF and video wallpapers with auto-pause, plus Wallhaven integration to search and download directly.
+- **Interactive Dino Game**: A fully playable Chrome Dino runner game embedded in the empty notification docks.
+- **Developer Console**: A premium terminal tab in the dashboard featuring inline ghost autocomplete, history, and a dedicated global shortcut.
+- **Bar Improvements**: A MacOS-style application dock in the taskbar, Material Design workspace icons, and a dedicated notification status icon with DND toggle.
+- **Desktop Enhancements**: Customizable floating desktop lyrics, animated Shimeji characters, and Bezel Mode for a seamless display look.
+
+## Global Shortcuts
+
+All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hyprland.org/Configuring/Binds/#dbus-global-shortcuts).
+
+### Available Shortcuts
+
+| Shortcut Name | Description |
+|---------------|-------------|
+| `caelestia:controlCenter` | Open control center |
+| `caelestia:launcher` | Toggle launcher |
+| `caelestia:dashboard` | Toggle dashboard |
+| `caelestia:session` | Toggle session menu |
+| `caelestia:sidebar` | Toggle sidebar |
+| `caelestia:utilities` | Toggle utilities panel |
+| `caelestia:emoji` | Open emoji picker |
+| `caelestia:clipboard` | Open clipboard history |
+| `caelestia:windowSwitcher` | Open window switcher |
+| `caelestia:keybinds` | Open keybinds list |
+| `caelestia:wallpaper` | Open wallpaper picker |
+| `caelestia:showall` | Toggle all UI elements |
+| `caelestia:terminal` | Toggle terminal drawer |
+
+### Hyprland Keybind Examples
+
+To bind these shortcuts in Hyprland, add to your config:
+
+```conf
+# Launcher and UI elements
+bind = SUPER, SPACE, global, caelestia:launcher
+bind = SUPER, RETURN, global, caelestia:launcher
+bind = SUPER, S, global, caelestia:controlCenter
+
+# New features in this fork
+bind = SUPER, E, global, caelestia:emoji
+bind = SUPER, V, global, caelestia:clipboard
+bind = SUPER, W, global, caelestia:windowSwitcher
+bind = SUPER, K, global, caelestia:keybinds
+bind = SUPER, B, global, caelestia:wallpaper
+bind = SUPER, T, global, caelestia:terminal
+
+# Other toggles
+bind = SUPER, D, global, caelestia:dashboard
+bind = SUPER, N, global, caelestia:sidebar
+bind = SUPER, M, global, caelestia:utilities
+```
+
+## Migration from Official Caelestia
+
+If you're migrating from the official caelestia shell to this fork, you may need to update your `shell.json` to include the new configuration options:
+
+```json
+"launcher": {
+    "favouriteEmojis": [],
+    "favouriteClips": []
+},
+"shimeji": {
+    "enabled": false,
+    "path": "root:/assets/shimeji/pusheen/",
+    "count": 1,
+    "autoHide": true,
+    "excludedScreens": [],
+    "screenCounts": {}
+},
+"background": {
+    "videoWallpaperPaused": false,
+    "videoWallpaperSoundEnabled": false,
+    "videoWallpaperPauseOnFullscreen": false,
+    "videoWallpaperPauseOnTiled": false,
+    "videoWallpaperPauseOnAllDisplays": false,
+    "videoWallpaperMuteOnMedia": false,
+    "desktopLyrics": {
+        "enabled": false,
+        "autoHide": true,
+        "scale": 1.0,
+        "position": "bottom-center",
+        "alignment": 1,
+        "invertColors": false,
+        "background": {
+            "enabled": false,
+            "opacity": 0.7,
+            "blur": true
+        },
+        "shadow": {
+            "enabled": true,
+            "opacity": 0.7,
+            "blur": 0.4
+        }
+    }
+},
+"utilities": {
+    "quickToggles": [
+        { "id": "wallpaper", "enabled": true },
+        { "id": "badapple", "enabled": true },
+        { "id": "pauseWallpaper", "enabled": true }
+    ]
+}
+```
 
 ## Usage
 

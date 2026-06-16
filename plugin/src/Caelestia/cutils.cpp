@@ -10,6 +10,7 @@
 #include <qfuturewatcher.h>
 #include <qloggingcategory.h>
 #include <qqmlengine.h>
+#include <QStandardPaths>
 
 Q_LOGGING_CATEGORY(lcCUtils, "caelestia.cutils", QtInfoMsg)
 
@@ -171,7 +172,7 @@ QString CUtils::qtVersion() const {
 }
 
 bool CUtils::isSystemd() const {
-    return QFileInfo::exists(QStringLiteral("/run/systemd/system"));
+    return !QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty();
 }
 
 } // namespace caelestia
