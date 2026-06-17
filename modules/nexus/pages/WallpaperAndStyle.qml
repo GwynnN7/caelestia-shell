@@ -198,6 +198,16 @@ PageBase {
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
+            text: qsTr("Recolor wallpaper")
+            subtext: qsTr("Tint the wallpaper to match static color schemes")
+            checked: Config.background.wallpaperRecolor
+            onToggled: GlobalConfig.background.wallpaperRecolor = checked
+            enabled: Config.background.wallpaperEnabled
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
             text: qsTr("Pause video wallpapers")
             checked: Config.background.videoWallpaperPaused
             onToggled: GlobalConfig.background.videoWallpaperPaused = checked

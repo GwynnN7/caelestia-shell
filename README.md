@@ -14,11 +14,16 @@
 
 https://github.com/user-attachments/assets/0840f496-575c-4ca6-83a8-87bb01a85c5f
 
-## Components
+## Fork Features
 
--   Widgets: [`Quickshell`](https://quickshell.outfoxxed.me)
--   Window manager: [`Hyprland`](https://hyprland.org)
--   Dots: [`caelestia`](https://github.com/caelestia-dots)
+This fork adds the following features on top of the official shell:
+
+- **Launchers**: Emoji Picker, Clipboard History, Window Switcher, and Hyprland Keybinds.
+- **Wallpapers**: GIF/video support with auto-pause, plus Wallhaven integration.
+- **Games**: Playable Chrome Dino runner embedded in the notification dock.
+- **Dashboard**: Developer console terminal tab with history and autocomplete.
+- **Bar**: MacOS-style app dock, Material workspace icons, and DND toggle.
+- **Desktop**: Floating lyrics, Shimeji pets, dynamic wallpaper recoloring, and Bezel Mode.
 
 ## Installation
 
@@ -27,53 +32,7 @@ https://github.com/user-attachments/assets/0840f496-575c-4ca6-83a8-87bb01a85c5f
 > for the entire dots, head to [the main repo](https://github.com/caelestia-dots/caelestia) instead.
 > This fork is available at [dim-ghub/caelestia-shell](https://github.com/dim-ghub/caelestia-shell).
 
-### Arch linux
-
-> [!NOTE]
-> If you want to make your own changes/tweaks to the shell do NOT edit the files installed by the AUR
-> package. Instead, follow the instructions in the [manual installation section](#manual-installation).
-
-The shell is available from the AUR as `caelestia-shell`. You can install it with an AUR helper
-like [`yay`](https://github.com/Jguer/yay) or manually downloading the PKGBUILD and running `makepkg -si`.
-
-A package following the latest commit also exists as `caelestia-shell-git`. This is bleeding edge
-and likely to be unstable/have bugs. Regular users are recommended to use the stable package
-(`caelestia-shell`).
-
-### Nix
-
-You can run the shell directly via `nix run`:
-
-```sh
-nix run github:caelestia-dots/shell
-```
-
-Or add it to your system configuration:
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    caelestia-shell = {
-      url = "github:caelestia-dots/shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-}
-```
-
-The package is available as `caelestia-shell.packages.<system>.default`, which can be added to your
-`environment.systemPackages`, `users.users.<username>.packages`, `home.packages` if using home-manager,
-or a devshell. The shell can then be run via `caelestia-shell`.
-
-> [!TIP]
-> The default package does not have the CLI enabled by default, which is required for full funcionality.
-> To enable the CLI, use the `with-cli` package.
-
-For home-manager, you can also use the Caelestia's home manager module (explained in [configuring](https://github.com/caelestia-dots/shell?tab=readme-ov-file#home-manager-module)) that installs and configures the shell and the CLI.
-
-### Manual installation (this fork)
+### Arch Linux / Manual (this fork)
 
 Dependencies:
 
@@ -120,16 +79,44 @@ cd caelestia
 > [!TIP]
 > By default, the script will use the latest version tag from [upstream](https://github.com/caelestia-dots/shell) to set the version number for the build. It does not download anything from upstream - it builds your local fork. You can also specify a version manually: `./install.sh 2.0.2`
 
-## Fork Features
+### Nix
 
-This fork adds the following features on top of the official caelestia shell:
+You can run the shell directly via `nix run`:
 
-- **Enhanced Launchers**: Emoji Picker, Clipboard History, Window Switcher, and Hyprland Keybinds (with favorites support).
-- **Dynamic Wallpapers**: Support for GIF and video wallpapers with auto-pause, plus Wallhaven integration to search and download directly.
-- **Interactive Dino Game**: A fully playable Chrome Dino runner game embedded in the empty notification docks.
-- **Developer Console**: A premium terminal tab in the dashboard featuring inline ghost autocomplete, history, and a dedicated global shortcut.
-- **Bar Improvements**: A MacOS-style application dock in the taskbar, Material Design workspace icons, and a dedicated notification status icon with DND toggle.
-- **Desktop Enhancements**: Customizable floating desktop lyrics, animated Shimeji characters, and Bezel Mode for a seamless display look.
+```sh
+nix run github:caelestia-dots/shell
+```
+
+Or add it to your system configuration:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+The package is available as `caelestia-shell.packages.<system>.default`, which can be added to your
+`environment.systemPackages`, `users.users.<username>.packages`, `home.packages` if using home-manager,
+or a devshell. The shell can then be run via `caelestia-shell`.
+
+> [!TIP]
+> The default package does not have the CLI enabled by default, which is required for full funcionality.
+> To enable the CLI, use the `with-cli` package.
+
+For home-manager, you can also use the Caelestia's home manager module (explained in [configuring](https://github.com/caelestia-dots/shell?tab=readme-ov-file#home-manager-module)) that installs and configures the shell and the CLI.
+
+## Components
+
+-   Widgets: [`Quickshell`](https://quickshell.outfoxxed.me)
+-   Window manager: [`Hyprland`](https://hyprland.org)
+-   Dots: [`caelestia`](https://github.com/caelestia-dots)
 
 ## Global Shortcuts
 
