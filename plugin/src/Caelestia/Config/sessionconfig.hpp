@@ -43,10 +43,6 @@ public:
     explicit SessionCommands(QObject* parent = nullptr)
         : ConfigObject(parent) {
         if (QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty()) {
-            m_logout = { u"hyprctl"_s, u"dispatch"_s, u"exit"_s };
-            m_shutdown = { u"loginctl"_s, u"poweroff"_s };
-            m_hibernate = { u"loginctl"_s, u"hibernate"_s };
-            m_reboot = { u"loginctl"_s, u"reboot"_s };
         }
     }
 };
