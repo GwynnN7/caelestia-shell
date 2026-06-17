@@ -20,17 +20,7 @@ Item {
 
     visible: BadApplePlayer.shouldPlay
 
-    onVisibleChanged: {
-        if (visible) {
-            mediaPlayer.play();
-            audioOutput.muted = !isFirstInstance;
-        } else {
-            mediaPlayer.stop();
-        }
-    }
-
     Component.onCompleted: {
-        mediaPlayer.audioOutput = audioOutput;
         root.isFirstInstance = (BadApplePlayer.firstInstance === null);
         BadApplePlayer.firstInstance = root;
     }
@@ -41,39 +31,34 @@ Item {
         }
     }
 
-    Connections {
-        function onToggleRequested() {
-            root.visible = BadApplePlayer.shouldPlay;
-            if (BadApplePlayer.shouldPlay) {
-                mediaPlayer.play();
-                audioOutput.muted = !isFirstInstance;
-            } else {
-                mediaPlayer.stop();
-            }
-        }
-
-        target: BadApplePlayer
-    }
-
     Rectangle {
         anchors.fill: parent
         color: "black"
     }
 
-    MediaPlayer {
-        id: mediaPlayer
-
-        source: `${Quickshell.shellDir}/assets/badapple.mp4`
-        videoOutput: videoOutput
-    }
-
-    VideoOutput {
-        id: videoOutput
-
+    Loader {
+        active: root.visible
         anchors.fill: parent
-    }
+        sourceComponent: Component {
+            Item {
+                MediaPlayer {
+                    id: mediaPlayer
+                    source: `${Quickshell.shellDir}/assets/badapple.mp4`
+                    videoOutput: videoOutput
+                    audioOutput: audioOut
+                    Component.onCompleted: mediaPlayer.play()
+                }
 
-    AudioOutput {
-        id: audioOutput
+                VideoOutput {
+                    id: videoOutput
+                    anchors.fill: parent
+                }
+
+                AudioOutput {
+                    id: audioOut
+                    muted: !root.isFirstInstance
+                }
+            }
+        }
     }
 }

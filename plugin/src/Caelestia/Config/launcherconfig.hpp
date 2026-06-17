@@ -2,7 +2,8 @@
 
 #include "configobject.hpp"
 
-#include <qfileinfo.h>
+#include <QFileInfo>
+#include <QStandardPaths>
 
 namespace caelestia::config {
 
@@ -158,7 +159,7 @@ public:
     explicit LauncherConfig(QObject* parent = nullptr)
         : ConfigObject(parent)
         , m_useFuzzy(new LauncherUseFuzzy(this)) {
-        if (!QFileInfo::exists(QStringLiteral("/run/systemd/system"))) {
+        if (QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty()) {
             for (auto& actionVal : m_actions) {
                 QVariantMap action = actionVal.toMap();
                 QString name = action.value(u"name"_s).toString();

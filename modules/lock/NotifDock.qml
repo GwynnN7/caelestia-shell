@@ -18,9 +18,6 @@ ColumnLayout {
 
     readonly property int notifCount: Notifs.list.length
     property bool gameActive: false
-    onNotifCountChanged: {
-        if (notifCount > 0 && !Config.lock.hideNotifs) gameActive = false;
-    }
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.large

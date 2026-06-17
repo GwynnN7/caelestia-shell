@@ -20,9 +20,6 @@ Item {
     readonly property int notifCount: Notifs.list.reduce((acc, n) => n.closed ? acc : acc + 1, 0)
 
     property bool gameActive: false
-    onNotifCountChanged: {
-        if (notifCount > 0) gameActive = false;
-    }
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.medium
