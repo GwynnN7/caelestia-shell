@@ -182,15 +182,21 @@ Item {
             source: Paths.absolutePath(Config.paths.mediaGif)
             asynchronous: true
             fillMode: AnimatedImage.PreserveAspectFit
+            visible: !Config.dashboard.useMediaShapes
         }
 
         MultiEffect {
             anchors.fill: gif
             source: gif
 
-            visible: Config.dashboard.colorizeMediaGif
+            visible: Config.dashboard.colorizeMediaGif && !Config.dashboard.useMediaShapes
             colorization: 1
             colorizationColor: Colours.palette.m3primary
+        }
+
+        MediaShapes {
+            anchors.fill: parent
+            visible: Config.dashboard.useMediaShapes
         }
     }
 }

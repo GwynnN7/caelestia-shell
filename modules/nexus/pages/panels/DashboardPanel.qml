@@ -234,6 +234,22 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
+            text: qsTr("Use material shapes")
+            subtext: qsTr("Replace the media GIF with audio-reactive material shapes")
+            checked: Config.dashboard.useMediaShapes
+            onToggled: GlobalConfig.dashboard.useMediaShapes = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Randomize shape colors")
+            subtext: qsTr("Randomly shift shape colors while morphing")
+            checked: Config.dashboard.randomizeMediaShapeColors
+            onToggled: GlobalConfig.dashboard.randomizeMediaShapeColors = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
             last: true
             text: qsTr("Hyprland splash")
             subtext: qsTr("Show the current Hyprland splash text")
