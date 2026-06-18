@@ -168,6 +168,7 @@ Item {
         }
         pwdResolverComp.createObject(root, {
             command: ["fish", "-c", "cd " + path + " && pwd"],
+            workingDirectory: currentDirectory,
             running: true
         });
     }
