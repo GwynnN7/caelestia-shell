@@ -24,8 +24,8 @@ Item {
     Item {
         id: listWrapper
 
-        implicitWidth: list.width
-        implicitHeight: list.height + root.padding
+        implicitWidth: list.implicitWidth
+        implicitHeight: list.implicitHeight + root.padding
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: searchWrapper.top

@@ -72,6 +72,9 @@ Item {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
 
+    width: implicitWidth
+    height: implicitHeight
+
     clip: true
     state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
 
@@ -117,12 +120,6 @@ Item {
                 active: true
             }
 
-            AnchorChanges {
-                target: root
-                anchors.left: root.parent.left
-                anchors.right: root.parent.right
-                anchors.horizontalCenter: undefined
-            }
         },
         State {
             name: "wallpapers"
@@ -136,12 +133,6 @@ Item {
                 target: wallpaperList
                 active: true
             }
-            AnchorChanges {
-                target: root
-                anchors.left: undefined
-                anchors.right: undefined
-                anchors.horizontalCenter: root.parent.horizontalCenter
-            }
         },
         State {
             name: "windowSwitcher"
@@ -154,12 +145,6 @@ Item {
             PropertyChanges {
                 target: windowSwitcherList
                 active: true
-            }
-            AnchorChanges {
-                target: root
-                anchors.left: undefined
-                anchors.right: undefined
-                anchors.horizontalCenter: root.parent.horizontalCenter
             }
         },
         State {
@@ -175,12 +160,6 @@ Item {
                 active: true
             }
 
-            AnchorChanges {
-                target: root
-                anchors.left: root.parent.left
-                anchors.right: root.parent.right
-                anchors.horizontalCenter: undefined
-            }
         }
     ]
 
