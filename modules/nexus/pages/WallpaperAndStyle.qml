@@ -50,7 +50,7 @@ PageBase {
                         Layout.alignment: Qt.AlignHCenter
                         text: "hide_image"
                         color: Colours.palette.m3onSurfaceVariant
-                        font: Tokens.font.icon.extraLarge
+                        fontStyle: Tokens.font.icon.extraLarge
                     }
 
                     StyledText {
@@ -189,21 +189,6 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
-            first: true
-            text: qsTr("Display wallpaper")
-            checked: Config.background.wallpaperEnabled
-            onToggled: GlobalConfig.background.wallpaperEnabled = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Recolor wallpaper")
-            subtext: qsTr("Tint the wallpaper to match static color schemes")
-            checked: Config.background.wallpaperRecolor
-            onToggled: GlobalConfig.background.wallpaperRecolor = checked
-            enabled: Config.background.wallpaperEnabled
-        }
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
@@ -314,12 +299,15 @@ PageBase {
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+<<<<<<< HEAD
             Layout.fillWidth: true
             text: qsTr("Toast transparency")
             subtext: qsTr("Apply transparency and blur to toast notifications")
             checked: GlobalConfig.utilities.toasts.transparency
             onToggled: GlobalConfig.utilities.toasts.transparency = checked
         }
+=======
+>>>>>>> upstream/main
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing

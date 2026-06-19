@@ -26,7 +26,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Enabled")
             checked: Config.sidebar.enabled
@@ -34,8 +33,11 @@ PageBase {
         }
 
         StepperRow {
+<<<<<<< HEAD
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
+=======
+>>>>>>> upstream/main
             last: true
             label: qsTr("Drag threshold")
             subtext: qsTr("Pixels dragged before the sidebar opens")

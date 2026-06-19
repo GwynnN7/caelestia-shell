@@ -47,7 +47,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Persistent")
             subtext: qsTr("Keep the bar visible at all times")
@@ -71,7 +70,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("Show on hover")
             subtext: qsTr("Reveal the bar when the cursor reaches the screen edge")
             checked: Config.bar.showOnHover
@@ -79,7 +77,6 @@ PageBase {
         }
 
         StepperRow {
-            Layout.fillWidth: true
             last: true
             label: qsTr("Drag threshold")
             subtext: qsTr("Pixels dragged before the bar reveals")
@@ -152,7 +149,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Workspaces")
             subtext: qsTr("Scroll over the workspace indicator to switch workspaces")
@@ -161,7 +157,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("Volume")
             subtext: qsTr("Scroll on the top half of the bar to adjust volume")
             checked: Config.bar.scrollActions.volume
@@ -169,7 +164,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             last: true
             text: qsTr("Brightness")
             subtext: qsTr("Scroll on the bottom half of the bar to adjust brightness")

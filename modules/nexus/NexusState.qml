@@ -5,6 +5,7 @@ import Quickshell.Bluetooth
 QtObject {
     property ShellScreen screen
     property bool isWindow
+    property bool animatingContainer
     property int currentPageIdx
     property list<int> subPageIdxStack
     property bool searchOpen
@@ -12,6 +13,7 @@ QtObject {
     property string selectedWallpaperCategory
     property string wallpaperFilterType: "all"
     property BluetoothDevice selectedBtDevice
+    property DesktopEntry selectedApp
 
     signal close
     signal subPageOpened(idx: int)

@@ -16,7 +16,8 @@ ColumnLayout {
     required property NexusState nState
     property bool isSubPage
     property bool scrollable: true
-    readonly property int cappedWidth: Math.min(800, width)
+    readonly property int cappedWidth: Math.min(Tokens.sizes.nexus.maxContentWidth, width)
+    readonly property alias flickable: flickable
 
     default property Item contentChild
 
