@@ -89,7 +89,6 @@ Item {
                         if (Colours.scheme === "dynamic" && currentItem.modelData.path !== Wallpapers.actualCurrent)
                             Wallpapers.previewColourLock = true;
                         Wallpapers.setWallpaper(currentItem.modelData.path);
-                        root.visibilities.launcher = false;
                     } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
                         if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
                             currentItem.onClicked();

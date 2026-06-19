@@ -21,6 +21,17 @@ Item {
     required property int rounding
 
     readonly property bool showWallpapers: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `)
+    onShowWallpapersChanged: {
+        if (showWallpapers) {
+            for (let category of Wallpapers.categories) {
+                let walls = Wallpapers.grouped[category] || [];
+                if (walls.some(w => w.path === Wallpapers.actualCurrent)) {
+                    currentWallpaperTab = category;
+                    break;
+                }
+            }
+        }
+    }
     readonly property bool showWindowSwitcher: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)
     readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
     readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showKeybinds ? keybindsList.item : appList.item))
