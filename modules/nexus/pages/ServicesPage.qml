@@ -225,7 +225,6 @@ PageBase {
         }
 
         SelectRow {
-<<<<<<< HEAD
             Layout.fillWidth: true
             label: qsTr("Service manager")
             subtext: qsTr("Used for launching apps and sleep commands")
@@ -236,8 +235,6 @@ PageBase {
 
         SelectRow {
             Layout.fillWidth: true
-=======
->>>>>>> upstream/main
             last: true
             label: qsTr("GPU")
             subtext: Gpu.name ? qsTr("Monitoring: %1").arg(Gpu.name) : qsTr("Override for GPU type")
