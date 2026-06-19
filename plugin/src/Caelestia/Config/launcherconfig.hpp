@@ -158,24 +158,7 @@ class LauncherConfig : public ConfigObject {
 public:
     explicit LauncherConfig(QObject* parent = nullptr)
         : ConfigObject(parent)
-        , m_useFuzzy(new LauncherUseFuzzy(this)) {
-        if (QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty()) {
-            for (auto& actionVal : m_actions) {
-                QVariantMap action = actionVal.toMap();
-                QString name = action.value(u"name"_s).toString();
-                if (name == u"Shutdown"_s) {
-                    action[u"command"_s] = QStringList{ u"loginctl"_s, u"poweroff"_s };
-                } else if (name == u"Reboot"_s) {
-                    action[u"command"_s] = QStringList{ u"loginctl"_s, u"reboot"_s };
-                } else if (name == u"Logout"_s) {
-                    action[u"command"_s] = QStringList{ u"hyprctl"_s, u"dispatch"_s, u"exit"_s };
-                } else if (name == u"Sleep"_s) {
-                    action[u"command"_s] = QStringList{ u"loginctl"_s, u"suspend"_s };
-                }
-                actionVal = action;
-            }
-        }
-    }
+        , m_useFuzzy(new LauncherUseFuzzy(this)) {}
 };
 
 } // namespace caelestia::config

@@ -41,10 +41,7 @@ class SessionCommands : public ConfigObject {
 
 public:
     explicit SessionCommands(QObject* parent = nullptr)
-        : ConfigObject(parent) {
-        if (QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty()) {
-        }
-    }
+        : ConfigObject(parent) {}
 };
 
 class SessionConfig : public ConfigObject {

@@ -25,7 +25,11 @@ Scope {
         } else if (typeof action === "string") {
             Hypr.dispatch(Hypr.usingLua && ["dpms off", "dpms on"].includes(action) ? `hl.dsp.dpms({ action = "${action === "dpms off" ? "disable" : "enable"}" })` : action);
         } else {
-            Quickshell.execDetached(action);
+            let cmd = action.slice();
+            if (!GlobalConfig.services.useSystemd && cmd.length > 0 && cmd[0] === "systemctl") {
+                cmd[0] = "loginctl";
+            }
+            Quickshell.execDetached(cmd);
         }
     }
 

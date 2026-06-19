@@ -97,7 +97,7 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
         renderType: Text.QtRendering
-        text: root.modelData.relativePath
+        text: root.modelData.name
         font: Tokens.font.label.medium
     }
 

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import Caelestia
 import Caelestia.Config
 import qs.components
@@ -24,53 +25,21 @@ Item {
     readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
     readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showKeybinds ? keybindsList.item : appList.item))
 
-    // Color sorting state for launcher wallpaper picker
-    property color launcherSortColor: "transparent"
-    property var launcherColorDistances: ({})
-    property var launcherWallpaperColors: ({})
+    property string currentWallpaperTab: "Main"
 
-    readonly property list<color> launcherSortColors: ["#e53935" // Red
-        , "#1e88e5" // Blue
-        , "#43a047" // Green
-        , "#fdd835" // Yellow
-        , "#8e24aa" // Purple
-        , "#fb8c00"  // Orange
-    ]
-
-    function launcherToggleSortColor(color: color) {
-        if (launcherSortColor === color) {
-            launcherSortColor = "transparent";
-            launcherWallpaperColors = ({});
-            launcherColorDistances = ({});
-        } else {
-            launcherSortColor = color;
-            launcherAnalyzeColors();
+    readonly property var wallpaperTabs: {
+        const res = [];
+        for (let dir of Wallpapers.categories) {
+            res.push({ id: dir, text: dir });
         }
-    }
-
-    function launcherColorDistance(c1: color, c2: color): real {
-        const dr = c1.r - c2.r;
-        const dg = c1.g - c2.g;
-        const db = c1.b - c2.b;
-        return Math.sqrt(dr * dr + dg * dg + db * db);
-    }
-
-    function launcherAnalyzeColors() {
-        const walls = Wallpapers.list;
-        const baseDir = Paths.wallsdir;
-        const newDistances = {};
-
-        for (const w of walls) {
-            if (w.parentDir === baseDir) {
-                newDistances[w.path] = launcherColorDistance(launcherWallpaperColors[w.path] ?? "black", launcherSortColor);
-            }
-        }
-
-        launcherColorDistances = newDistances;
+        return res;
     }
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
+
+    width: implicitWidth
+    height: implicitHeight
 
     clip: true
     state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
@@ -117,12 +86,6 @@ Item {
                 active: true
             }
 
-            AnchorChanges {
-                target: root
-                anchors.left: root.parent.left
-                anchors.right: root.parent.right
-                anchors.horizontalCenter: undefined
-            }
         },
         State {
             name: "wallpapers"
@@ -136,12 +99,6 @@ Item {
                 target: wallpaperList
                 active: true
             }
-            AnchorChanges {
-                target: root
-                anchors.left: undefined
-                anchors.right: undefined
-                anchors.horizontalCenter: root.parent.horizontalCenter
-            }
         },
         State {
             name: "windowSwitcher"
@@ -154,12 +111,6 @@ Item {
             PropertyChanges {
                 target: windowSwitcherList
                 active: true
-            }
-            AnchorChanges {
-                target: root
-                anchors.left: undefined
-                anchors.right: undefined
-                anchors.horizontalCenter: root.parent.horizontalCenter
             }
         },
         State {
@@ -175,12 +126,6 @@ Item {
                 active: true
             }
 
-            AnchorChanges {
-                target: root
-                anchors.left: root.parent.left
-                anchors.right: root.parent.right
-                anchors.horizontalCenter: undefined
-            }
         }
     ]
 
@@ -223,155 +168,127 @@ Item {
             visibilities: root.visibilities
             panels: root.panels
             content: root.content
+            contentList: root
         }
     }
 
-    // Color sorting buttons for launcher wallpaper picker
-    Row {
-        id: colorButtonsRow
+    Item {
+        id: wallpaperTabsWrapper
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Tokens.padding.medium
-        spacing: Tokens.spacing.small
+        implicitWidth: Math.min(parent.width - Tokens.padding.large * 2, tabsRow.implicitWidth)
+        implicitHeight: tabsRow.implicitHeight + indicator.implicitHeight + 5
 
         visible: root.state === "wallpapers"
 
-        // Red button
-        Rectangle {
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-            color: "#e53935"
-
-            Rectangle {
-                anchors.centerIn: parent
-                width: 32
-                height: 32
-                radius: parent.radius
-                color: "transparent"
-                border.width: root.launcherSortColor === "#e53935" ? 2 : 0
-                border.color: Colours.palette.m3onSurface
+        Flickable {
+            id: tabsFlickable
+            anchors.fill: parent
+            contentWidth: tabsRow.implicitWidth
+            contentHeight: parent.height
+            flickableDirection: Flickable.HorizontalFlick
+            clip: true
+            
+            ScrollBar.horizontal: StyledScrollBar {
+                flickable: tabsFlickable
+                active: tabsFlickable.moving || tabsFlickable.dragging
             }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.launcherToggleSortColor("#e53935")
-            }
-        }
+            Row {
+                id: tabsRow
+                spacing: Tokens.spacing.large
 
-        // Blue button
-        Rectangle {
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-            color: "#1e88e5"
+                Repeater {
+                    id: tabsRepeater
+                    model: root.wallpaperTabs
 
-            Rectangle {
-                anchors.centerIn: parent
-                width: 32
-                height: 32
-                radius: parent.radius
-                color: "transparent"
-                border.width: root.launcherSortColor === "#1e88e5" ? 2 : 0
-                border.color: Colours.palette.m3onSurface
-            }
+                    delegate: Item {
+                        id: tab
+                        required property var modelData
+                        required property int index
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.launcherToggleSortColor("#1e88e5")
-            }
-        }
+                        readonly property bool current: root.currentWallpaperTab === tab.modelData.id
 
-        // Green button
-        Rectangle {
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-            color: "#43a047"
+                        implicitWidth: label.implicitWidth + Tokens.padding.medium * 2
+                        implicitHeight: label.implicitHeight + Tokens.padding.small * 2
 
-            Rectangle {
-                anchors.centerIn: parent
-                width: 32
-                height: 32
-                radius: parent.radius
-                color: "transparent"
-                border.width: root.launcherSortColor === "#43a047" ? 2 : 0
-                border.color: Colours.palette.m3onSurface
-            }
+                        CustomMouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.launcherToggleSortColor("#43a047")
-            }
-        }
+                            function onWheel(event: WheelEvent): void {
+                                let idx = root.wallpaperTabs.findIndex(t => t.id === root.currentWallpaperTab);
+                                if (event.angleDelta.y < 0 || event.angleDelta.x < 0)
+                                    idx = Math.min(idx + 1, root.wallpaperTabs.length - 1);
+                                else if (event.angleDelta.y > 0 || event.angleDelta.x > 0)
+                                    idx = Math.max(idx - 1, 0);
+                                
+                                root.currentWallpaperTab = root.wallpaperTabs[idx].id;
+                            }
 
-        // Yellow button
-        Rectangle {
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-            color: "#fdd835"
+                            StateLayer {
+                                anchors.fill: parent
+                                radius: Tokens.rounding.medium
+                                color: tab.current ? Colours.palette.m3primary : Colours.palette.m3onSurface
+                                onClicked: root.currentWallpaperTab = tab.modelData.id
+                            }
+                        }
 
-            Rectangle {
-                anchors.centerIn: parent
-                width: 32
-                height: 32
-                radius: parent.radius
-                color: "transparent"
-                border.width: root.launcherSortColor === "#fdd835" ? 2 : 0
-                border.color: Colours.palette.m3onSurface
+                        StyledText {
+                            id: label
+                            anchors.centerIn: parent
+                            text: tab.modelData.text
+                            color: tab.current ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                            font: Tokens.font.label.large
+                        }
+                    }
+                }
             }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.launcherToggleSortColor("#fdd835")
-            }
-        }
+            Item {
+                id: indicator
 
-        // Purple button
-        Rectangle {
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-            color: "#8e24aa"
+                anchors.top: tabsRow.bottom
+                anchors.topMargin: 5
 
-            Rectangle {
-                anchors.centerIn: parent
-                width: 32
-                height: 32
-                radius: parent.radius
-                color: "transparent"
-                border.width: root.launcherSortColor === "#8e24aa" ? 2 : 0
-                border.color: Colours.palette.m3onSurface
-            }
+                property int currentIndex: Math.max(0, root.wallpaperTabs.findIndex(t => t.id === root.currentWallpaperTab))
+                property Item currentTab: tabsRepeater.itemAt(currentIndex)
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.launcherToggleSortColor("#8e24aa")
-            }
-        }
+                implicitWidth: currentTab ? currentTab.implicitWidth : 0
+                implicitHeight: 3
+                x: currentTab ? tabsRow.x + currentTab.x : 0
 
-        // Orange button
-        Rectangle {
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-            color: "#fb8c00"
+                onCurrentIndexChanged: {
+                    if (currentTab) {
+                        const targetX = currentTab.x;
+                        const targetWidth = currentTab.implicitWidth;
+                        if (targetX < tabsFlickable.contentX)
+                            tabsFlickable.contentX = targetX;
+                        else if (targetX + targetWidth > tabsFlickable.contentX + tabsFlickable.width)
+                            tabsFlickable.contentX = targetX + targetWidth - tabsFlickable.width;
+                    }
+                }
 
-            Rectangle {
-                anchors.centerIn: parent
-                width: 32
-                height: 32
-                radius: parent.radius
-                color: "transparent"
-                border.width: root.launcherSortColor === "#fb8c00" ? 2 : 0
-                border.color: Colours.palette.m3onSurface
-            }
+                clip: true
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.launcherToggleSortColor("#fb8c00")
+                StyledRect {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    implicitHeight: parent.implicitHeight * 2
+                    color: Colours.palette.m3primary
+                    radius: Tokens.rounding.full
+                }
+
+                Behavior on x {
+                    Anim {}
+                }
+                Behavior on implicitWidth {
+                    Anim {}
+                }
             }
         }
     }

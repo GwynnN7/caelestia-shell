@@ -48,17 +48,7 @@ class GeneralIdle : public ConfigObject {
 
 public:
     explicit GeneralIdle(QObject* parent = nullptr)
-        : ConfigObject(parent) {
-        if (QStandardPaths::findExecutable(QStringLiteral("systemctl")).isEmpty()) {
-            for (auto& timeoutVal : m_timeouts) {
-                QVariantMap timeout = timeoutVal.toMap();
-                if (timeout.value(u"idleAction"_s).toStringList() == QStringList{ u"systemctl"_s, u"suspend-then-hibernate"_s }) {
-                    timeout[u"idleAction"_s] = QStringList{ u"loginctl"_s, u"suspend"_s };
-                    timeoutVal = timeout;
-                }
-            }
-        }
-    }
+        : ConfigObject(parent) {}
 };
 
 class GeneralBattery : public ConfigObject {

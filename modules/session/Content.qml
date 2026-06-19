@@ -128,10 +128,18 @@ Column {
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
         radius: pressed ? Tokens.rounding.medium : activeFocus ? Tokens.rounding.extraLarge : Tokens.rounding.largeIncreased
         font: Tokens.font.icon.builders.large.scale(1.3).build()
-        onClicked: Quickshell.execDetached(button.command)
+        function executeCmd() {
+            let cmd = button.command.slice();
+            if (!GlobalConfig.services.useSystemd && cmd.length > 0 && cmd[0] === "systemctl") {
+                cmd[0] = "loginctl";
+            }
+            Quickshell.execDetached(cmd);
+        }
 
-        Keys.onEnterPressed: Quickshell.execDetached(button.command)
-        Keys.onReturnPressed: Quickshell.execDetached(button.command)
+        onClicked: executeCmd()
+
+        Keys.onEnterPressed: executeCmd()
+        Keys.onReturnPressed: executeCmd()
         Keys.onEscapePressed: root.visibilities.session = false
         Keys.onPressed: event => {
             if (!Config.session.vimKeybinds)

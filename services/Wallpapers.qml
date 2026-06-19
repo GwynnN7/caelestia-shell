@@ -23,6 +23,40 @@ Searcher {
     property bool previewColourLock
     property bool pendingPreviewClear
 
+    readonly property var categories: {
+        let dummy = root.list;
+        const baseDir = Paths.wallsdir;
+        let cats = [];
+        for (let i = 0; i < root.list.length; i++) {
+            let p = root.list[i].parentDir;
+            if (p !== baseDir) {
+                let cat = p.slice(baseDir.length + 1);
+                if (cat.includes("/")) cat = cat.slice(0, cat.indexOf("/"));
+                if (!cats.includes(cat)) cats.push(cat);
+            }
+        }
+        return ["Main"].concat(cats.sort());
+    }
+
+    readonly property var grouped: {
+        let dummy = root.list;
+        const baseDir = Paths.wallsdir;
+        let grp = { "Main": [] };
+        for (let i = 0; i < root.list.length; i++) {
+            let w = root.list[i];
+            let p = w.parentDir;
+            if (p === baseDir) {
+                grp["Main"].push(w);
+            } else {
+                let cat = p.slice(baseDir.length + 1);
+                if (cat.includes("/")) cat = cat.slice(0, cat.indexOf("/"));
+                if (!grp[cat]) grp[cat] = [];
+                grp[cat].push(w);
+            }
+        }
+        return grp;
+    }
+
     function getCategoryFor(w: FileSystemEntry): string {
         let category = w.parentDir.slice(Paths.wallsdir.length + 1);
         if (category.includes("/"))

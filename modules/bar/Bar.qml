@@ -104,6 +104,21 @@ GridLayout {
                 return;
             }
             popouts.hasCurrent = false;
+        } else if (id === "github") {
+            const item = ch.item as Item;
+            if (item) {
+                const relPos = pos - (isHorizontal ? ch.x : ch.y);
+                const inside = isHorizontal ? (relPos >= 0 && relPos <= item.implicitWidth) : (relPos >= 0 && relPos <= item.implicitHeight);
+                if (inside) {
+                    popouts.currentName = "github";
+                    popouts.currentCenter = isHorizontal ? item.mapToItem(null, item.implicitWidth / 2, 0).x : (item.mapToItem(null, 0, item.implicitHeight / 2).y ?? 0);
+                    popouts.hasCurrent = true;
+                } else {
+                    popouts.hasCurrent = false;
+                }
+            } else {
+                popouts.hasCurrent = false;
+            }
         } else {
             popouts.hasCurrent = false;
         }
@@ -212,6 +227,15 @@ GridLayout {
                 delegate: WrappedLoader {
                     visible: !root.fullscreen
                     sourceComponent: StatusIcons {}
+                }
+            }
+            DelegateChoice {
+                roleValue: "github"
+                delegate: WrappedLoader {
+                    visible: enabled && !root.fullscreen && GithubStore.available
+                    sourceComponent: GithubActivity {
+                        popouts: root.popouts
+                    }
                 }
             }
             DelegateChoice {
