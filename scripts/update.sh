@@ -29,7 +29,7 @@ fi
 
 echo "--------------------------------------------------------"
 echo "[STAGE 3] Installing via pkexec..."
-if pkexec cmake --install build; then
+if pkexec cmake --install "$DIR/build"; then
     echo "--------------------------------------------------------"
     echo "[SUCCESS] Update complete! Please restart Caelestia."
 else
