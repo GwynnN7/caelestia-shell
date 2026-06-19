@@ -99,7 +99,6 @@ PageBase {
                     filters: Images.validImageExtensions
                     onAccepted: path => {
                         Wallpapers.setWallpaper(path);
-                        root.nState.closeSubPage();
                     }
                 }
             }
@@ -179,7 +178,6 @@ PageBase {
                     fillLabel: false
                     onClicked: {
                         Wallpapers.setWallpaper(Quickshell.shellPath(modelData.path));
-                        root.nState.closeSubPage();
                     }
                 }
             }
@@ -489,7 +487,6 @@ PageBase {
                             root.nState.openSubPage(2); // Category page
                         } else {
                             Wallpapers.setWallpaper(modelData.path);
-                            root.nState.closeSubPage();
                         }
                     }
 
