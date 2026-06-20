@@ -8,57 +8,65 @@ import Caelestia
 Singleton {
     id: root
 
-    readonly property alias temperature: props.temperature
     readonly property alias active: props.active
-    property bool available: true // We assume it's available or we can check with `which hyprsunset`
+    readonly property var sunsetCmd: ["systemctl", "--user"]
 
     function nightLightToast(message: string): void {
-        Toaster.toast(qsTr("Night Light"), qsTr(message), "dark_mode");
+        Toaster.toast(qsTr("Automatic Night Light"), qsTr(message), "dark_mode");
     }
 
-    function start(temp): void {
-        if (temp !== undefined && temp !== null)
-            props.temperature = temp;
-        props.active = true;
-    }
-
-    function stop(): void {
-        props.active = false;
-    }
-
-    function toggle(temp): void {
+    function toggle(): void {
         if (props.active)
-            stop();
+            runAction("stop");
         else
-            start(temp);
+            runAction("start");
     }
+
+    function runAction(action: string): void {
+        actionProc.command = root.sunsetCmd.concat((action === "start" ? ["restart"] : ["stop"])).concat(["hyprsunset"]);
+        actionProc.running = true;
+    }
+
+    function refresh(): void {
+        if (!serviceEnabledProc.running)
+            serviceEnabledProc.running = true;
+    }
+
+    Component.onCompleted: refresh()
 
     PersistentProperties {
         id: props
 
-        property int temperature: 6000
         property bool active: false
 
         reloadableId: "hyprSunset"
     }
 
     Process {
-        id: sunsetProc
-        command: ["hyprsunset", "--temperature", props.temperature.toString()]
-        running: props.active
+        id: serviceEnabledProc
 
-        stdout: StdioCollector {
-            id: out
-        }
-        stderr: StdioCollector {
-            id: err
-        }
-
+        command: root.sunsetCmd.concat(["is-active", "--quiet", "hyprsunset"])
         onExited: code => { // qmllint disable signal-handler-parameters
-            if (code !== 0 && props.active) {
-                console.error("[HyprSunset] exited with code " + code + ": " + err.text);
-                props.active = false; // Turn off if it crashed
+            if(props.active !== (code === 0))
+            {
+                props.active = code === 0;
+                root.nightLightToast(props.active ? "Enabled" : "Disabled");
             }
         }
+    }
+
+    Process {
+        id: actionProc
+
+        onExited: code => { // qmllint disable signal-handler-parameters
+            root.refresh()
+        }
+    }
+
+    Timer {
+        interval: 5000
+        running: true
+        repeat: true
+        onTriggered: root.refresh()
     }
 }
