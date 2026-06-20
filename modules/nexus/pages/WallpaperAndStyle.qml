@@ -50,7 +50,7 @@ PageBase {
                         Layout.alignment: Qt.AlignHCenter
                         text: "hide_image"
                         color: Colours.palette.m3onSurfaceVariant
-                        font: Tokens.font.icon.extraLarge
+                        fontStyle: Tokens.font.icon.extraLarge
                     }
 
                     StyledText {
@@ -205,6 +205,17 @@ PageBase {
             enabled: Config.background.wallpaperEnabled
         }
 
+        SliderRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
+            icon: ""
+            label: qsTr("Recolor strength")
+            valueLabel: Math.round(value * 100) + "%"
+            value: Config.background.wallpaperRecolorStrength
+            enabled: Config.background.wallpaperRecolor && Config.background.wallpaperEnabled
+            onMoved: v => GlobalConfig.background.wallpaperRecolorStrength = v
+        }
+
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
@@ -312,14 +323,6 @@ PageBase {
             onToggled: GlobalConfig.appearance.transparency.enabled = checked
         }
 
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Toast transparency")
-            subtext: qsTr("Apply transparency and blur to toast notifications")
-            checked: GlobalConfig.utilities.toasts.transparency
-            onToggled: GlobalConfig.utilities.toasts.transparency = checked
-        }
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing

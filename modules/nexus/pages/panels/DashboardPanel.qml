@@ -129,7 +129,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Enabled")
             checked: Config.dashboard.enabled
@@ -138,6 +137,7 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
+            last: true
             text: qsTr("Show on hover")
             subtext: qsTr("Reveal when the cursor reaches the screen edge")
             checked: Config.dashboard.showOnHover
@@ -189,7 +189,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Dashboard")
             checked: Config.dashboard.showDashboard
@@ -197,14 +196,12 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("Media")
             checked: Config.dashboard.showMedia
             onToggled: GlobalConfig.dashboard.showMedia = checked
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("Performance")
             checked: Config.dashboard.showPerformance
             onToggled: GlobalConfig.dashboard.showPerformance = checked
@@ -212,6 +209,7 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
+            last: true
             text: qsTr("Weather")
             checked: Config.dashboard.showWeather
             onToggled: GlobalConfig.dashboard.showWeather = checked
@@ -271,7 +269,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Battery")
             checked: Config.dashboard.performance.showBattery
@@ -279,35 +276,30 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("GPU")
             checked: Config.dashboard.performance.showGpu
             onToggled: GlobalConfig.dashboard.performance.showGpu = checked
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("CPU")
             checked: Config.dashboard.performance.showCpu
             onToggled: GlobalConfig.dashboard.performance.showCpu = checked
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("Memory")
             checked: Config.dashboard.performance.showMemory
             onToggled: GlobalConfig.dashboard.performance.showMemory = checked
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             text: qsTr("Storage")
             checked: Config.dashboard.performance.showStorage
             onToggled: GlobalConfig.dashboard.performance.showStorage = checked
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             last: true
             text: qsTr("Network")
             checked: Config.dashboard.performance.showNetwork
@@ -320,7 +312,6 @@ PageBase {
         }
 
         StepperRow {
-            Layout.fillWidth: true
             first: true
             last: true
             label: qsTr("Drag threshold")

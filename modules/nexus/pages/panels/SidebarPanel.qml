@@ -26,7 +26,6 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
             text: qsTr("Enabled")
             checked: Config.sidebar.enabled

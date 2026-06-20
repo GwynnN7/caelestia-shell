@@ -7,9 +7,11 @@ import qs.components
 import qs.services
 import qs.modules.nexus.common
 import qs.modules.nexus.pages
+import qs.modules.nexus.pages.apps
 import qs.modules.nexus.pages.audio
 import qs.modules.nexus.pages.bluetooth
 import qs.modules.nexus.pages.panels
+import qs.modules.nexus.pages.services
 import qs.modules.nexus.pages.wallandstyle
 import qs.modules.nexus.pages.panels.taskbar
 
@@ -104,6 +106,9 @@ QtObject {
 
                 // Taskbar component sub-pages
                 Component {
+                    BarComponents {}
+                }
+                Component {
                     BarWorkspaces {}
                 }
                 Component {
@@ -127,10 +132,27 @@ QtObject {
             }
         },
         Component {
+            // Apps
+            StackPage {
+                Component {
+                    AppsPage {}
+                }
+                Component {
+                    AllApps {}
+                }
+                Component {
+                    AppInfo {}
+                }
+            }
+        },
+        Component {
             // Services
             StackPage {
                 Component {
                     ServicesPage {}
+                }
+                Component {
+                    NotificationsPage {}
                 }
             }
         },
@@ -168,7 +190,7 @@ QtObject {
                 Layout.alignment: Qt.AlignHCenter
                 text: "handyman"
                 color: Colours.palette.m3outlineVariant
-                font: Tokens.font.icon.extraLarge
+                fontStyle: Tokens.font.icon.extraLarge
             }
 
             StyledText {

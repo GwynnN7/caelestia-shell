@@ -110,7 +110,7 @@ StyledRect {
 
         command: ["bash", "-c", `
         set -Eeuo pipefail
-        export GITHUB_TOKEN="${Config.bar.github.token}"
+        export GITHUB_TOKEN="$(secret-tool lookup service caelestia-shell account github 2>/dev/null || echo '')"
         : "\${GITHUB_TOKEN:?Missing GITHUB_TOKEN}"
 
         # Resolve login via token if GITHUB_USERNAME is unset

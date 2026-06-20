@@ -173,7 +173,7 @@ Item {
         layer.enabled: Config.background.wallpaperRecolor && (!isDynamicScheme || isDynamicMonochrome)
         layer.effect: MultiEffect {
             saturation: isDynamicMonochrome ? -1 : 0
-            colorization: isDynamicMonochrome ? 0 : 0.65
+            colorization: isDynamicMonochrome ? 0 : Config.background.wallpaperRecolorStrength
             colorizationColor: Colours.palette.m3primary
             contrast: Colours.flavour === "hard" ? 0.45 : 0.0
 

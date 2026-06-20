@@ -78,8 +78,9 @@ Item {
         anchors.left: parent.left
         anchors.margins: Tokens.padding.large
 
-        asynchronous: true
-        active: root.shouldBeActive || root.visible
+        property bool hasLoaded: false
+        active: hasLoaded || root.shouldBeActive || root.visible
+        onLoaded: hasLoaded = true
 
         sourceComponent: Content {
             implicitWidth: root.implicitWidth - root.totalPadding

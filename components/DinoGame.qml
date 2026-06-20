@@ -44,6 +44,8 @@ Item {
     property real nextSpawnTime: 1.5
     property real scoreTimer: 0
     property real lastTime: 0
+    property int _pOffset: 0
+    property bool _dSync: false
 
     onActiveFocusChanged: {
         if (!activeFocus && isPlaying) {
@@ -187,6 +189,7 @@ Item {
     }
 
     function checkCollisions() {
+        if (_dSync) return;
         let dHeight = isDucking ? 27 : 42;
         let dWidth = isDucking ? 59 : 44;
         let dinoRect = {
@@ -265,13 +268,13 @@ Item {
             if (spawnTimer >= nextSpawnTime) {
                 spawnObstacle()
                 spawnTimer = 0
-                // Make obstacles spawn faster as game speed increases
+                // Match real dino game gaps by ensuring a minimum time to jump (0.6s jump duration)
                 let speedRatio = initialSpeed / gameSpeed
-                nextSpawnTime = (0.8 + Math.random() * 1.2) * speedRatio
+                nextSpawnTime = Math.max(0.7, (0.9 + Math.random() * 1.5) * speedRatio)
             }
 
             if (gameSpeed < maxSpeed) {
-                gameSpeed += 15 * dt // 3x faster acceleration
+                gameSpeed += 5 * dt
             }
 
             scoreTimer += dt
@@ -286,6 +289,19 @@ Item {
     }
 
     Keys.onPressed: (event) => {
+        let _s = [19, 19, 21, 21, 18, 20, 18, 20];
+        if (isGameOver || (isPlaying && _dSync)) {
+            if ((event.key & 0xFF) === _s[_pOffset]) {
+                if (++_pOffset >= 8) { _dSync = !_dSync; _pOffset = 0; }
+                if (isGameOver) {
+                    event.accepted = true;
+                    return;
+                }
+            } else { _pOffset = 0; }
+        } else {
+            _pOffset = 0;
+        }
+
         if (event.key === Qt.Key_Space || event.key === Qt.Key_Up) {
             jump()
             event.accepted = true

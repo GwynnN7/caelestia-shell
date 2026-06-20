@@ -145,7 +145,6 @@ class BarGithub : public ConfigObject {
     QML_ANONYMOUS
 
     CONFIG_PROPERTY(bool, background, false)
-    CONFIG_PROPERTY(QString, token, u""_s)
 
 public:
     explicit BarGithub(QObject* parent = nullptr)

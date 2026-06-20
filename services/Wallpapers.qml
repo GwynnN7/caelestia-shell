@@ -150,7 +150,7 @@ Searcher {
 
         recursive: true
         path: Paths.wallsdir
-        filter: FileSystemModel.NoFilter
+        filter: FileSystemModel.Files
         nameFilters: Images.validImageExtensions.concat(Images.validVideoExtensions).map(e => `*.${e}`)
     }
 

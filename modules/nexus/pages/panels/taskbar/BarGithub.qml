@@ -7,12 +7,34 @@ import qs.components
 import qs.components.controls
 import qs.modules.nexus.common
 import qs.services
+import Quickshell
+import Quickshell.Io
 
 PageBase {
     id: root
 
     title: qsTr("GitHub")
     isSubPage: true
+
+    function saveToken(token) {
+        if (!token) {
+            Quickshell.execDetached(["secret-tool", "clear", "service", "caelestia-shell", "account", "github"]);
+        } else {
+            Quickshell.execDetached(["bash", "-c", "secret-tool store --label=\"Caelestia GitHub Token\" service caelestia-shell account github <<< \"$1\"", "--", token]);
+        }
+    }
+
+    property Process readTokenProc: Process {
+        id: readTokenProc
+        command: ["secret-tool", "lookup", "service", "caelestia-shell", "account", "github"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                tokenInput.text = text.trim();
+            }
+        }
+    }
+
+    Component.onCompleted: readTokenProc.running = true
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -83,11 +105,10 @@ PageBase {
                         anchors.leftMargin: Tokens.padding.medium
                         anchors.rightMargin: Tokens.padding.medium
                         verticalAlignment: TextInput.AlignVCenter
-                        text: Config.bar.github.token
                         placeholderText: "ghp_..."
                         echoMode: TextInput.Password
                         passwordCharacter: "•"
-                        onAccepted: GlobalConfig.bar.github.token = text
+                        onAccepted: root.saveToken(text)
                     }
                 }
 
@@ -95,7 +116,7 @@ PageBase {
                     Layout.preferredWidth: 32
                     Layout.preferredHeight: 32
                     icon: "save"
-                    onClicked: GlobalConfig.bar.github.token = tokenInput.text
+                    onClicked: root.saveToken(tokenInput.text)
                 }
 
                 IconButton {
@@ -104,7 +125,7 @@ PageBase {
                     icon: "close"
                     onClicked: {
                         tokenInput.text = ""
-                        GlobalConfig.bar.github.token = ""
+                        root.saveToken("")
                     }
                 }
             }
