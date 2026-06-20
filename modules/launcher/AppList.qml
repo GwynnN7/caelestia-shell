@@ -67,6 +67,37 @@ StyledListView {
             Emojis.reload();
         if (state === "clipboard")
             Clipboard.reload();
+            
+        if (state !== "scheme" && state !== "variant") {
+            Colours.showPreview = false;
+        }
+    }
+
+    onCurrentItemChanged: {
+        if (state === "scheme" || state === "variant") {
+            if (currentItem && currentItem.modelData)
+                previewTimer.restart();
+        }
+    }
+
+    Component.onDestruction: {
+        Colours.showPreview = false;
+    }
+
+    Timer {
+        id: previewTimer
+        interval: 100
+        onTriggered: {
+            if (!root.currentItem || !root.currentItem.modelData) return;
+            if (root.state === "scheme") {
+                const schemeData = root.currentItem.modelData;
+                Colours.load(JSON.stringify({ mode: Colours.light ? "light" : "dark", colours: schemeData.colours }), true);
+                Colours.showPreview = true;
+            } else if (root.state === "variant") {
+                const variantData = root.currentItem.modelData;
+                M3Variants.previewVariant(variantData.variant);
+            }
+        }
     }
 
     states: [
