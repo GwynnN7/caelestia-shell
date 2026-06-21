@@ -14,6 +14,7 @@ conflicts=("${pkgname}-git")
 
 source=("git+https://github.com/GwynnN7/${pkgname}.git")
 sha256sums=('SKIP')
+options=(!lto !strip)
 
 build() {
     cd "${srcdir}/${pkgname}"
