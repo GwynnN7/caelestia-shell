@@ -25,6 +25,7 @@ ShellRoot {
     GSFLoader {}
 
     Background {}
+    BadAppleOverlay {}
 
     Drawers {}
     AreaPicker {}

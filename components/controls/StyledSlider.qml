@@ -26,6 +26,7 @@ Slider {
     property real filledWidth
 
     signal interaction(v: real)
+    signal released(v: real)
 
     Component.onCompleted: filledWidth = Qt.binding(() => (width - handle.implicitWidth - handle.anchors.leftMargin) * pos)
 
@@ -178,6 +179,7 @@ Slider {
         }
         onReleased: e => {
             root.interaction(posBinding.value);
+            root.released(posBinding.value);
             widthBehavior.enabled = true;
             dragMovement = 0;
         }

@@ -228,7 +228,7 @@ Item {
                                 }
                                 
                                 if (modelData.toplevels.length > 0) {
-                                    Hypr.dispatch(`focuswindow address:${modelData.toplevels[0].address}`);
+                                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${modelData.toplevels[0].address}" })` : `focuswindow address:0x${modelData.toplevels[0].address}`);
                                 } else if (modelData.entry) {
                                     // Mark as launching
                                     let newLaunching = Object.assign({}, root.launchingApps);

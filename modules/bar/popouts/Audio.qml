@@ -133,10 +133,8 @@ ColumnLayout {
             implicitHeight: parent.implicitHeight
 
             value: Audio.volume
-            onInteraction: value => {
-                Audio.setVolume(value);
-                Audio.playEffectTick();
-            }
+            onInteraction: v => Audio.setVolume(v)
+            onReleased: v => Audio.playEffectTick()
         }
     }
 

@@ -148,7 +148,7 @@ RowLayout {
                             anchors.fill: parent
                             radius: Tokens.rounding.small
                             onClicked: {
-                                Hypr.dispatch(`closewindow address:0x${modelData.address}`);
+                                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.window.close({ window = "address:0x${modelData.address}" })` : `closewindow address:0x${modelData.address}`);
                                 root.popouts.hasCurrent = false;
                             }
                         }
@@ -173,7 +173,7 @@ RowLayout {
                         color: "transparent"
 
                         onClicked: {
-                            Hypr.dispatch(`focuswindow address:0x${modelData.address}`);
+                            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${modelData.address}" })` : `focuswindow address:0x${modelData.address}`);
                             root.popouts.hasCurrent = false;
                         }
 

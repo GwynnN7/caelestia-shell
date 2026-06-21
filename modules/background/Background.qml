@@ -47,14 +47,6 @@ Variants {
                 }
             }
 
-            BadAppleVideo {
-                id: badappleVid
-
-                property var screenModel: win.modelData
-
-                anchors.fill: parent
-                z: 1
-            }
 
             Visualiser {
                 anchors.fill: parent

@@ -37,7 +37,7 @@ QtObject {
     }
 
     function focusWindow(address: string): void {
-        Hyprland.dispatch(`focuswindow address:0x${address}`);
+        Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${address}" })` : `focuswindow address:0x${address}`);
     }
 
     Component.onCompleted: {

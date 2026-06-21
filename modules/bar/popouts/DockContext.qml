@@ -149,7 +149,7 @@ ColumnLayout {
 
         onClicked: {
             for (const toplevel of model.toplevels) {
-                Hypr.dispatch(`closewindow address:0x${toplevel.address}`);
+                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.window.close({ window = "address:0x${toplevel.address}" })` : `closewindow address:0x${toplevel.address}`);
             }
             root.popouts.hasCurrent = false;
         }

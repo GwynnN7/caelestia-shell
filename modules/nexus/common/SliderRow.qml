@@ -18,6 +18,7 @@ ConnectedRect {
 
     signal moved(value: real)
     signal interaction(value: real)
+    signal released(value: real)
 
     Layout.fillWidth: true
     implicitHeight: rowLayout.implicitHeight + rowLayout.anchors.margins + rowLayout.anchors.topMargin
@@ -87,6 +88,7 @@ ConnectedRect {
                         root.moved(v);
                         root.interaction(v);
                     }
+                    onReleased: v => root.released(v)
                 }
             }
         }

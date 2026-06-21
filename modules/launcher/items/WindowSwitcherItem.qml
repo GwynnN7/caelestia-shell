@@ -17,7 +17,7 @@ Item {
     required property var list
 
     function clicked(): void {
-        Hyprland.dispatch(`focuswindow address:0x${root.modelData.address}`);
+        Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${root.modelData.address}" })` : `focuswindow address:0x${root.modelData.address}`);
         root.list.visibilities.launcher = false;
     }
 

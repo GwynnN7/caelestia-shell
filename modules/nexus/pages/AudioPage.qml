@@ -42,7 +42,7 @@ PageBase {
             value: Audio.volume
             enabled: !Audio.muted
             onMoved: v => Audio.setVolume(v)
-            onInteraction: v => Audio.playEffectTick()
+            onReleased: v => Audio.playEffectTick()
         }
 
         ToggleRow {
@@ -70,7 +70,7 @@ PageBase {
             value: Audio.sourceVolume
             enabled: !Audio.sourceMuted
             onMoved: v => Audio.setSourceVolume(v)
-            onInteraction: v => Audio.playEffectTick()
+            onReleased: v => Audio.playEffectTick()
         }
 
         ToggleRow {
