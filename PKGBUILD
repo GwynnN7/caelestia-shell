@@ -14,12 +14,23 @@ conflicts=("${pkgname}-git")
 
 source=("git+https://github.com/GwynnN7/${pkgname}.git")
 sha256sums=('SKIP')
-options=(!lto !strip)
+
+pkgver() {
+    cd "${srcdir}/${pkgname}"
+    
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+}
 
 build() {
     cd "${srcdir}/${pkgname}"
 
-    cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/ -DDISTRIBUTOR="AUR (package: $pkgname)" -DVERSION="$pkgver"
+    cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_INSTALL_PREFIX=/ \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+        -DDISTRIBUTOR="AUR (package: $pkgname)" \
+        -DVERSION="$pkgver"
+        
     cmake --build build
 }
 
