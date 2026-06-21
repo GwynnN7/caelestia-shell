@@ -78,10 +78,8 @@ Item {
         anchors.left: parent.left
         anchors.margins: Tokens.padding.large
 
-        property bool hasLoaded: false
-        active: hasLoaded || root.shouldBeActive || root.visible
-        onLoaded: hasLoaded = true
-
+        active: root.shouldBeActive || root.visible
+        
         sourceComponent: Content {
             implicitWidth: root.implicitWidth - root.totalPadding
             props: root.props

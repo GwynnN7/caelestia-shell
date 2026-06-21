@@ -47,9 +47,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
 
-        property bool hasLoaded: false
-        active: hasLoaded || root.shouldBeActive || root.visible
-        onLoaded: hasLoaded = true
+        active: root.shouldBeActive || root.visible
 
         sourceComponent: Content {
             visibilities: root.visibilities

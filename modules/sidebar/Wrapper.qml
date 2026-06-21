@@ -36,9 +36,7 @@ Item {
         anchors.margins: CUtils.clamp(anchors.leftMargin - Config.border.thickness, 0, anchors.leftMargin)
         anchors.bottomMargin: 0
 
-        property bool hasLoaded: false
-        active: hasLoaded || root.shouldBeActive || root.visible
-        onLoaded: hasLoaded = true
+        active: root.shouldBeActive || root.visible
 
         sourceComponent: Content {
             implicitWidth: Tokens.sizes.sidebar.width - content.anchors.leftMargin - content.anchors.margins
