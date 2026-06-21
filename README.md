@@ -20,6 +20,7 @@ This fork adds the following features on top of the official shell:
 
 - **Launchers**: Emoji Picker, Clipboard History, Window Switcher, and Hyprland Keybinds.
 - **Wallpapers**: GIF/video support with auto-pause, plus Wallhaven integration.
+- **Bad Apple Easter Egg**: A custom shader effect that plays Bad Apple directly through the shell's UI material by masking the background and preserving the shell's native translucent blur and shadow effects.
 - **Games**: Playable Chrome Dino runner embedded in the notification dock.
 - **Dashboard**: Developer console terminal tab with history and autocomplete.
 - **Bar**: MacOS-style app dock, Material workspace icons, DND toggle, and a live drag-and-drop components editor.

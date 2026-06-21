@@ -18,7 +18,7 @@ Item {
         BadApplePlayer.stop();
     }
 
-    visible: BadApplePlayer.shouldPlay
+    property Item videoOutput: loader.item ? loader.item.videoOutput : null
 
     Component.onCompleted: {
         root.isFirstInstance = (BadApplePlayer.firstInstance === null);
@@ -31,16 +31,14 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "black"
-    }
-
     Loader {
-        active: root.visible
+        id: loader
+        active: BadApplePlayer.shouldPlay
         anchors.fill: parent
         sourceComponent: Component {
             Item {
+                property alias videoOutput: videoOutput
+
                 MediaPlayer {
                     id: mediaPlayer
                     source: `${Quickshell.shellDir}/assets/badapple.mp4`
@@ -52,6 +50,8 @@ Item {
                 VideoOutput {
                     id: videoOutput
                     anchors.fill: parent
+                    fillMode: VideoOutput.Stretch
+                    layer.enabled: true
                 }
 
                 AudioOutput {
