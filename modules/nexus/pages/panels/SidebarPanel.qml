@@ -53,95 +53,20 @@ PageBase {
         ToggleRow {
             Layout.fillWidth: true
             first: true
-            text: qsTr("Celestial AI Mode (Orion)")
-            subtext: qsTr("Enable advanced autonomous features using qwen3.5:9b")
-            checked: GlobalConfig.ai.enableCelestialMode
-            onToggled: GlobalConfig.ai.enableCelestialMode = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Save chat history")
-            subtext: qsTr("Persist conversations across shell restarts")
-            checked: GlobalConfig.ai.saveChatHistory
-            onToggled: GlobalConfig.ai.saveChatHistory = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Enable Ollama")
-            subtext: qsTr("Show Ollama in the provider selection tab")
+            text: qsTr("Enable Assistant")
+            subtext: qsTr("Show the AI Assistant in the sidebar")
             checked: GlobalConfig.ai.enableOllama
             onToggled: GlobalConfig.ai.enableOllama = checked
         }
 
-        SelectRow {
-            id: defaultProviderRow
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            label: qsTr("Default Provider")
-            subtext: qsTr("AI Provider loaded on startup")
-            fallbackIcon: "smart_toy"
-            fallbackText: qsTr("Select Provider")
-            enabled: !GlobalConfig.ai.enableCelestialMode
-            opacity: enabled ? 1 : 0.5
-            
-            active: menuItems.find(m => m.providerId === GlobalConfig.ai.defaultProvider) ?? menuItems[0] ?? null
-            onSelected: item => {
-                GlobalConfig.ai.defaultProvider = item.providerId;
-            }
-            menuItems: providerVariants.instances
-
-            Variants {
-                id: providerVariants
-                model: [
-                    { id: "ollama", label: "Ollama" }
-                ]
-                delegate: MenuItem {
-                    required property var modelData
-                    readonly property string providerId: modelData.id
-                    text: modelData.label
-                }
-            }
-        }
-
-        SelectRow {
-            id: defaultModelRow
+        ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             last: true
-            label: qsTr("Default Model")
-            subtext: qsTr("Model loaded on startup for default provider")
-            fallbackIcon: "smart_toy"
-            fallbackText: qsTr("Select Model")
-            menuOnTop: true
-            enabled: !GlobalConfig.ai.enableCelestialMode
-            opacity: enabled ? 1 : 0.5
-            
-            active: menuItems.find(m => m.modelData === GlobalConfig.ai.defaultOllamaModel) ?? menuItems[0] ?? null
-
-            onSelected: item => {
-                if (GlobalConfig.ai.defaultProvider === "ollama") {
-                    GlobalConfig.ai.defaultOllamaModel = item.modelData;
-                }
-            }
-            menuItems: modelVariants.instances
-
-            Variants {
-                id: modelVariants
-                model: {
-                    if (GlobalConfig.ai.defaultProvider === "ollama") {
-                        return ["llama3", "mistral", "phi3", "gemma"];
-                    }
-                    return [];
-                }
-                delegate: MenuItem {
-                    required property string modelData
-                    text: modelData
-                }
-            }
+            text: qsTr("Enable Tool Usage")
+            subtext: qsTr("Allow the assistant to search the web, take screenshots, etc.")
+            checked: GlobalConfig.ai.enableCelestialMode
+            onToggled: GlobalConfig.ai.enableCelestialMode = checked
         }
     }
 }

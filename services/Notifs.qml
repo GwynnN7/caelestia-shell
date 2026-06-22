@@ -108,7 +108,7 @@ Singleton {
             });
             root.list = [comp, ...root.list];
 
-            if (comp.popup && notif.appName !== "caelestia-cli" && !GlobalConfig.audio.sounds.disabledNotifApps.includes(notif.appName))
+            if (!props.dnd && notif.appName !== "caelestia-cli" && !GlobalConfig.audio.sounds.disabledNotifApps.includes(notif.appName))
                 Audio.playNotification();
         }
     }

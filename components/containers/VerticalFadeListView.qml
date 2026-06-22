@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.components
 import qs.components.effects
+import QtQuick.Effects
 
 StyledListView {
     id: root
@@ -26,7 +27,7 @@ StyledListView {
     orientation: ListView.Vertical
 
     layer.enabled: true
-    layer.effect: Mask {
+    layer.effect: MultiEffect { maskEnabled: true;
         maskSource: mask
 
         Rectangle {

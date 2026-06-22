@@ -79,6 +79,13 @@ cd caelestia
 ./scripts/install.sh
 ```
 
+Alternatively, this fork can be installed and managed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr)'s
+`gh` plugin:
+
+```sh
+pkg install gh/dim-ghub/caelestia-shell-git
+```
+
 > [!TIP]
 > By default, the script will use the latest version tag from [upstream](https://github.com/caelestia-dots/shell) to set the version number for the build. It does not download anything from upstream - it builds your local fork. You can also specify a version manually: `./scripts/install.sh 2.0.2`
 
@@ -283,6 +290,12 @@ the command.
 ## Updating
 
 If installed via the AUR package, simply update your system (e.g. using `yay`).
+
+If installed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr), run:
+
+```sh
+pkg update
+```
 
 If installed manually, pull the latest changes and re-run the install script:
 

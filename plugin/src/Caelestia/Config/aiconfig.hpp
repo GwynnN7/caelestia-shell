@@ -23,6 +23,7 @@ class AiConfig : public ConfigObject {
     CONFIG_PROPERTY(QString, defaultProvider, u"ollama"_s)
     CONFIG_PROPERTY(bool, enableOllama, true)
     CONFIG_PROPERTY(bool, enableCelestialMode, false)
+    CONFIG_PROPERTY(QString, orionModel, u"qwen3.5:9b"_s)
 
     CONFIG_PROPERTY(QString, activeProvider, u"ollama"_s)
     CONFIG_PROPERTY(QString, activeOllamaModel, u"llama3"_s)

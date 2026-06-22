@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.components
 import qs.components.effects
+import QtQuick.Effects
 
 StyledFlickable {
     id: root
@@ -25,7 +26,7 @@ StyledFlickable {
     flickableDirection: Flickable.VerticalFlick
 
     layer.enabled: true
-    layer.effect: Mask {
+    layer.effect: MultiEffect { maskEnabled: true;
         maskSource: mask
 
         Rectangle {
