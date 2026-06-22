@@ -16,7 +16,7 @@ ColumnLayout {
 
     property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
-    implicitWidth: Math.max(600, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
+    implicitWidth: Math.max(400, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
     spacing: Tokens.spacing.medium
 
     ButtonGroup {
@@ -36,6 +36,7 @@ ColumnLayout {
 
     StyledRect {
         Layout.fillWidth: true
+        Layout.minimumWidth: 400
         implicitWidth: outputLayout.implicitWidth + Tokens.padding.medium * 2
         implicitHeight: outputLayout.implicitHeight + Tokens.padding.medium * 2
         radius: Tokens.rounding.medium
