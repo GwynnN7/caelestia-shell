@@ -69,15 +69,17 @@ Item {
         return list ? list[index % list.length] : "";
     }
 
-    function tick() {
+    function tick(dt) {
         if (dragging)
             return;
 
+        const timeScale = dt / 0.030;
+
         if (!onGround) {
-            vy += gravity;
-            vx *= 0.98;
+            vy += gravity * timeScale;
+            vx *= Math.pow(0.98, timeScale);
         } else if (Math.abs(vx) > 0.1) {
-            vx *= 0.3;
+            vx *= Math.pow(0.3, timeScale);
             if (Math.abs(vx) < 0.5)
                 vx = 0;
         }
@@ -95,8 +97,8 @@ Item {
             }
         }
 
-        root.x += vx;
-        root.y += vy;
+        root.x += vx * timeScale;
+        root.y += vy * timeScale;
 
         if (root.x < minX) {
             root.x = minX;
@@ -114,7 +116,7 @@ Item {
                 onGround = true;
                 vx = 0;
                 currentAnim = "idle";
-                if (walkTarget < 0 && Math.random() < 0.1) {
+                if (walkTarget < 0 && Math.random() < 0.1 * timeScale) {
                     walkRandom();
                 }
             } else if (vy < 0) {
@@ -210,13 +212,11 @@ Item {
         mirror: facingRight
     }
 
-    Timer {
-        id: physicsTimer
+    FrameAnimation {
+        id: physicsLoop
 
-        interval: 30
-        repeat: true
         running: true
-        onTriggered: tick()
+        onTriggered: tick(frameTime)
     }
 
     Timer {
