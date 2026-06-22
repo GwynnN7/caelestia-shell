@@ -27,8 +27,12 @@ Scope {
             Hypr.dispatch(Hypr.usingLua && ["dpms off", "dpms on"].includes(action) ? `hl.dsp.dpms({ action = "${action === "dpms off" ? "disable" : "enable"}" })` : action);
         } else {
             let cmd = action.slice();
-            if (!GlobalConfig.services.useSystemd && cmd.length > 0 && cmd[0] === "systemctl") {
-                cmd[0] = "loginctl";
+            if (!GlobalConfig.services.useSystemd) {
+                if (cmd.length > 0 && cmd[0] === "systemctl") {
+                    cmd[0] = "loginctl";
+                } else if (cmd.length > 2 && cmd[0] === "hyprshutdown" && cmd[1] === "-p") {
+                    cmd[2] = cmd[2].replace("systemctl", "loginctl");
+                }
             }
             Quickshell.execDetached(cmd);
         }
