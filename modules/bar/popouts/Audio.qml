@@ -16,7 +16,7 @@ ColumnLayout {
 
     property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
 
-    implicitWidth: Math.max(300, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
+    implicitWidth: Math.max(600, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
     spacing: Tokens.spacing.medium
 
     ButtonGroup {
