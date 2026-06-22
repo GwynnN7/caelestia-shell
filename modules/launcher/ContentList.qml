@@ -34,7 +34,8 @@ Item {
     }
     readonly property bool showWindowSwitcher: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)
     readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
-    readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showKeybinds ? keybindsList.item : appList.item))
+    readonly property bool showAnimations: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `)
+    readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showAnimations ? animationsList.item : (showKeybinds ? keybindsList.item : appList.item)))
 
     property string currentWallpaperTab: "Main"
 
@@ -53,7 +54,7 @@ Item {
     height: implicitHeight
 
     clip: true
-    state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
+    state: showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps")))
 
     Behavior on state {
         SequentialAnimation {
@@ -80,6 +81,11 @@ Item {
             keybindsList.active = true;
         } else {
             keybindsList.active = false;
+        }
+        if (state === "animations") {
+            animationsList.active = true;
+        } else {
+            animationsList.active = false;
         }
     }
 
@@ -134,6 +140,20 @@ Item {
             }
             PropertyChanges {
                 target: keybindsList
+                active: true
+            }
+
+        },
+        State {
+            name: "animations"
+
+            PropertyChanges {
+                target: root
+                implicitWidth: root.Tokens.sizes.launcher.itemWidth
+                implicitHeight: Math.min(root.maxHeight, root.Tokens.sizes.launcher.itemHeight * 7)
+            }
+            PropertyChanges {
+                target: animationsList
                 active: true
             }
 
@@ -335,6 +355,19 @@ Item {
         }
     }
 
+    Loader {
+        id: animationsList
+
+        active: false
+
+        anchors.fill: parent
+
+        sourceComponent: AnimationsList {
+            search: root.search
+            visibilities: root.visibilities
+        }
+    }
+
     Row {
         id: empty
 
@@ -353,6 +386,8 @@ Item {
                     return "wallpaper_slideshow";
                 if (root.state === "keybinds")
                     return "keyboard";
+                if (root.state === "animations")
+                    return "animation";
                 return "manage_search";
             }
             color: Colours.palette.m3onSurfaceVariant
@@ -370,6 +405,8 @@ Item {
                         return qsTr("No wallpapers found");
                     if (root.state === "keybinds")
                         return qsTr("No keybinds found");
+                    if (root.state === "animations")
+                        return qsTr("No animations found");
                     return qsTr("No results");
                 }
                 color: Colours.palette.m3onSurfaceVariant
@@ -382,6 +419,8 @@ Item {
                         return Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else");
                     if (root.state === "keybinds")
                         return qsTr("No keybinds match your search");
+                    if (root.state === "animations")
+                        return qsTr("Try adding .lua files to ~/.config/caelestia/animations/");
                     return qsTr("Try searching for something else");
                 }
                 color: Colours.palette.m3onSurfaceVariant

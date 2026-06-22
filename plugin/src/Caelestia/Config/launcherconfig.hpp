@@ -153,6 +153,12 @@ class LauncherConfig : public ConfigObject {
                 { u"description"_s, u"View all keybinds"_s },
                 { u"command"_s, QStringList{ u"autocomplete"_s, u"keybinds"_s } },
             }),
+            vmap({
+                { u"name"_s, u"Animations"_s },
+                { u"icon"_s, u"animation"_s },
+                { u"description"_s, u"Switch your animation style"_s },
+                { u"command"_s, QStringList{ u"autocomplete"_s, u"animations"_s } },
+            }),
         })
 
 public:
