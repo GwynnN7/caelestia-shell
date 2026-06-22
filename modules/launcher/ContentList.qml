@@ -420,7 +420,7 @@ Item {
                     if (root.state === "keybinds")
                         return qsTr("No keybinds match your search");
                     if (root.state === "animations")
-                        return qsTr("Try adding .lua files to ~/.config/caelestia/animations/");
+                        return qsTr("Try adding .lua files to\n~/.config/caelestia/animations/");
                     return qsTr("Try searching for something else");
                 }
                 color: Colours.palette.m3onSurfaceVariant

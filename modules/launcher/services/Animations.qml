@@ -28,11 +28,13 @@ Searcher {
                 // Construct the model data
                 const result = [];
                 
-                // Add the default item that removes the dofile
-                result.push({
-                    name: "Default (None)",
-                    path: "default"
-                });
+                if (lines.length > 0) {
+                    // Add the default item that removes the dofile
+                    result.push({
+                        name: "Default (None)",
+                        path: "default"
+                    });
+                }
 
                 for (let file of lines) {
                     let parts = file.split("/");
