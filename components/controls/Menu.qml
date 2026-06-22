@@ -38,15 +38,17 @@ MouseArea {
 
     parent: {
         let node = root.attachTo;
+        let interactionsNode = null;
+        
         while (node && node.parent) {
+            if (node.utilitiesShortcutActive !== undefined) {
+                interactionsNode = node;
+            }
             node = node.parent;
         }
 
-        const win = QsWindow.window;
-        if (win && win.contentItem === node) {
-            if ("interactionWrapper" in win && win.interactionWrapper) {
-                return win.interactionWrapper;
-            }
+        if (interactionsNode) {
+            return interactionsNode;
         }
 
         return node || root.parent;
