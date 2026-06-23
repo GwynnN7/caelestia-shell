@@ -231,6 +231,11 @@ Item {
                 maskEnabled: img.needsMask
                 maskSource: maskSourceItem
 
+                shadowEnabled: img.needsMask
+                shadowColor: Qt.rgba(0, 0, 0, 0.6)
+                shadowBlur: 1.0
+                shadowVerticalOffset: 4
+
                 saturation: (shouldRecolor && isDynamicMonochrome) ? -1 : 0
                 colorization: (shouldRecolor && !isDynamicMonochrome) ? Config.background.wallpaperRecolorStrength : 0
                 colorizationColor: Colours.palette.m3primary
