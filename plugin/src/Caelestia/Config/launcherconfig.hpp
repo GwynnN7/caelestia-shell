@@ -2,13 +2,13 @@
 
 #include "configobject.hpp"
 
-#include <QFileInfo>
-#include <QStandardPaths>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qvariant.h>
 
 namespace caelestia::config {
 
 using Qt::StringLiterals::operator""_s;
-
 
 class LauncherUseFuzzy : public ConfigObject {
     Q_OBJECT
@@ -93,21 +93,21 @@ class LauncherConfig : public ConfigObject {
                 { u"name"_s, u"Shutdown"_s },
                 { u"icon"_s, u"power_settings_new"_s },
                 { u"description"_s, u"Shutdown the system"_s },
-                { u"command"_s, QStringList{ u"hyprshutdown"_s, u"-p"_s, u"systemctl poweroff"_s } },
+                { u"command"_s, QStringList{ u"poweroff"_s } },
                 { u"dangerous"_s, true },
             }),
             vmap({
                 { u"name"_s, u"Reboot"_s },
                 { u"icon"_s, u"cached"_s },
                 { u"description"_s, u"Reboot the system"_s },
-                { u"command"_s, QStringList{ u"hyprshutdown"_s, u"-p"_s, u"systemctl reboot"_s, u"-t"_s, u"Rebooting..."_s } },
+                { u"command"_s, QStringList{ u"reboot"_s } },
                 { u"dangerous"_s, true },
             }),
             vmap({
                 { u"name"_s, u"Logout"_s },
                 { u"icon"_s, u"exit_to_app"_s },
                 { u"description"_s, u"Log out of the current session"_s },
-                { u"command"_s, QStringList{ u"hyprshutdown"_s } },
+                { u"command"_s, QStringList{ u"logout"_s } },
                 { u"dangerous"_s, true },
             }),
             vmap({

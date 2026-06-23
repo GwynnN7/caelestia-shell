@@ -17,11 +17,15 @@ qml_module(caelestia-services
         storage.cpp
         lyriccandidate.cpp
         lyrics.cpp
+        sessionmanager.cpp
+        sessionmanager.hpp
     LIBRARIES
+        Qt::DBus
         PkgConfig::Pipewire
         PkgConfig::Aubio
         PkgConfig::Cava
         Sensors::Sensors
+        caelestia-core
         caelestia-config
         caelestia-internal
 )

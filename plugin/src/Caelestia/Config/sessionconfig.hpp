@@ -2,8 +2,8 @@
 
 #include "configobject.hpp"
 
-#include <QFileInfo>
-#include <QStandardPaths>
+#include <qstring.h>
+#include <qstringlist.h>
 
 namespace caelestia::config {
 
@@ -29,15 +29,15 @@ class SessionCommands : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
 
-    CONFIG_PROPERTY(QStringList, shutdown, { u"systemctl"_s, u"poweroff"_s })
-    CONFIG_PROPERTY(QStringList, logout, { u"loginctl"_s, u"terminate-user"_s, u""_s })
-    CONFIG_PROPERTY(QStringList, suspend, { u"systemctl"_s, u"suspend"_s })
-    CONFIG_PROPERTY(QStringList, reboot, { u"systemctl"_s, u"reboot"_s })
-    CONFIG_PROPERTY(QStringList, windows, { u"systemctl"_s, u"reboot"_s })
+    CONFIG_PROPERTY(QStringList, shutdown, { u"poweroff"_s })
+    CONFIG_PROPERTY(QStringList, logout, { u"logout"_s })
+    CONFIG_PROPERTY(QStringList, suspend, { u"suspend"_s })
+    CONFIG_PROPERTY(QStringList, reboot, { u"reboot"_s })
+    CONFIG_PROPERTY(QStringList, windows, { u"reboot"_s })
+    CONFIG_PROPERTY(QStringList, bios, { u"bios"_s})
     CONFIG_PROPERTY(QStringList, lamp, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
     CONFIG_PROPERTY(QStringList, generic, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
     CONFIG_PROPERTY(QStringList, automode, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
-    CONFIG_PROPERTY(QStringList, bios, { u"systemctl"_s, u"reboot"_s, u"--firmware-setup"_s })
 
 public:
     explicit SessionCommands(QObject* parent = nullptr)

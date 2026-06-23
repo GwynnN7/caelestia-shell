@@ -238,7 +238,7 @@ Item {
                                     const subCmd = modelData?.entry.runInTerminal
                                         ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData?.entry.command]
                                         : modelData?.entry.command;
-                                    const finalCmd = GlobalConfig.services.useSystemd ? ["app2unit", "--", ...subCmd] : subCmd;
+                                    const finalCmd = ["app2unit", "--", ...subCmd];
                                     Quickshell.execDetached({
                                         command: finalCmd,
                                         workingDirectory: modelData?.entry.workingDirectory
