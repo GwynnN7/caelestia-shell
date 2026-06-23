@@ -16,6 +16,9 @@ Singleton {
     property string scheme
     property string flavour
     property string variant
+    property string previewScheme: ""
+    property string previewFlavour: ""
+    property string previewVariant: ""
     readonly property bool light: showPreview ? previewLight : currentLight
     property bool currentLight
     property bool previewLight
@@ -65,12 +68,15 @@ Singleton {
         const scheme = JSON.parse(data);
 
         if (!isPreview) {
-            root.scheme = scheme.name;
-            flavour = scheme.flavour;
-            variant = scheme.variant || "";
-            currentLight = scheme.mode === "light";
+            root.scheme = (scheme.name || "").trim();
+            root.flavour = (scheme.flavour || "").trim();
+            root.variant = (scheme.variant || "").trim();
+            root.currentLight = scheme.mode === "light";
         } else {
-            previewLight = scheme.mode === "light";
+            root.previewScheme = (scheme.name || "").trim();
+            root.previewFlavour = (scheme.flavour || "").trim();
+            root.previewVariant = (scheme.variant || "").trim();
+            root.previewLight = scheme.mode === "light";
         }
 
         for (const [name, colour] of Object.entries(scheme.colours)) {

@@ -33,7 +33,7 @@ Item {
         anchors.left: parent.left
 
         active: root.shouldBeActive || root.visible
-        
+
         sourceComponent: Content {
             visibilities: root.visibilities
         }

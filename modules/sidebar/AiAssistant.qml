@@ -87,6 +87,8 @@ Item {
     property var ollamaModelsList: []
     property bool isTyping: false
     property bool isThinking: false
+    property string currentThoughtText: ""
+    property bool isThoughtExpanded: false
     onIsTypingChanged: {
         if (isTyping) listView.positionViewAtEnd();
     }
@@ -217,7 +219,8 @@ Item {
                     chatHistory.append({
                         "isUser": msgs[j].isUser === true,
                         "text": msgs[j].text || "",
-                        "isFinished": msgs[j].isFinished !== false
+                        "isFinished": msgs[j].isFinished !== false,
+                        "thoughtText": msgs[j].thoughtText || ""
                     });
                 }
                 found = true;
@@ -264,7 +267,8 @@ Item {
             msgs.push({
                 "isUser": msg.isUser === true,
                 "text": msg.text || "",
-                "isFinished": msg.isFinished !== false
+                "isFinished": msg.isFinished !== false,
+                "thoughtText": msg.thoughtText || ""
             });
         }
         
@@ -418,7 +422,8 @@ Item {
         chatHistory.append({
             "isUser": false,
             "text": message || "",
-            "isFinished": true
+            "isFinished": true,
+            "thoughtText": ""
         });
         listView.positionViewAtEnd();
         saveHistory();
@@ -431,7 +436,8 @@ Item {
             chatHistory.append({
                 "isUser": true,
                 "text": promptText || "",
-                "isFinished": true
+                "isFinished": true,
+                "thoughtText": ""
             });
             listView.positionViewAtEnd();
             saveHistory();
@@ -440,6 +446,8 @@ Item {
         isTyping = true;
         isThinking = true;
         inAgentLoop = true;
+        currentThoughtText = "";
+        isThoughtExpanded = false;
         
         if (isSystemToolResult) {
             if (toolName === "web_search" || toolName === "read_webpage") {
@@ -462,9 +470,11 @@ Item {
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         
-        var parsedLines = 0;
-        var accumulatedText = "";
-        var toolCalls = null;
+        var processedTextLength = 0;
+        var accumulatedThoughtText = "";
+        var accumulatedContentText = "";
+        var rawAccumulatedContentText = "";
+        var finalToolCalls = null;
         
         for (var i = chatHistory.count - 1; i >= 0; i--) {
             var m = chatHistory.get(i);
@@ -476,27 +486,87 @@ Item {
         chatHistory.append({
             "isUser": false,
             "text": "",
-            "isFinished": false
+            "isFinished": false,
+            "thoughtText": ""
         });
         
         listView.positionViewAtEnd();
         
         xhr.onreadystatechange = () => {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.readyState === 3 || xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
-                    try {
-                        var parsed = JSON.parse(xhr.responseText);
-                        var responseText = "";
-                        var toolCalls = null;
-                        
-                        if (parsed.message) {
-                            responseText = parsed.message.content || "";
-                            toolCalls = parsed.message.tool_calls || null;
+                    var currentText = xhr.responseText;
+                    var unparsed = currentText.substring(processedTextLength);
+                    var lines = unparsed.split('\n');
+                    
+                    var linesToProcess = (xhr.readyState === XMLHttpRequest.DONE) ? lines.length : lines.length - 1;
+                    
+                    for (var i = 0; i < linesToProcess; i++) {
+                        var line = lines[i].trim();
+                        if (line === "") {
+                            processedTextLength += lines[i].length + 1;
+                            continue;
                         }
                         
-                        if (responseText) {
-                            startTypingAnimation(responseText);
-                        } else if (toolCalls && toolCalls.length > 0) {
+                        try {
+                            var parsed = JSON.parse(line);
+                            processedTextLength += lines[i].length + 1;
+                            
+                            if (parsed.message) {
+                                var chunkReasoning = parsed.message.thinking || parsed.message.reasoning || parsed.message.reasoning_content || "";
+                                if (chunkReasoning) {
+                                    accumulatedThoughtText += chunkReasoning;
+                                }
+                                
+                                var chunkContent = parsed.message.content || "";
+                                if (chunkContent) {
+                                    rawAccumulatedContentText += chunkContent;
+                                }
+                                
+                                var displayContent = rawAccumulatedContentText;
+                                var displayThought = accumulatedThoughtText;
+                                
+                                if (accumulatedThoughtText === "") {
+                                    var openThinkIdx = displayContent.indexOf("<think>");
+                                    var closeThinkIdx = displayContent.indexOf("</think>");
+                                    
+                                    if (openThinkIdx !== -1) {
+                                        if (closeThinkIdx !== -1) {
+                                            displayThought = displayContent.substring(openThinkIdx + 7, closeThinkIdx).trim();
+                                            displayContent = displayContent.substring(0, openThinkIdx) + displayContent.substring(closeThinkIdx + 8);
+                                        } else {
+                                            displayThought = displayContent.substring(openThinkIdx + 7).trim();
+                                            displayContent = displayContent.substring(0, openThinkIdx);
+                                        }
+                                    }
+                                }
+                                
+                                root.currentThoughtText = displayThought.trim();
+                                
+                                if (displayContent.trim() !== "") {
+                                    if (isThinking) isThinking = false;
+                                }
+                                
+                                chatHistory.setProperty(chatHistory.count - 1, "thoughtText", displayThought.trim());
+                                chatHistory.setProperty(chatHistory.count - 1, "text", displayContent.trim());
+                                listView.positionViewAtEnd();
+                                
+                                if (parsed.message.tool_calls) {
+                                    finalToolCalls = parsed.message.tool_calls;
+                                }
+                            }
+                        } catch (e) {
+                            break;
+                        }
+                    }
+                }
+                
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        chatHistory.setProperty(chatHistory.count - 1, "isFinished", true);
+                        saveHistory();
+                        
+                        if (finalToolCalls && finalToolCalls.length > 0) {
                             var enableTools = GlobalConfig.ai.enableCelestialMode;
                             if (enableTools) {
                                 currentActionText = "Using tools...";
@@ -504,8 +574,8 @@ Item {
                                 accumulatedToolImage = "";
                                 runningToolsCount = 0;
                                 
-                                for (var t = 0; t < toolCalls.length; t++) {
-                                    var tool = toolCalls[t].function;
+                                for (var t = 0; t < finalToolCalls.length; t++) {
+                                    var tool = finalToolCalls[t].function;
                                     var toolName = tool.name;
                                     var args = tool.arguments;
                                     
@@ -574,17 +644,12 @@ Item {
                             isThinking = false;
                             inAgentLoop = false;
                         }
-                    } catch (e) {
-                        addAiMessage("Error parsing Ollama response: " + e.message);
+                    } else {
+                        addAiMessage("Ollama request failed (status " + xhr.status + ").");
                         isTyping = false;
                         isThinking = false;
                         inAgentLoop = false;
                     }
-                } else {
-                    addAiMessage("Ollama request failed (status " + xhr.status + ").");
-                    isTyping = false;
-                    isThinking = false;
-                    inAgentLoop = false;
                 }
             }
         };
@@ -623,7 +688,7 @@ Item {
         var requestBody = {
             "model": ollamaModel,
             "messages": messages,
-            "stream": false
+            "stream": true
         };
         
         if (enableTools) {
@@ -1073,8 +1138,8 @@ Item {
                          StyledRect {
                              id: bubbleBg
                              y: Tokens.spacing.medium / 2
-                             width: Math.min(listView.width * 0.85, rowLayout.implicitWidth + Tokens.padding.medium * 2)
-                             height: rowLayout.implicitHeight + Tokens.padding.medium * 2
+                             width: Math.min(listView.width * 0.85, footerCol.implicitWidth + Tokens.padding.medium * 2 + 8)
+                             height: footerCol.implicitHeight + Tokens.padding.medium * 2
                              radius: Tokens.rounding.large
                              color: Colours.tPalette.m3surfaceContainer
 
@@ -1084,67 +1149,129 @@ Item {
                              bottomLeftRadius: 4
                              bottomRightRadius: Tokens.rounding.large
 
-                             RowLayout {
-                                 id: rowLayout
-                                 anchors.centerIn: parent
+                             Column {
+                                 id: footerCol
+                                 anchors.fill: parent
+                                 anchors.margins: Tokens.padding.medium
                                  spacing: Tokens.spacing.small
                                  
-                                 LoadingIndicator {
-                                     Layout.preferredWidth: 20
-                                     Layout.preferredHeight: 20
-                                     color: Colours.palette.m3primary
-                                 }
-                                 
-                                 // M3 Expressive Animated Text Wrapper
-                                 Item {
-                                     Layout.preferredWidth: mainText.implicitWidth
-                                     Layout.preferredHeight: mainText.implicitHeight
-                                     // The bubble smoothly expands/shrinks as the text width changes
-                                     Behavior on Layout.preferredWidth { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                                 Row {
+                                     spacing: Tokens.spacing.small
                                      
-                                     StyledText {
-                                         id: mainText
-                                         text: displayedText
-                                         color: Colours.palette.m3onSurfaceVariant
-                                         font: Tokens.font.body.small
+                                     LoadingIndicator {
+                                         width: 20
+                                         height: 20
+                                         color: Colours.palette.m3primary
+                                     }
+                                     
+                                     // M3 Expressive Animated Text Wrapper
+                                     Item {
+                                         width: mainText.implicitWidth
+                                         height: mainText.implicitHeight
+                                         // The bubble smoothly expands/shrinks as the text width changes
+                                         Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
                                          
-                                         property string displayedText: root.currentActionText
-                                         property string nextText: ""
+                                         StyledText {
+                                             id: mainText
+                                             text: displayedText
+                                             color: Colours.palette.m3onSurfaceVariant
+                                             font: Tokens.font.body.small
+                                             
+                                             property string displayedText: root.currentActionText
+                                             property string nextText: ""
 
-                                         transform: Translate { id: textTrans; y: 0 }
-                                         opacity: 1.0
+                                             transform: Translate { id: textTrans; y: 0 }
+                                             opacity: 1.0
 
-                                         Connections {
-                                             target: root
-                                             function onCurrentActionTextChanged() {
-                                                 if (root.currentActionText !== mainText.displayedText) {
-                                                     mainText.nextText = root.currentActionText;
-                                                     switchAnim.restart();
+                                             Connections {
+                                                 target: root
+                                                 function onCurrentActionTextChanged() {
+                                                     if (root.currentActionText !== mainText.displayedText) {
+                                                         mainText.nextText = root.currentActionText;
+                                                         switchAnim.restart();
+                                                     }
                                                  }
                                              }
-                                         }
 
-                                         // Expressive slot-machine bounce for state switching
-                                         SequentialAnimation {
-                                             id: switchAnim
-                                             ParallelAnimation {
-                                                 NumberAnimation { target: textTrans; property: "y"; to: -8; duration: 150; easing.type: Easing.InCubic }
-                                                 NumberAnimation { target: mainText; property: "opacity"; to: 0.0; duration: 150; easing.type: Easing.InCubic }
+                                             SequentialAnimation {
+                                                 id: switchAnim
+                                                 ParallelAnimation {
+                                                     NumberAnimation { target: textTrans; property: "y"; to: -8; duration: 150; easing.type: Easing.InCubic }
+                                                     NumberAnimation { target: mainText; property: "opacity"; to: 0.0; duration: 150; easing.type: Easing.InCubic }
+                                                 }
+                                                 PropertyAction { target: mainText; property: "displayedText"; value: mainText.nextText }
+                                                 PropertyAction { target: textTrans; property: "y"; value: 8 }
+                                                 ParallelAnimation {
+                                                     NumberAnimation { target: textTrans; property: "y"; to: 0; duration: 400; easing.type: Easing.OutBack; easing.overshoot: 1.5 }
+                                                     NumberAnimation { target: mainText; property: "opacity"; to: 1.0; duration: 250; easing.type: Easing.OutQuad }
+                                                 }
                                              }
-                                             PropertyAction { target: mainText; property: "displayedText"; value: mainText.nextText }
-                                             PropertyAction { target: textTrans; property: "y"; value: 8 }
-                                             ParallelAnimation {
-                                                 NumberAnimation { target: textTrans; property: "y"; to: 0; duration: 400; easing.type: Easing.OutBack; easing.overshoot: 1.5 }
-                                                 NumberAnimation { target: mainText; property: "opacity"; to: 1.0; duration: 250; easing.type: Easing.OutQuad }
+
+                                             SequentialAnimation {
+                                                 running: isThinking && !switchAnim.running
+                                                 loops: Animation.Infinite
+                                                 NumberAnimation { target: mainText; property: "opacity"; from: 1.0; to: 0.4; duration: 800; easing.type: Easing.InOutSine }
+                                                 NumberAnimation { target: mainText; property: "opacity"; from: 0.4; to: 1.0; duration: 800; easing.type: Easing.InOutSine }
                                              }
                                          }
+                                     }
+                                     
+                                     Item {
+                                         visible: root.currentThoughtText !== ""
+                                         width: Tokens.spacing.medium
+                                         height: 1
+                                     }
+                                     
+                                     Item {
+                                         visible: root.currentThoughtText !== ""
+                                         width: thoughtRowFooter.implicitWidth
+                                         height: thoughtRowFooter.implicitHeight
+                                         Row {
+                                             id: thoughtRowFooter
+                                             spacing: Tokens.spacing.small
+                                             MaterialIcon {
+                                                 text: "expand_more"
+                                                 color: Colours.palette.m3onSurfaceVariant
+                                                 font: Tokens.font.icon.small
+                                                 rotation: root.isThoughtExpanded ? 180 : 0
+                                                 Behavior on rotation { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+                                             }
+                                         }
+                                         MouseArea {
+                                             anchors.fill: parent
+                                             anchors.margins: -10
+                                             cursorShape: Qt.PointingHandCursor
+                                             onClicked: root.isThoughtExpanded = !root.isThoughtExpanded
+                                         }
+                                     }
+                                 }
+                                 Item {
+                                     id: footerThoughtContentWrapper
+                                     width: footerThoughtContent.width
+                                     height: root.isThoughtExpanded ? footerThoughtContent.implicitHeight : 0
+                                     clip: true
+                                     
+                                     Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
 
-                                         // Fluid, organic breathing opacity while processing
-                                         SequentialAnimation {
-                                             running: isThinking && !switchAnim.running
-                                             loops: Animation.Infinite
-                                             NumberAnimation { target: mainText; property: "opacity"; from: 1.0; to: 0.4; duration: 800; easing.type: Easing.InOutSine }
-                                             NumberAnimation { target: mainText; property: "opacity"; from: 0.4; to: 1.0; duration: 800; easing.type: Easing.InOutSine }
+                                     TextEdit {
+                                         id: footerThoughtContent
+                                         width: Math.min(implicitWidth, listView.width * 0.85 - Tokens.padding.medium * 2)
+                                         textFormat: Text.MarkdownText
+                                         text: root.currentThoughtText
+                                         color: Colours.palette.m3onSurfaceVariant
+                                         font: Tokens.font.body.small
+                                         wrapMode: Text.Wrap
+                                         readOnly: true
+                                         selectByMouse: true
+                                         selectionColor: Colours.palette.m3primary
+                                         selectedTextColor: Colours.palette.m3onPrimary
+                                         opacity: root.isThoughtExpanded ? 1.0 : 0.0
+                                         
+                                         Behavior on opacity {
+                                             SequentialAnimation {
+                                                 PauseAnimation { duration: root.isThoughtExpanded ? 100 : 0 }
+                                                 NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+                                             }
                                          }
                                      }
                                  }
@@ -1157,11 +1284,12 @@ Item {
 
                          required property string text
                          required property bool isUser
-                         property bool isFinished: true
+                         required property bool isFinished
+                         required property string thoughtText
 
                          width: listView.width - Tokens.padding.large
-                         visible: delegateItem.text !== ""
-                         height: delegateItem.text === "" ? 0 : bubbleRect.height
+                         visible: (!delegateItem.isFinished && isThinking) ? false : (delegateItem.text !== "" || delegateItem.thoughtText !== "")
+                         height: visible ? bubbleRect.height : 0
                          
                          scale: 0.0
                          opacity: 0.0
@@ -1178,8 +1306,8 @@ Item {
                          
                          SequentialAnimation {
                              id: popDoneAnim
-                             NumberAnimation { target: delegateItem; property: "scale"; from: 1.0; to: 1.05; duration: 150; easing.type: Easing.OutQuad }
-                             NumberAnimation { target: delegateItem; property: "scale"; from: 1.05; to: 1.0; duration: 200; easing.type: Easing.OutBounce }
+                             NumberAnimation { target: delegateItem; property: "scale"; from: 1.0; to: 1.02; duration: 100; easing.type: Easing.OutQuad }
+                             NumberAnimation { target: delegateItem; property: "scale"; from: 1.02; to: 1.0; duration: 150; easing.type: Easing.OutSine }
                          }
                          
                          onIsFinishedChanged: {
@@ -1193,8 +1321,8 @@ Item {
                              anchors.left: delegateItem.isUser ? undefined : parent.left
                              
                              // Let implicitWidth dictate width (with +8 buffer for layout engine) to stop short words from splitting line breaks
-                             width: Math.min(maxBubbleWidth, messageText.implicitWidth + Tokens.padding.medium * 2 + 8)
-                             height: messageText.implicitHeight + Tokens.padding.medium * 2
+                             width: Math.min(maxBubbleWidth, bubbleLayout.implicitWidth + Tokens.padding.medium * 2 + 8)
+                             height: bubbleLayout.implicitHeight + Tokens.padding.medium * 2
                              radius: Tokens.rounding.large
                              color: delegateItem.isUser ? Colours.palette.m3primary : Colours.tPalette.m3surfaceContainer
 
@@ -1204,26 +1332,97 @@ Item {
                              bottomLeftRadius: delegateItem.isUser ? Tokens.rounding.large : 4
                              bottomRightRadius: delegateItem.isUser ? 4 : Tokens.rounding.large
                              
-                             TextEdit {
-                                 id: messageText
-                                 textFormat: Text.MarkdownText
-                                 anchors.fill: parent
+                             Column {
+                                 id: bubbleLayout
+                                 anchors.top: parent.top
+                                 anchors.left: parent.left
                                  anchors.margins: Tokens.padding.medium
-                                 text: delegateItem.text !== undefined ? delegateItem.text : ""
-                                 color: delegateItem.isUser ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
-                                 font: Tokens.font.body.small
-                                 wrapMode: Text.Wrap
-                                 readOnly: true
-                                 selectByMouse: true
-                                 selectionColor: Colours.palette.m3primary
-                                 selectedTextColor: Colours.palette.m3onPrimary
+                                 spacing: Tokens.spacing.small
 
-                                 MouseArea {
-                                     anchors.fill: parent
-                                     hoverEnabled: true
-                                     cursorShape: Qt.IBeamCursor
-                                     propagateComposedEvents: true
-                                     onPressed: mouse => mouse.accepted = false
+                                 property string delegateThought: delegateItem.thoughtText
+                                 property bool isExpanded: false
+
+                                 Item {
+                                     visible: bubbleLayout.delegateThought !== ""
+                                     implicitWidth: thoughtRow.implicitWidth
+                                     implicitHeight: thoughtRow.implicitHeight
+                                     height: visible ? implicitHeight : 0
+
+                                     Row {
+                                         id: thoughtRow
+                                         spacing: Tokens.spacing.small
+                                         Text {
+                                             text: "Thought Process"
+                                             color: Colours.palette.m3onSurfaceVariant
+                                             font: Tokens.font.body.small
+                                         }
+                                         MaterialIcon {
+                                             id: thoughtArrow
+                                             text: "expand_more"
+                                             color: Colours.palette.m3onSurfaceVariant
+                                             font: Tokens.font.icon.small
+                                             rotation: bubbleLayout.isExpanded ? 180 : 0
+                                             Behavior on rotation { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+                                         }
+                                     }
+                                     MouseArea {
+                                         anchors.fill: parent
+                                         cursorShape: Qt.PointingHandCursor
+                                         onClicked: bubbleLayout.isExpanded = !bubbleLayout.isExpanded
+                                     }
+                                 }
+
+                                 Item {
+                                     id: thoughtContentWrapper
+                                     width: thoughtContent.width
+                                     height: bubbleLayout.isExpanded ? thoughtContent.implicitHeight : 0
+                                     clip: true
+                                     
+                                     Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+
+                                     TextEdit {
+                                         id: thoughtContent
+                                         width: Math.min(implicitWidth, bubbleRect.maxBubbleWidth - Tokens.padding.medium * 2)
+                                         textFormat: Text.MarkdownText
+                                         text: bubbleLayout.delegateThought
+                                         color: Colours.palette.m3onSurfaceVariant
+                                         font: Tokens.font.body.small
+                                         wrapMode: Text.Wrap
+                                         readOnly: true
+                                         selectByMouse: true
+                                         selectionColor: Colours.palette.m3primary
+                                         selectedTextColor: Colours.palette.m3onPrimary
+                                         opacity: bubbleLayout.isExpanded ? 1.0 : 0.0
+                                         
+                                         Behavior on opacity {
+                                             SequentialAnimation {
+                                                 PauseAnimation { duration: bubbleLayout.isExpanded ? 100 : 0 }
+                                                 NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+                                             }
+                                         }
+                                     }
+                                 }
+
+                                 TextEdit {
+                                     id: messageText
+                                     textFormat: Text.MarkdownText
+                                     width: Math.min(implicitWidth, bubbleRect.maxBubbleWidth - Tokens.padding.medium * 2)
+                                     text: delegateItem.text !== undefined ? delegateItem.text : ""
+                                     color: delegateItem.isUser ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
+                                     font: Tokens.font.body.small
+                                     wrapMode: Text.Wrap
+                                     readOnly: true
+                                     selectByMouse: true
+                                     selectionColor: Colours.palette.m3primary
+                                     selectedTextColor: Colours.palette.m3onPrimary
+
+                                     MouseArea {
+                                         anchors.fill: parent
+                                         hoverEnabled: true
+                                         cursorShape: Qt.IBeamCursor
+                                         propagateComposedEvents: true
+                                         onPressed: mouse => mouse.accepted = false
+                                     }
                                  }
                              }
                          }

@@ -3,6 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import QtMultimedia
+import Quickshell
+import M3Shapes
 import Caelestia.Config
 import qs.components
 import qs.components.filedialog
@@ -28,7 +30,7 @@ Item {
     onSourceChanged: {
         if (!source)
             current = null;
-        else if (current !== one) {
+        else if (current === one) {
             two.screen = screen;
             two.update();
         } else {
@@ -165,70 +167,131 @@ Item {
 
         anchors.fill: parent
 
-        opacity: 0
-        scale: Wallpapers.showPreview ? 1 : 0.8
+        opacity: 1
+        scale: 1
 
-        readonly property bool isDynamicScheme: Colours.scheme.startsWith("dynamic")
-        readonly property bool isDynamicMonochrome: isDynamicScheme && Colours.variant === "monochrome"
-        layer.enabled: Config.background.wallpaperRecolor && (!isDynamicScheme || isDynamicMonochrome)
-        layer.effect: MultiEffect {
-            saturation: isDynamicMonochrome ? -1 : 0
-            colorization: isDynamicMonochrome ? 0 : Config.background.wallpaperRecolorStrength
-            colorizationColor: Colours.palette.m3primary
-            contrast: Colours.flavour === "hard" ? 0.45 : 0.0
+        readonly property real maxRadius: Math.sqrt(width * width + height * height)
+        property real maskRadius: 0
+        Component.onCompleted: maskRadius = maxRadius
+        z: root.current === img ? 1 : 0
 
-            Behavior on colorizationColor {
-                CAnim {}
+        readonly property var shapes: [
+            MaterialShape.Circle, MaterialShape.Square, MaterialShape.Diamond,
+            MaterialShape.ClamShell, MaterialShape.Pentagon, MaterialShape.Gem,
+            MaterialShape.Clover4Leaf, MaterialShape.SoftBurst, MaterialShape.Cookie6Sided
+        ]
+        property int currentShape: MaterialShape.Circle
+
+        onZChanged: {
+            if (z === 1) {
+                maskRadius = 0;
+                maskAnim.restart();
+            } else {
+                maskRadius = 0;
+                currentShape = shapes[Math.floor(Math.random() * shapes.length)];
             }
         }
 
-        states: State {
-            name: "visible"
-            when: root.current === img
-
-            PropertyChanges {
-                img.opacity: 1
-                img.scale: 1
-            }
-        }
-
-        CachingAnimatedImage {
+        Item {
+            id: maskWrapper
             anchors.fill: parent
-            path: img.imagePath
-            visible: !img.isVideoImage && img.imagePath !== ""
-            asynchronous: true
-            fillMode: AnimatedImage.PreserveAspectCrop
-            source: img.imagePath || ""
-            playing: true
 
-            onStatusChanged: {
-                if (status === Image.Ready && !img.isVideoImage)
-                    root.current = img;
+            MaterialShape {
+                anchors.centerIn: parent
+                width: 2000
+                height: 2000
+                shape: img.currentShape
+                color: "white"
+                scale: img.maxRadius > 0 ? (img.maskRadius * 2) / 2000 : 0
             }
         }
 
-        CachingVideo {
+        ShaderEffectSource {
+            id: maskSourceItem
+            sourceItem: maskWrapper
             anchors.fill: parent
-            path: img.videoPath
-            screen: root.screen
-            visible: img.isVideoImage && img.videoPath !== ""
+            hideSource: true
+            live: true
+        }
 
-            onPlayingChanged: {
-                if (playing && img.isVideoImage)
-                    root.current = img;
+        readonly property string currentSchemeName: Colours.showPreview ? Colours.previewScheme : Colours.scheme
+        readonly property string currentVariantName: Colours.showPreview ? Colours.previewVariant : Colours.variant
+        readonly property bool isDynamicScheme: currentSchemeName.startsWith("dynamic")
+        readonly property bool isDynamicMonochrome: isDynamicScheme && currentVariantName === "monochrome"
+        readonly property bool needsMask: img.z === 1 && img.maskRadius < img.maxRadius
+        readonly property bool shouldRecolor: Config.background.wallpaperRecolor && (!isDynamicScheme || isDynamicMonochrome)
+        
+
+        Item {
+            id: contentItem
+            anchors.fill: parent
+
+            layer.enabled: needsMask || Config.background.wallpaperRecolor
+            layer.effect: MultiEffect {
+                maskEnabled: img.needsMask
+                maskSource: maskSourceItem
+
+                shadowEnabled: img.needsMask
+                shadowColor: "black"
+                shadowBlur: 1.0
+                shadowVerticalOffset: 15
+                shadowHorizontalOffset: 5
+
+                saturation: (shouldRecolor && isDynamicMonochrome) ? -1 : 0
+                colorization: (shouldRecolor && !isDynamicMonochrome) ? Config.background.wallpaperRecolorStrength : 0
+                colorizationColor: Colours.palette.m3primary
+                readonly property string currentFlavourName: Colours.showPreview ? Colours.previewFlavour : Colours.flavour
+                contrast: (shouldRecolor && currentFlavourName === "hard") ? 0.45 : 0.0
+
+                Behavior on saturation { Anim { type: Anim.DefaultEffects } }
+                Behavior on colorization { Anim { type: Anim.DefaultEffects } }
+                Behavior on contrast { Anim { type: Anim.DefaultEffects } }
+
+                Behavior on colorizationColor {
+                    CAnim {}
+                }
+            }
+
+
+
+            CachingAnimatedImage {
+                anchors.fill: parent
+                path: img.imagePath
+                visible: !img.isVideoImage && img.imagePath !== ""
+                asynchronous: true
+                fillMode: AnimatedImage.PreserveAspectCrop
+                source: img.imagePath || ""
+                playing: true
+
+                onStatusChanged: {
+                    if (status === Image.Ready && !img.isVideoImage)
+                        root.current = img;
+                }
+            }
+
+            CachingVideo {
+                anchors.fill: parent
+                path: img.videoPath
+                screen: root.screen
+                visible: img.isVideoImage && img.videoPath !== ""
+
+                onPlayingChanged: {
+                    if (playing && img.isVideoImage)
+                        root.current = img;
+                }
             }
         }
 
-        Behavior on opacity {
-            Anim {
-                type: Anim.SlowEffects
-            }
-        }
 
-        Behavior on scale {
+
             Anim {
+                id: maskAnim
+                target: img
+                property: "maskRadius"
+                from: 0
+                to: img.maxRadius
                 type: Anim.Emphasized
+                duration: 2500
             }
-        }
     }
 }

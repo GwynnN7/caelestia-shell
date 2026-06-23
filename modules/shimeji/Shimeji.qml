@@ -31,7 +31,6 @@ StyledWindow {
     readonly property var barWrapper: (() => {
         let name = root.screen ? root.screen.name : undefined;
         let bar = name ? Visibilities.bars.get(name) : undefined;
-        console.log("Shimeji barWrapper evaluated:", name, bar, bar ? bar.exclusiveZone : "no bar", "config position:", Config.bar.position);
         return bar;
     })()
 
