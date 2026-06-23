@@ -25,13 +25,25 @@ Singleton {
         });
     }
 
+    Process {
+        id: enableSystemGameMode
+        command: ["sh", "-c", "sudo systemctl stop ananicy-cpp && sudo scxctl switch --sched cake"]
+    }
+
+    Process {
+        id: disableSystemGameMode
+        command: ["sh", "-c", "sudo systemctl start ananicy-cpp && sudo scxctl restore"]
+    }
+
     onEnabledChanged: {
         if (enabled) {
+            enableSystemGameMode.running = true;
             setDynamicConfs();
             if (GlobalConfig.utilities.toasts.gameModeChanged)
                 Toaster.toast(qsTr("Game mode enabled"), qsTr("Disabled Hyprland animations, blur, gaps and shadows"), "gamepad");
         } else {
             Hypr.extras.message("reload");
+            disableSystemGameMode.running = true;
             if (GlobalConfig.utilities.toasts.gameModeChanged)
                 Toaster.toast(qsTr("Game mode disabled"), qsTr("Hyprland settings restored"), "gamepad");
         }
