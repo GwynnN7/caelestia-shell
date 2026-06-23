@@ -21,7 +21,6 @@ Item {
     readonly property var barWrapper: {
         let name = root.screen ? root.screen.name : undefined;
         let bar = name ? Visibilities.bars.get(name) : undefined;
-        console.log("Visualiser: screen name:", name, "retrieved barWrapper from Map:", bar);
         return bar;
     }
     readonly property int barExclusiveZone: barWrapper ? barWrapper.exclusiveZone : 0

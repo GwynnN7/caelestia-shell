@@ -223,25 +223,25 @@ Item {
                         
                         onClicked: mouse => {
                             if (mouse.button === Qt.LeftButton) {
-                                if (modelData.isPinned) {
+                                if (modelData?.isPinned) {
                                     bounceAnim.start();
                                 }
                                 
-                                if (modelData.toplevels.length > 0) {
-                                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${modelData.toplevels[0].address}" })` : `focuswindow address:0x${modelData.toplevels[0].address}`);
-                                } else if (modelData.entry) {
+                                if (modelData?.toplevels.length > 0) {
+                                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${modelData?.toplevels[0].address}" })` : `focuswindow address:0x${modelData?.toplevels[0].address}`);
+                                } else if (modelData?.entry) {
                                     // Mark as launching
                                     let newLaunching = Object.assign({}, root.launchingApps);
-                                    newLaunching[modelData.appClass || modelData.id] = true;
+                                    newLaunching[modelData?.appClass || modelData?.id] = true;
                                     root.launchingApps = newLaunching;
                                     
-                                    const subCmd = modelData.entry.runInTerminal
-                                        ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData.entry.command]
-                                        : modelData.entry.command;
+                                    const subCmd = modelData?.entry.runInTerminal
+                                        ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData?.entry.command]
+                                        : modelData?.entry.command;
                                     const finalCmd = GlobalConfig.services.useSystemd ? ["app2unit", "--", ...subCmd] : subCmd;
                                     Quickshell.execDetached({
                                         command: finalCmd,
-                                        workingDirectory: modelData.entry.workingDirectory
+                                        workingDirectory: modelData?.entry.workingDirectory
                                     });
                                 }
                             } else if (mouse.button === Qt.RightButton) {
@@ -280,15 +280,15 @@ Item {
                         const activeTop = Hyprland.activeToplevel;
                         if (!activeTop) return false;
                         
-                        if (activeTop.lastIpcObject && modelData.appClass) {
+                        if (activeTop.lastIpcObject && modelData?.appClass) {
                             const activeClass = (activeTop.lastIpcObject.class || activeTop.lastIpcObject.initialClass || "").toLowerCase();
-                            const appId = modelData.appClass.toLowerCase();
+                            const appId = modelData?.appClass.toLowerCase();
                             if (activeClass && (activeClass === appId || activeClass.includes(appId) || appId.includes(activeClass))) {
                                 return true;
                             }
                         }
                         
-                        for (const top of modelData.toplevels) {
+                        for (const top of modelData?.toplevels || []) {
                             if (top.address && top.address === activeTop.address) return true;
                         }
                         return false;
@@ -296,7 +296,7 @@ Item {
 
                     property bool hasWindows: {
                         const dummy = root.modelUpdateTrigger;
-                        return modelData.toplevels.length > 0;
+                        return modelData?.toplevels.length > 0;
                     }
 
 
@@ -307,10 +307,10 @@ Item {
                         anchors.centerIn: parent
                         implicitSize: Math.round(((delegateItem.width || 0) * 0.7) / 2) * 2 || 0
                         source: {
-                            if (modelData.entry && modelData.entry.icon) {
-                                return Quickshell.iconPath(modelData.entry.icon, "image-missing");
+                            if (modelData?.entry && modelData?.entry.icon) {
+                                return Quickshell.iconPath(modelData?.entry.icon, "image-missing");
                             }
-                            return Quickshell.iconPath(modelData.iconName, "image-missing");
+                            return Quickshell.iconPath(modelData?.iconName, "image-missing");
                         }
                         asynchronous: true
                         visible: !(Config.bar.dock.recolourIcons ?? false)
@@ -334,7 +334,7 @@ Item {
                     Loader {
                         anchors.fill: icon
                         anchors.margins: -Tokens.padding.small
-                        active: root.launchingApps[modelData.appClass || modelData.id] || false
+                        active: root.launchingApps[modelData?.appClass || modelData?.id] || false
                         sourceComponent: CircularIndicator {
                             running: true
                             strokeWidth: 2
@@ -365,7 +365,7 @@ Item {
                         
                         model: {
                             const dummy = root.modelUpdateTrigger;
-                            return Math.min(2, modelData.toplevels.length);
+                            return Math.min(2, modelData?.toplevels.length);
                         }
                         
                         delegate: Rectangle {

@@ -83,7 +83,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             text: root.modelData?.preview ?? ""
-            font.pointSize: Tokens.fontSize.normal
+            font: Tokens.font.body.medium
             elide: Text.ElideRight
             visible: !(root.modelData?.isImage ?? false)
         }
