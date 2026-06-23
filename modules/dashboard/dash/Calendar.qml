@@ -159,7 +159,8 @@ CustomMouseArea {
         DayOfWeekRow {
             id: daysRow
 
-            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: grid.implicitWidth
             locale: grid.locale
 
             delegate: StyledText {
@@ -173,7 +174,8 @@ CustomMouseArea {
         }
 
         Item {
-            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: grid.implicitWidth
             implicitHeight: grid.implicitHeight
 
             opacity: root.animOpacity
