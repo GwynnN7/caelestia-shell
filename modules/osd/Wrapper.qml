@@ -99,9 +99,7 @@ Item {
         anchors.left: parent.left
 
         asynchronous: true
-        property bool hasLoaded: false
-        active: hasLoaded || root.shouldBeActive || root.visible
-        onLoaded: hasLoaded = true
+        active: root.shouldBeActive || root.visible
 
         sourceComponent: Content {
             monitor: root.monitor

@@ -78,16 +78,8 @@ Item {
         anchors.left: parent.left
         anchors.margins: Tokens.padding.large
 
-        property bool hasLoaded: false
-        property bool _shouldBeActive: root.shouldBeActive || root.visible
-        active: hasLoaded || _shouldBeActive
-        
-        on_ShouldBeActiveChanged: {
-            if (_shouldBeActive) hasLoaded = true;
-        }
-        Component.onCompleted: {
-            if (_shouldBeActive) hasLoaded = true;
-        }
+        asynchronous: true
+        active: root.shouldBeActive || root.visible
 
         sourceComponent: Content {
             implicitWidth: root.implicitWidth - root.totalPadding

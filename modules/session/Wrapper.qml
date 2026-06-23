@@ -32,9 +32,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
 
-        property bool hasLoaded: false
-        active: hasLoaded || root.shouldBeActive || root.visible
-        onLoaded: hasLoaded = true
+        active: root.shouldBeActive || root.visible
 
         sourceComponent: Content {
             visibilities: root.visibilities
