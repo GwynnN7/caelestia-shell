@@ -28,13 +28,13 @@ CustomMouseArea {
 
     function inBarArea(x: real, y: real): bool {
         if (Config.bar.position === "left")
-            return x < bar.implicitWidth;
+            return x < bar.x + bar.implicitWidth;
         if (Config.bar.position === "right")
-            return x > screen.width - bar.implicitWidth;
+            return x > bar.x;
         if (Config.bar.position === "top")
-            return y < bar.implicitHeight;
+            return y < bar.y + bar.implicitHeight;
         if (Config.bar.position === "bottom")
-            return y > screen.height - bar.implicitHeight;
+            return y > bar.y;
         return false;
     }
 
