@@ -40,11 +40,12 @@ Singleton {
         }
     }
 
-    // Force Quickshell to continuously track windows in the background
-    property var _toplevelsTracker: Hyprland.toplevels.values
-    on_ToplevelsTrackerChanged: evaluateAutoEnable()
-
-    Component.onCompleted: evaluateAutoEnable()
+    Timer {
+        interval: 500
+        repeat: true
+        running: true
+        onTriggered: root.evaluateAutoEnable()
+    }
 
     Connections {
         target: GlobalConfig.utilities.gameMode
