@@ -154,6 +154,15 @@ QtObject {
                 Component {
                     NotificationsPage {}
                 }
+                Component {
+                    GameModePage {}
+                }
+                Component {
+                    GameModeTargetsPage {}
+                }
+                Component {
+                    ArpcPage {}
+                }
             }
         },
         Component {

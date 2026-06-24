@@ -137,7 +137,6 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
-            last: true
             text: qsTr("Show on hover")
             subtext: qsTr("Reveal when the cursor reaches the screen edge")
             checked: Config.dashboard.showOnHover
@@ -209,7 +208,6 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
-            last: true
             text: qsTr("Weather")
             checked: Config.dashboard.showWeather
             onToggled: GlobalConfig.dashboard.showWeather = checked

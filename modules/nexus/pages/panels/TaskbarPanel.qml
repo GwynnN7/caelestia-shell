@@ -95,7 +95,7 @@ PageBase {
         NavRow {
             first: true
             icon: "view_agenda"
-            label: qsTr("Toggle & Rearrange")
+            label: qsTr("Toggle & rearrange")
             status: qsTr("Add, remove or reorder components")
             onClicked: root.nState.openSubPage(5)
         }

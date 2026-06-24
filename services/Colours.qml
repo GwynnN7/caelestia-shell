@@ -186,7 +186,7 @@ Singleton {
     }
 
     component Transparency: QtObject {
-        readonly property bool enabled: Tokens.transparency.enabled
+        readonly property bool enabled: Tokens.transparency.enabled && !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableShellTransparency)
         readonly property real base: Math.max(0, Math.min(1, Tokens.transparency.base - (root.light ? 0.1 : 0)))
         readonly property real layers: Tokens.transparency.layers
 

@@ -41,10 +41,10 @@ Item {
     readonly property real bottomMargin: anchors.bottomMargin
 
     anchors.fill: parent
-    anchors.leftMargin: Config.bar.position === "left" ? bar.implicitWidth : borderThickness
-    anchors.rightMargin: Config.bar.position === "right" ? bar.implicitWidth : borderThickness
-    anchors.topMargin: Config.bar.position === "top" ? bar.implicitHeight : borderThickness
-    anchors.bottomMargin: Config.bar.position === "bottom" ? bar.implicitHeight : borderThickness
+    anchors.leftMargin: (Config.bar.position === "left" ? bar.implicitWidth + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge * 2 : 0) : borderThickness + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0))
+    anchors.rightMargin: (Config.bar.position === "right" ? bar.implicitWidth + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge * 2 : 0) : borderThickness + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0))
+    anchors.topMargin: (Config.bar.position === "top" ? bar.implicitHeight + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge * 2 : 0) : borderThickness + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0))
+    anchors.bottomMargin: (Config.bar.position === "bottom" ? bar.implicitHeight + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge * 2 : 0) : borderThickness + (GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0))
 
     states: [
         State {
@@ -138,6 +138,7 @@ Item {
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
         implicitHeight: osd.implicitHeight
+        visible: osd.offsetScale < 1
 
         Osd.Wrapper {
             id: osd
@@ -164,8 +165,8 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
-        anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
+        anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.extraLarge) : 0
+        anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.extraLarge) : 0
     }
 
     Item {
@@ -179,6 +180,7 @@ Item {
 
         implicitWidth: session.implicitWidth * (1 - session.offsetScale)
         implicitHeight: session.implicitHeight
+        visible: session.offsetScale < 1
 
         Session.Wrapper {
             id: session
@@ -251,7 +253,7 @@ Item {
         anchors.right: parent.right
         property bool shouldPush: popoutsWrapper.offsetScale < 1 && !popoutsWrapper.content.isDockPopout
 
-        anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : -notifications.anchors.topMargin
-        anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
+        anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.extraLarge) : -notifications.anchors.topMargin
+        anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.extraLarge) : 0
     }
 }

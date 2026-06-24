@@ -317,6 +317,15 @@ PageBase {
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
+            text: qsTr("Islands")
+            subtext: qsTr("Everything appears as its own floating widget (Very Experimental)")
+            checked: GlobalConfig.appearance.islands
+            onToggled: GlobalConfig.appearance.islands = checked
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
             text: qsTr("Transparency")
             subtext: qsTr("Base %1, layers %2").arg(Colours.transparency.base).arg(Colours.transparency.layers)
             checked: Colours.transparency.enabled

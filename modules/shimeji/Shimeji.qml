@@ -16,7 +16,7 @@ StyledWindow {
 
     readonly property alias shimejiScreen: root.modelData
 
-    readonly property bool shouldBeVisible: !GlobalConfig.forScreen(modelData.name).shimeji.autoHide || (Hypr.monitorFor(modelData)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true)
+    readonly property bool shouldBeVisible: !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableShimeji) && (!GlobalConfig.forScreen(modelData.name).shimeji.autoHide || (Hypr.monitorFor(modelData)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true))
 
     property var extractedPaths: []
 

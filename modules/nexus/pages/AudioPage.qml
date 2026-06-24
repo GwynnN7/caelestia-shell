@@ -243,7 +243,7 @@ PageBase {
         StyledText {
             Layout.fillWidth: true
             Layout.topMargin: Tokens.spacing.large - parent.spacing
-            text: qsTr("Notification Silencing")
+            text: qsTr("Notification silencing")
             font: Tokens.font.body.small
             color: Colours.palette.m3primary
         }

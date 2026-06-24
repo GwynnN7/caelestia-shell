@@ -25,7 +25,7 @@ StyledRect {
         else if (root.modelData.type === Toast.Error)
             baseColor = Colours.palette.m3errorContainer;
 
-        if (GlobalConfig.utilities.toasts.transparency) {
+        if (GlobalConfig.utilities.toasts.transparency && !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableToastTransparency)) {
             return Qt.alpha(baseColor, Math.max(0.1, GlobalConfig.utilities.toasts.transparencyBase));
         }
         return baseColor;
@@ -49,7 +49,7 @@ StyledRect {
         opacity: parent.opacity
         z: -1
         level: 3
-        visible: !GlobalConfig.utilities.toasts.transparency
+        visible: !GlobalConfig.utilities.toasts.transparency || (GameMode.enabled && GlobalConfig.utilities.gameMode.disableToastTransparency)
     }
 
     RowLayout {

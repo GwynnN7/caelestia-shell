@@ -60,7 +60,6 @@ Dependencies:
 -   [`bash`](https://www.gnu.org/software/bash)
 -   `qt6-base`
 -   `qt6-declarative`
-
 Build dependencies:
 
 -   [`cmake`](https://cmake.org)

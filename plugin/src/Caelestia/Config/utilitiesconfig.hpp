@@ -46,6 +46,29 @@ public:
         : ConfigObject(parent) {}
 };
 
+class UtilitiesGameMode : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_GLOBAL_PROPERTY(bool, disableHyprlandAnimations, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableHyprlandBlur, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableHyprlandGaps, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableHyprlandShadows, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableShellTransparency, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableWindowTransparency, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableToastTransparency, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableDesktopLyrics, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableVisualizer, true)
+    CONFIG_GLOBAL_PROPERTY(bool, disableShimeji, true)
+
+    CONFIG_GLOBAL_PROPERTY(bool, autoEnable, true)
+    CONFIG_GLOBAL_PROPERTY(QStringList, autoEnableRegexes)
+
+public:
+    explicit UtilitiesGameMode(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
 class UtilitiesConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
@@ -54,6 +77,7 @@ class UtilitiesConfig : public ConfigObject {
     CONFIG_PROPERTY(int, maxToasts, 4)
     CONFIG_SUBOBJECT(UtilitiesToasts, toasts)
     CONFIG_SUBOBJECT(UtilitiesVpn, vpn)
+    CONFIG_SUBOBJECT(UtilitiesGameMode, gameMode)
     CONFIG_PROPERTY(QVariantList, quickToggles,
         {
             vmap({ { u"id"_s, u"wifi"_s }, { u"enabled"_s, true } }),
@@ -71,7 +95,8 @@ public:
     explicit UtilitiesConfig(QObject* parent = nullptr)
         : ConfigObject(parent)
         , m_toasts(new UtilitiesToasts(this))
-        , m_vpn(new UtilitiesVpn(this)) {}
+        , m_vpn(new UtilitiesVpn(this))
+        , m_gameMode(new UtilitiesGameMode(this)) {}
 };
 
 } // namespace caelestia::config

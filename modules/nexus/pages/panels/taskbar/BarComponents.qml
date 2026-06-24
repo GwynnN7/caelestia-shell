@@ -12,7 +12,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: qsTr("Toggle & Rearrange")
+    title: qsTr("Toggle & rearrange")
     isSubPage: true
     scrollable: false
 

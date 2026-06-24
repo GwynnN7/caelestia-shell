@@ -160,12 +160,24 @@ StyledWindow {
             Config.screen: root.screen.name
             anchors.fill: parent
             anchors.margins: -50 // Make border thicker to smooth out bulge from closed drawers
-            group: blobGroup
+            group: GlobalConfig.appearance.islands ? null : blobGroup
+            visible: !GlobalConfig.appearance.islands
             radius: root.borderRounding
             borderLeft: (Config.bar.position === "left" ? bar.implicitWidth : root.borderThickness) - anchors.margins - root.sdfBorderOffset
             borderRight: (Config.bar.position === "right" ? bar.implicitWidth : root.borderThickness) - anchors.margins - root.sdfBorderOffset
             borderTop: (Config.bar.position === "top" ? bar.implicitHeight : root.borderThickness) - anchors.margins - root.sdfBorderOffset
             borderBottom: (Config.bar.position === "bottom" ? bar.implicitHeight : root.borderThickness) - anchors.margins - root.sdfBorderOffset
+        }
+
+        BlobRect {
+            visible: GlobalConfig.appearance.islands
+            group: GlobalConfig.appearance.islands ? blobGroup : null
+            x: bar.x
+            y: bar.y
+            implicitWidth: bar.width
+            implicitHeight: bar.height
+            radius: Tokens.rounding.extraLarge
+            deformScale: (0.1 * Config.appearance.deformScale) / 10000
         }
 
         PanelBg {
@@ -187,8 +199,8 @@ StyledWindow {
 
             panel: panels.sessionWrapper
             deformAmount: 0.2
-            x: panels.sessionWrapper.x + panels.session.x + panels.leftMargin
-            implicitWidth: panels.session.width
+            x: panels.sessionWrapper.x + panels.leftMargin
+            implicitWidth: panels.sessionWrapper.width
         }
 
         PanelBg {
@@ -207,10 +219,10 @@ StyledWindow {
                 return arr;
             }
             
-            topLeftRadius: (Config.bar.position === "top" && connectedToPopout) ? 0 : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
-            topRightRadius: (Config.bar.position === "top" && connectedToPopout) ? 0 : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
-            bottomLeftRadius: (Config.bar.position === "bottom" && connectedToPopout) ? 0 : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
-            bottomRightRadius: (Config.bar.position === "bottom" && connectedToPopout) ? 0 : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
+            topLeftRadius: GlobalConfig.appearance.islands ? radius : ((Config.bar.position === "top" && connectedToPopout) ? 0 : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius))
+            topRightRadius: GlobalConfig.appearance.islands ? radius : ((Config.bar.position === "top" && connectedToPopout) ? 0 : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius))
+            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : ((Config.bar.position === "bottom" && connectedToPopout) ? 0 : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius))
+            bottomRightRadius: GlobalConfig.appearance.islands ? radius : ((Config.bar.position === "bottom" && connectedToPopout) ? 0 : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius))
         }
 
         PanelBg {
@@ -218,8 +230,8 @@ StyledWindow {
 
             panel: panels.osdWrapper
             deformAmount: 0.25
-            x: panels.osdWrapper.x + panels.osd.x + panels.leftMargin
-            implicitWidth: panels.osd.width
+            x: panels.osdWrapper.x + panels.leftMargin
+            implicitWidth: panels.osdWrapper.width
         }
 
         PanelBg {
@@ -234,10 +246,10 @@ StyledWindow {
             panel: panels.utilities
             deformAmount: panels.sidebar.visible ? 0.1 : 0.15
             exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
-            topLeftRadius: Config.bar.position === "right" ? radius : (Config.bar.position === "bottom" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
-            topRightRadius: Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : (Config.bar.position === "bottom" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
-            bottomLeftRadius: Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
-            bottomRightRadius: Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
+            topLeftRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "right" ? radius : (Config.bar.position === "bottom" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius))
+            topRightRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : (Config.bar.position === "bottom" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius))
+            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
+            bottomRightRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
         }
 
         PanelBg {
@@ -263,23 +275,23 @@ StyledWindow {
                 return panels.popouts.implicitWidth;
             }
             
-            bottomLeftRadius: (bar.position === "top" && connectedToSidebar) ? 0 : radius
-            bottomRightRadius: (bar.position === "top" && connectedToSidebar) ? 0 : radius
-            topLeftRadius: (bar.position === "bottom" && connectedToSidebar) ? 0 : radius
-            topRightRadius: (bar.position === "bottom" && connectedToSidebar) ? 0 : radius
+            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : ((bar.position === "top" && connectedToSidebar) ? 0 : radius)
+            bottomRightRadius: GlobalConfig.appearance.islands ? radius : ((bar.position === "top" && connectedToSidebar) ? 0 : radius)
+            topLeftRadius: GlobalConfig.appearance.islands ? radius : ((bar.position === "bottom" && connectedToSidebar) ? 0 : radius)
+            topRightRadius: GlobalConfig.appearance.islands ? radius : ((bar.position === "bottom" && connectedToSidebar) ? 0 : radius)
 
             y: {
                 const baseY = panels.popoutsWrapper.y + panels.popouts.y + panels.topMargin;
                 if (bar.position === "top")
                     return baseY - panels.popouts.implicitHeight * extraShift;
                 if (bar.position === "bottom" && connectedToSidebar)
-                    return baseY - Tokens.spacing.medium - 10;
+                    return baseY - Tokens.spacing.extraLarge - 10;
                 return baseY;
             }
             implicitHeight: {
                 if (bar.position === "top" || bar.position === "bottom") {
                     let h = panels.popouts.implicitHeight * (1 + extraShift);
-                    if (connectedToSidebar) h += Tokens.spacing.medium + 10;
+                    if (connectedToSidebar) h += Tokens.spacing.extraLarge + 10;
                     return h;
                 }
                 return panels.popouts.implicitHeight;
@@ -327,6 +339,10 @@ StyledWindow {
                     target: bar
                     width: bar.implicitWidth
                     height: undefined
+                    anchors.topMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.bottomMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.leftMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.rightMargin: 0
                 }
             },
 
@@ -346,6 +362,10 @@ StyledWindow {
                     target: bar
                     width: bar.implicitWidth
                     height: undefined
+                    anchors.topMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.bottomMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.leftMargin: 0
+                    anchors.rightMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
                 }
             },
 
@@ -365,6 +385,10 @@ StyledWindow {
                     target: bar
                     width: undefined
                     height: bar.implicitHeight
+                    anchors.leftMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.rightMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.topMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.bottomMargin: 0
                 }
             },
 
@@ -384,6 +408,10 @@ StyledWindow {
                     target: bar
                     width: undefined
                     height: bar.implicitHeight
+                    anchors.leftMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.rightMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.bottomMargin: GlobalConfig.appearance.islands ? Tokens.spacing.extraLarge : 0
+                    anchors.topMargin: 0
                 }
             }
         ]
@@ -443,7 +471,7 @@ StyledWindow {
         property real deformAmount: 0.15
         Config.screen: root.screen.name
 
-        group: blobGroup
+        group: panel.visible ? blobGroup : null
         x: panel.x + panels.leftMargin
         y: panel.y + panels.topMargin
         implicitWidth: panel.width
