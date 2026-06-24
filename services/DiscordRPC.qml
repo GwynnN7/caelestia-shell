@@ -89,6 +89,13 @@ Item {
         function onArpcManualOverrideChanged() { root.updatePresence(); }
     }
 
+    Connections {
+        target: Colours
+        function onSchemeChanged() { root.updatePresence(); }
+        function onLightChanged() { root.updatePresence(); }
+        function onVariantChanged() { root.updatePresence(); }
+    }
+
     property string currentSteamAppId: ""
     property var currentSteamData: null
     property bool fetchingSteam: false
