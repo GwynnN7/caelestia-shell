@@ -91,16 +91,8 @@ Singleton {
     }
 
     function reloadHyprRules(): void {
-        const toastBaseClamped = Math.max(0.1, GlobalConfig.utilities.toasts.transparencyBase);
-        const drawersBlur = transparency.enabled || GlobalConfig.utilities.toasts.transparency;
-        let drawersBase = 1.0;
-        if (transparency.enabled && GlobalConfig.utilities.toasts.transparency) {
-            drawersBase = Math.min(transparency.base, toastBaseClamped);
-        } else if (transparency.enabled) {
-            drawersBase = transparency.base;
-        } else if (GlobalConfig.utilities.toasts.transparency) {
-            drawersBase = toastBaseClamped;
-        }
+        const drawersBlur = transparency.enabled;
+        let drawersBase = transparency.enabled ? transparency.base : 1.0;
         const drawersIgnoreAlpha = drawersBase - 0.03;
 
         if (Hypr.usingLua) {
