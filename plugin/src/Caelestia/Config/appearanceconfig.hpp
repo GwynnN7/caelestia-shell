@@ -187,9 +187,8 @@ class AppearanceFont : public ConfigObject {
     CONFIG_SUBOBJECT(FontStyleConfig, label)
     CONFIG_SUBOBJECT(FontStyleConfig, mono)
     CONFIG_SUBOBJECT(IconFontStyleConfig, icon)
-    CONFIG_PROPERTY(QString, clock, QStringLiteral("Rubik"))
-    // Google Sans Flex doesn't play well with unicode symbols apparently, so use Rubik instead
-    CONFIG_PROPERTY(QString, workspaces, QStringLiteral("Rubik"))
+    CONFIG_PROPERTY(QString, clock, QStringLiteral("GoogleSansFlex"))
+    CONFIG_PROPERTY(QString, workspaces, QStringLiteral("GoogleSansFlex"))
 
 public:
     explicit AppearanceFont(QObject* parent = nullptr)
