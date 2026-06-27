@@ -52,6 +52,10 @@ QUrl IUtils::urlForPath(const QString& path, int fillMode) {
     return url;
 }
 
+QUrl IUtils::animatedUrlForPath(const QString& path) {
+    return QUrl::fromLocalFile(path);
+}
+
 bool IUtils::fileExists(const QString& path) const {
     return QFileInfo::exists(path);
 }

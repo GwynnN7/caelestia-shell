@@ -191,8 +191,10 @@ GridLayout {
                 roleValue: "dock"
                 delegate: WrappedLoader {
                     Layout.fillWidth: true
-                    visible: !root.fullscreen && !Config.bar.dock.detached
-                    sourceComponent: Config.bar.dock.detached ? null : dockComponent
+                    visible: !root.fullscreen
+                    sourceComponent: Dock {
+                        bar: root
+                    }
                 }
             }
             DelegateChoice {
@@ -244,15 +246,6 @@ GridLayout {
                     }
                 }
             }
-        }
-    }
-
-    Component {
-        id: dockComponent
-
-        Dock {
-            bar: root
-            popouts: root.popouts
         }
     }
 
