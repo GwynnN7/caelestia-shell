@@ -16,6 +16,7 @@ CustomMouseArea {
     required property DrawerVisibilities visibilities
     required property Panels panels
     required property Bar.BarWrapper bar
+    required property DockWrapper dockWrapper
     required property real borderThickness
     required property bool fullscreen
 
@@ -35,6 +36,21 @@ CustomMouseArea {
             return y < bar.y + bar.implicitHeight;
         if (Config.bar.position === "bottom")
             return y > bar.y;
+        return false;
+    }
+
+    function inDockArea(x: real, y: real): bool {
+        if (!Config.bar.dock.detached || !dockWrapper.visible)
+            return false;
+        const pos = Config.bar.dock.position;
+        if (pos === "left")
+            return x < dockWrapper.x + dockWrapper.implicitWidth;
+        if (pos === "right")
+            return x > dockWrapper.x;
+        if (pos === "top")
+            return y < dockWrapper.y + dockWrapper.implicitHeight;
+        if (pos === "bottom")
+            return y > dockWrapper.y;
         return false;
     }
 
@@ -115,6 +131,12 @@ CustomMouseArea {
 
             if (Config.bar.showOnHover)
                 bar.isHovered = false;
+
+            if (Config.bar.dock.detached && !Config.bar.dock.persistent)
+                dockWrapper.isHovered = false;
+
+            if (Config.sidebar.showOnHover)
+                visibilities.sidebar = false;
         }
     }
 
@@ -135,6 +157,10 @@ CustomMouseArea {
         // Show bar in non-exclusive mode on hover
         if (!visibilities.bar && Config.bar.showOnHover && inBarArea(x, y))
             bar.isHovered = true;
+
+        // Show dock in non-exclusive mode on hover
+        if (Config.bar.dock.detached && !Config.bar.dock.persistent && inDockArea(x, y))
+            dockWrapper.isHovered = true;
 
         // Show/hide bar on drag
         if (pressed && inBarArea(dragStart.x, dragStart.y)) {
@@ -176,6 +202,14 @@ CustomMouseArea {
             }
 
             const showSidebar = Config.bar.position === "right" ? pressed && dragStart.x < Math.max(Config.border.minThickness, panels.leftMargin + panels.sidebar.x + panels.sidebar.width) : pressed && dragStart.x > Math.min(screen.width - Config.border.minThickness, panels.leftMargin + panels.sidebar.x);
+
+            // Show sidebar on hover (top-right corner, bounded by notification panel height)
+            if (Config.sidebar.showOnHover) {
+                const sidebarTriggerY = Math.max(Config.sidebar.minHoverThreshold, panels.notifications.y + panels.notifications.height + borderThickness);
+                const showSidebarHover = x > Math.min(width - Config.border.minThickness, bar.implicitWidth + panels.sidebar.x) && y <= sidebarTriggerY;
+                if (showSidebarHover && !visibilities.sidebar)
+                    visibilities.sidebar = true;
+            }
 
             // Show/hide session on drag
             if (pressed && inRightPanel(panels.sessionWrapper, dragStart.x, dragStart.y) && withinPanelHeight(panels.sessionWrapper, x, y)) {
@@ -219,6 +253,19 @@ CustomMouseArea {
                     visibilities.session = true;
                 else if (Config.bar.position === "right" ? dragX < hideThreshold : dragX > hideThreshold)
                     visibilities.session = false;
+            }
+
+            // Show/hide sidebar on hover
+            if (Config.sidebar.showOnHover && !pressed) {
+                const sidebarTriggerY = Math.max(Config.sidebar.minHoverThreshold, panels.notifications.y + panels.notifications.height + borderThickness);
+                const showSidebarHover = x > Math.min(width - Config.border.minThickness, bar.implicitWidth + panels.sidebar.x) && y <= sidebarTriggerY;
+                if (showSidebarHover && !visibilities.sidebar) {
+                    visibilities.sidebar = true;
+                } else {
+                    const inSidebarArea = inRightPanel(panels.sidebar, x, y) || inRightPanel(panels.sessionWrapper, x, y);
+                    if (!inSidebarArea)
+                        visibilities.sidebar = false;
+                }
             }
 
             // Hide sidebar on drag

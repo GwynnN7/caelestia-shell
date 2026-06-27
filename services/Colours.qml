@@ -91,35 +91,21 @@ Singleton {
     }
 
     function reloadHyprRules(): void {
-        const toastBaseClamped = Math.max(0.1, GlobalConfig.utilities.toasts.transparencyBase);
-        const drawersBlur = transparency.enabled || GlobalConfig.utilities.toasts.transparency;
-        let drawersBase = 1.0;
-        if (transparency.enabled && GlobalConfig.utilities.toasts.transparency) {
-            drawersBase = Math.min(transparency.base, toastBaseClamped);
-        } else if (transparency.enabled) {
-            drawersBase = transparency.base;
-        } else if (GlobalConfig.utilities.toasts.transparency) {
-            drawersBase = toastBaseClamped;
-        }
-        const drawersIgnoreAlpha = drawersBase - 0.03;
-
+        let rule, trEnabled;
+        const ignoreAlpha = Math.max(0, transparency.base - 0.03);
         if (Hypr.usingLua) {
-            const rule = `eval hl.layer_rule({ match = { namespace = "%1" }, %2 })`;
-            Hypr.extras.batchMessage([
-                rule.arg("caelestia-drawers").arg(`blur = ${drawersBlur}`),
-                rule.arg("caelestia-drawers").arg(`ignore_alpha = ${drawersIgnoreAlpha}`),
-                rule.arg("caelestia-polkit").arg(`blur = ${transparency.enabled}`),
-                rule.arg("caelestia-polkit").arg(`ignore_alpha = ${transparency.base - 0.03}`)
-            ]);
+            rule = `eval hl.layer_rule({ match = { namespace = "%1" }, %2 = %3 })`;
+            trEnabled = transparency.enabled;
         } else {
-            const str = "keyword layerrule %1 %2, match:namespace %3";
-            Hypr.extras.batchMessage([
-                str.arg("blur").arg(drawersBlur ? 1 : 0).arg("caelestia-drawers"),
-                str.arg("ignore_alpha").arg(drawersIgnoreAlpha).arg("caelestia-drawers"),
-                str.arg("blur").arg(transparency.enabled ? 1 : 0).arg("caelestia-polkit"),
-                str.arg("ignore_alpha").arg(transparency.base - 0.03).arg("caelestia-polkit")
-            ]);
+            rule = "keyword layerrule %2 %3, match:namespace %1";
+            trEnabled = transparency.enabled ? 1 : 0;
         }
+        Hypr.extras.batchMessage([
+            rule.arg("caelestia-drawers").arg("blur").arg(trEnabled),
+            rule.arg("caelestia-drawers").arg("ignore_alpha").arg(ignoreAlpha),
+            rule.arg("caelestia-polkit").arg("blur").arg(trEnabled),
+            rule.arg("caelestia-polkit").arg("ignore_alpha").arg(ignoreAlpha)
+        ]);
     }
 
     function requestReloadHyprRules(): void {
@@ -188,7 +174,7 @@ Singleton {
     component Transparency: QtObject {
         readonly property bool enabled: Tokens.transparency.enabled && !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableShellTransparency)
         readonly property real base: Math.max(0, Math.min(1, Tokens.transparency.base - (root.light ? 0.1 : 0)))
-        readonly property real layers: Tokens.transparency.layers
+        readonly property real layers: Math.max(0, Math.min(1, Tokens.transparency.layers))
 
         onEnabledChanged: {
             if (enabled)

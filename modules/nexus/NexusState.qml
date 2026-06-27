@@ -14,6 +14,7 @@ QtObject {
     property string wallpaperFilterType: "all"
     property BluetoothDevice selectedBtDevice
     property DesktopEntry selectedApp
+    property string selectedEthernetInterface
 
     signal close
     signal subPageOpened(idx: int)

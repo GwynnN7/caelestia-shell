@@ -46,6 +46,7 @@ Item {
         }
         return res;
     }
+    property string animState: showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps")))
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
@@ -54,9 +55,9 @@ Item {
     height: implicitHeight
 
     clip: true
-    state: showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps")))
+    state: animState
 
-    Behavior on state {
+    Behavior on animState {
         SequentialAnimation {
             Anim {
                 target: root

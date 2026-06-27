@@ -30,7 +30,7 @@ GridLayout {
 
         for (let i = 0; i < repeater.count; i++) {
             const loader = repeater.itemAt(i) as WrappedLoader;
-            if (loader?.enabled && loader.id === "tray") {
+            if (loader?.enabled && loader.entryId === "tray") {
                 (loader.item as Tray).expanded = false;
             }
         }
@@ -39,7 +39,7 @@ GridLayout {
     function checkPopout(pos: real): void {
         const ch = childAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as WrappedLoader;
 
-        if (ch?.id !== "tray")
+        if (ch?.entryId !== "tray")
             closeTray();
 
         if (!ch) {
@@ -48,7 +48,7 @@ GridLayout {
             return;
         }
 
-        const id = ch.id;
+        const id = ch.entryId;
         const top = isHorizontal ? ch.x : ch.y;
 
         if (id === "statusIcons" && Config.bar.popouts.statusIcons) {
@@ -126,7 +126,7 @@ GridLayout {
 
     function handleWheel(pos: real, angleDelta: point): void {
         const ch = childAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as WrappedLoader;
-        if (ch?.id === "workspaces" && Config.bar.scrollActions.workspaces) {
+        if (ch?.entryId === "workspaces" && Config.bar.scrollActions.workspaces) {
             // Workspace scroll
             const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor);
             const specialWs = mon?.lastIpcObject.specialWorkspace.name;
@@ -191,10 +191,8 @@ GridLayout {
                 roleValue: "dock"
                 delegate: WrappedLoader {
                     Layout.fillWidth: true
-                    visible: !root.fullscreen
-                    sourceComponent: Dock {
-                        bar: root
-                    }
+                    visible: !root.fullscreen && !Config.bar.dock.detached
+                    sourceComponent: Config.bar.dock.detached ? null : dockComponent
                 }
             }
             DelegateChoice {
@@ -249,9 +247,19 @@ GridLayout {
         }
     }
 
+    Component {
+        id: dockComponent
+
+        Dock {
+            bar: root
+            popouts: root.popouts
+        }
+    }
+
     component WrappedLoader: Loader {
         required enabled
-        required property string id
+        required property var modelData
+        readonly property string entryId: modelData.id
         required property int index
 
         function findFirstEnabled(): Item {

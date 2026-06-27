@@ -329,7 +329,10 @@ PageBase {
             text: qsTr("Transparency")
             subtext: qsTr("Base %1, layers %2").arg(Colours.transparency.base).arg(Colours.transparency.layers)
             checked: Colours.transparency.enabled
-            onToggled: GlobalConfig.appearance.transparency.enabled = checked
+            onToggled: {
+                GlobalConfig.appearance.transparency.enabled = checked;
+                GlobalConfig.utilities.toasts.transparency = checked;
+            }
         }
 
 

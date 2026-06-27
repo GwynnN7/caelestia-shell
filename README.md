@@ -1147,8 +1147,10 @@ For example, to disable the bar on DP-1:
         "screenCounts": {}
     },
     "sidebar": {
-        "dragThreshold": 80,
-        "enabled": true
+        "enabled": true,
+        "showOnHover": false,
+        "minHoverThreshold": 200,
+        "dragThreshold": 80
     },
     "utilities": {
         "enabled": true,

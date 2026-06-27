@@ -27,12 +27,14 @@ Item {
     }
 
     readonly property int maxSize: {
-        const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
+        const otherModules = bar.children.filter(c => c.entryId && c.item !== this && c.entryId !== "spacer");
         if (bar.isHorizontal) {
             const otherWidth = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimWidth ?? curr.width), 0);
+            // Length - 2 cause repeater counts as a child
             return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
         } else {
             const otherHeight = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimHeight ?? curr.height), 0);
+            // Length - 2 cause repeater counts as a child
             return bar.height - otherHeight - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
         }
     }
