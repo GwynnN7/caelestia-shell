@@ -15,7 +15,6 @@ Variants {
         Exclusions {
             screen: scope.modelData
             bar: content.bar
-            dockWrapper: content.dockWrapper
         }
 
         ContentWindow {

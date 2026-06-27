@@ -131,9 +131,6 @@ QtObject {
                     BarDock {}
                 }
                 Component {
-                    BarDockDetached {}
-                }
-                Component {
                     BarGithub {}
                 }
             }

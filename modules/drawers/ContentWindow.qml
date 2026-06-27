@@ -11,7 +11,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.containers
 import qs.services
-import qs.modules.bar as Bar
+import qs.modules.bar
 
 StyledWindow {
     id: root
@@ -19,7 +19,6 @@ StyledWindow {
     Config.screen: screen.name
 
     readonly property alias bar: bar
-    readonly property alias dockWrapper: dockWrapper
     readonly property alias interactionWrapper: interactions
 
     readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
@@ -320,7 +319,6 @@ StyledWindow {
         visibilities: visibilities
         panels: panels
         bar: bar
-        dockWrapper: dockWrapper
         borderThickness: root.borderLayoutThickness
         fullscreen: root.hasFullscreen
 
@@ -424,7 +422,6 @@ StyledWindow {
             screen: root.screen
             visibilities: visibilities
             bar: bar
-            dockWrapper: dockWrapper
             borderThickness: root.borderThickness
 
             utilities.horizontalStretch: (sidebarBg.rawDeformMatrix.m11 - 1) / 2 + 1
@@ -456,7 +453,7 @@ StyledWindow {
             }
         }
 
-        Bar.BarWrapper {
+        BarWrapper {
             id: bar
 
             screen: root.screen
@@ -466,14 +463,6 @@ StyledWindow {
             fullscreen: root.hasFullscreen
 
             Component.onCompleted: Visibilities.registerBar(root.screen, this)
-        }
-
-        DockWrapper {
-            id: dockWrapper
-
-            screen: root.screen
-            visibilities: visibilities
-            blobGroup: blobGroup
         }
     }
 
