@@ -13,21 +13,52 @@ namespace caelestia::services {
 
 namespace {
 
-QStringList gpuBusyFiles() {
+QList<GpuHwmonFiles> findGpuFiles() {
+    QList<GpuHwmonFiles> files;
     static const QRegularExpression cardRe(QStringLiteral("^card\\d+$"));
 
-    QStringList files;
     QDirIterator it(QStringLiteral("/sys/class/drm"), QDir::Dirs | QDir::NoDotAndDotDot);
     while (it.hasNext()) {
         const QString path = it.next();
         if (!cardRe.match(it.fileName()).hasMatch()) {
             continue;
         }
-        const QString busy = path + QStringLiteral("/device/gpu_busy_percent");
-        if (QFile::exists(busy)) {
-            files << busy;
+
+        const QString baseDevicePath = path + QStringLiteral("/device");
+        const QString busyFile = baseDevicePath + QStringLiteral("/gpu_busy_percent");
+
+        if (!QFile::exists(busyFile)) {
+            continue;
         }
+
+        GpuHwmonFiles info;
+        info.busyFile = busyFile;
+
+        // Populate hwmon data automatically for any generic sysfs device
+        QDir hwmonBase(baseDevicePath + QStringLiteral("/hwmon"));
+        const QStringList hwmonDirs = hwmonBase.entryList(QStringList() << QStringLiteral("hwmon*"), QDir::Dirs | QDir::NoDotAndDotDot);
+
+        if (!hwmonDirs.isEmpty()) {
+            const QString hwmonPath = hwmonBase.absoluteFilePath(hwmonDirs.first());
+
+            const QString powerAvgFile = hwmonPath + QStringLiteral("/power1_average");
+            const QString powerInputFile = hwmonPath + QStringLiteral("/power1_input");
+            
+            if (QFile::exists(powerAvgFile)) {
+                info.powerCurFile = powerAvgFile;
+            } else if (QFile::exists(powerInputFile)) {
+                info.powerCurFile = powerInputFile;
+            }
+
+            const QString powerCapFile = hwmonPath + QStringLiteral("/power1_cap");
+            if (QFile::exists(powerCapFile)) {
+                info.powerCapFile = powerCapFile;
+            }
+        }
+
+        files.append(info);
     }
+    
     return files;
 }
 
@@ -64,7 +95,6 @@ QString parseGlxinfoName(const QByteArray& out) {
             return cleaned;
         }
     }
-
     return QString();
 }
 
@@ -91,8 +121,6 @@ QString parseLspciName(const QByteArray& out) {
         return cleanName(bracket.captured(1));
     }
 
-    // Split on a colon followed by whitespace so the PCI slot ("00:02.0") is not
-    // mistaken for the class/name separator ("controller: Device").
     static const QRegularExpression colonRe(QStringLiteral(":\\s+(.+)"));
     const auto colon = colonRe.match(match);
     if (colon.hasMatch()) {
@@ -108,8 +136,6 @@ struct NameSource {
     QString (*parse)(const QByteArray&);
 };
 
-// Name probes in priority order; the first non-empty result wins. The NVIDIA
-// probe is first and doubles as the type probe (see finishNameSource).
 const std::array<NameSource, 3>& nameSources() {
     static const std::array<NameSource, 3> sources = { {
         { QStringLiteral("nvidia-smi"), { QStringLiteral("--query-gpu=name"), QStringLiteral("--format=csv,noheader") },
@@ -120,14 +146,13 @@ const std::array<NameSource, 3>& nameSources() {
     return sources;
 }
 
-// Index of the NVIDIA source within nameSources(); its result also drives type.
 constexpr int kNvidiaSource = 0;
 
 } // namespace
 
 Gpu::Gpu(QObject* parent)
     : TickingService(parent) {
-    m_busyFiles = gpuBusyFiles();
+    m_gpuFiles = findGpuFiles();
 
     auto* svc = caelestia::config::GlobalConfig::instance()->services();
     m_userType = parseType(svc->gpuType());
@@ -173,7 +198,6 @@ void Gpu::setUserType(Type value) {
         emit typeChanged();
     }
 
-    // Probe again when switching back to auto
     if (value == Auto) {
         detectGpu();
     }
@@ -223,8 +247,6 @@ void Gpu::detectGpu() {
         return;
     }
     m_detecting = true;
-
-    // Probe in priority order, stopping at the first result
     tryNameSource(0);
 }
 
@@ -236,12 +258,8 @@ void Gpu::tryNameSource(int index) {
 }
 
 void Gpu::finishNameSource(int index, QString name) {
-    // The NVIDIA name probe doubles as the type probe: a non-empty result means an
-    // NVIDIA GPU is present and queryable. Derive autoType unconditionally (even when
-    // the user pins a type) so a later switch to Auto reads a correct value without
-    // depending on its own re-probe, which is skipped while a probe is in flight.
     if (index == kNvidiaSource) {
-        setAutoType(!name.isEmpty() ? Nvidia : (m_busyFiles.isEmpty() ? None : Generic));
+        setAutoType(!name.isEmpty() ? Nvidia : (m_gpuFiles.isEmpty() ? None : Generic));
     }
 
     if (!name.isEmpty()) {
@@ -261,9 +279,6 @@ void Gpu::runProcess(const QString& program, const QStringList& args, std::funct
     auto* proc = new QProcess(this);
     proc->setStandardErrorFile(QProcess::nullDevice());
 
-    // Deliver the result exactly once, then tear the process down. A crash or a
-    // missing binary yields empty output so the caller can fall through gracefully:
-    // only FailedToStart skips finished(), and a crash reports CrashExit there.
     const auto finish = [proc, callback = std::move(callback)](const QByteArray& out) {
         callback(out);
         proc->deleteLater();
@@ -282,41 +297,36 @@ void Gpu::runProcess(const QString& program, const QStringList& args, std::funct
 }
 
 void Gpu::readGenericUsage() {
-    
     qreal sum = 0.0;
     int count = 0;
-    for (const QString& path : std::as_const(m_busyFiles)) {
-        QFile f(path);
-        if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+
+    for (const GpuHwmonFiles& gpu : std::as_const(m_gpuFiles)) {
+        QFile fUtil(gpu.busyFile);
+        if (!fUtil.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            continue;
+        }
+        bool okUtil = false;
+        const qreal util = fUtil.readAll().trimmed().toDouble(&okUtil);
+        fUtil.close();
+
+        if (!okUtil) {
             continue;
         }
 
-        qreal effectiveLoad = util; 
+        qreal effectiveLoad = util;
 
-        QDir hwmonBase(baseDevicePath + QStringLiteral("/hwmon"));
-        const QStringList hwmonDirs = hwmonBase.entryList(QStringList() << QStringLiteral("hwmon*"), QDir::Dirs | QDir::NoDotAndDotDot);
-
-        if (!hwmonDirs.isEmpty()) {
-            const QString hwmonPath = hwmonBase.absoluteFilePath(hwmonDirs.first());
-
+        if (!gpu.powerCurFile.isEmpty() && !gpu.powerCapFile.isEmpty()) {
             qreal powerCur = 0.0;
             bool okCur = false;
-            QFile fPowerAvg(hwmonPath + QStringLiteral("/power1_average"));
-            if (fPowerAvg.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                powerCur = fPowerAvg.readAll().trimmed().toDouble(&okCur);
-                fPowerAvg.close();
-            }
-            if (!okCur) {
-                QFile fPowerInput(hwmonPath + QStringLiteral("/power1_input"));
-                if (fPowerInput.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                    powerCur = fPowerInput.readAll().trimmed().toDouble(&okCur);
-                    fPowerInput.close();
-                }
+            QFile fPowerCur(gpu.powerCurFile);
+            if (fPowerCur.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                powerCur = fPowerCur.readAll().trimmed().toDouble(&okCur);
+                fPowerCur.close();
             }
 
             qreal powerMax = 0.0;
             bool okMax = false;
-            QFile fPowerCap(hwmonPath + QStringLiteral("/power1_cap"));
+            QFile fPowerCap(gpu.powerCapFile);
             if (fPowerCap.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 powerMax = fPowerCap.readAll().trimmed().toDouble(&okMax);
                 fPowerCap.close();
@@ -340,7 +350,7 @@ void Gpu::readGenericUsage() {
     
     if (std::abs(newPerc - m_percentage) > 0.0001) {
         m_percentage = newPerc;
-        emit percentageChanged();
+        Q_EMIT percentageChanged();
     }
 }
 
