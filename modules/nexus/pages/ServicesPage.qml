@@ -213,6 +213,13 @@ PageBase {
             onClicked: root.nState.openSubPage(4)
         }
 
+        NavRow {
+            icon: "picture_in_picture"
+            label: qsTr("Picture in Picture")
+            status: qsTr("Configure PiP positioning and focus behavior")
+            onClicked: root.nState.openSubPage(5)
+        }
+
         StepperRow {
             label: qsTr("Visualiser bars")
             subtext: qsTr("Number of bars in the audio visualisers")

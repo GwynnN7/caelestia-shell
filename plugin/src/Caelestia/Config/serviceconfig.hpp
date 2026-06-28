@@ -50,6 +50,11 @@ class ServiceConfig : public ConfigObject {
     CONFIG_GLOBAL_PROPERTY(bool, arpcCaelestiaInfo, false)
     CONFIG_GLOBAL_PROPERTY(bool, arpcManualOverride, false)
 
+    // Picture-in-Picture Settings
+    CONFIG_GLOBAL_PROPERTY(QString, pipPosition, u"bottom right"_s)
+    CONFIG_GLOBAL_PROPERTY(bool, pipFollowFocus, false)
+    CONFIG_GLOBAL_PROPERTY(bool, pipPaused, false)
+
 public:
     explicit ServiceConfig(QObject* parent = nullptr)
         : ConfigObject(parent) {}

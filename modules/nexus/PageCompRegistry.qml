@@ -167,6 +167,9 @@ QtObject {
                 Component {
                     ArpcPage {}
                 }
+                Component {
+                    PipPage {}
+                }
             }
         },
         Component {

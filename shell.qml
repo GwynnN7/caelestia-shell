@@ -58,4 +58,5 @@ ShellRoot {
     // Force service initialization
     property var _arpcInit: DiscordRPC
     property var _gameModeInit: GameMode
+    property var _pipInit: PipManager
 }
