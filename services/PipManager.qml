@@ -16,6 +16,7 @@ Singleton {
     property double lastPipMoveTime: 0
     property string tempPipPosition: ""
     property string lastPipMonitor: ""
+    property string currentPipAddress: ""
 
     Timer {
         id: updateDebouncer
@@ -96,8 +97,16 @@ Singleton {
             return; // Pause auto-alignment while the user is interacting with the window!
         }
 
-        let monitor = t.workspace?.monitor || Hyprland.focusedMonitor;
         const addr = "address:0x" + t.address;
+        
+        if (root.currentPipAddress !== addr) {
+            root.lastPipX = -1;
+            root.lastPipY = -1;
+            root.tempPipPosition = "";
+            root.currentPipAddress = addr;
+        }
+
+        let monitor = t.workspace?.monitor || Hyprland.focusedMonitor;
 
         if (GlobalConfig.services.pipFollowFocus) {
             monitor = Hyprland.focusedMonitor;
