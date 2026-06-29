@@ -933,9 +933,9 @@ const termTypeMap = {
 };
 function buildPatternForExtendedMatch(fuzzy, caseMode, normalize, str) {
   let cacheable = true;
-  str = str.trimLeft();
+  str = str.replace(/^\s+/, "");
   {
-    const trimmedAtRightStr = str.trimRight();
+    const trimmedAtRightStr = str.replace(/\s+$/, "");
     if (trimmedAtRightStr.endsWith("\\") && str[trimmedAtRightStr.length] === " ") {
       str = trimmedAtRightStr + " ";
     } else {

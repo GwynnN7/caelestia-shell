@@ -159,6 +159,9 @@ QtObject {
                     NotificationsPage {}
                 }
                 Component {
+                    CortanaAiPage {}
+                }
+                Component {
                     GameModePage {}
                 }
                 Component {

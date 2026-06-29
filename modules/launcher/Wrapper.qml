@@ -23,12 +23,15 @@ Item {
     }
 
     property real offsetScale: shouldBeActive ? 0 : 1
+    property bool hasBeenOpened: false
 
     onShouldBeActiveChanged: {
-        if (shouldBeActive)
+        if (shouldBeActive) {
+            hasBeenOpened = true;
             implicitHeight = Qt.binding(() => content.implicitHeight);
-        else
+        } else {
             implicitHeight = implicitHeight; // Break binding during close anim
+        }
     }
 
     clip: Config.bar.position === "bottom"
@@ -51,13 +54,14 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
-        active: root.shouldBeActive || root.visible
+        active: hasBeenOpened || root.shouldBeActive || root.visible
 
         sourceComponent: Component {
             Content {
                 visibilities: root.visibilities
                 panels: root.panels
                 maxHeight: root.maxHeight
+                screenWidth: root.screen.width
             }
         }
     }

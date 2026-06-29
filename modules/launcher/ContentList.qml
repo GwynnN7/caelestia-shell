@@ -16,11 +16,27 @@ Item {
     required property DrawerVisibilities visibilities
     required property var panels
     required property real maxHeight
+    required property real screenWidth
     required property StyledTextField search
     required property int padding
     required property int rounding
 
+    property bool chatActivated: false
+
+    readonly property bool showChat: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}cortana `)
     readonly property bool showWallpapers: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `)
+    readonly property bool showWindowSwitcher: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)
+    readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
+    readonly property bool showAnimations: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `)
+    
+    readonly property var currentList: showChat ? (chatList.item ? chatList.item.currentList : null) : (showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showAnimations ? animationsList.item : (showKeybinds ? keybindsList.item : appList.item))))
+    readonly property alias chatList: chatList
+
+    onShowChatChanged: {
+        if (showChat)
+            chatActivated = true;
+    }
+
     onShowWallpapersChanged: {
         if (showWallpapers) {
             for (let category of Wallpapers.categories) {
@@ -32,10 +48,6 @@ Item {
             }
         }
     }
-    readonly property bool showWindowSwitcher: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)
-    readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
-    readonly property bool showAnimations: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `)
-    readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showAnimations ? animationsList.item : (showKeybinds ? keybindsList.item : appList.item)))
 
     property string currentWallpaperTab: "Main"
 
@@ -46,13 +58,11 @@ Item {
         }
         return res;
     }
-    property string animState: showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps")))
+    
+    property string animState: showChat ? "chat" : (showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))))
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-
-    width: implicitWidth
-    height: implicitHeight
 
     clip: true
     state: animState
@@ -77,19 +87,6 @@ Item {
         }
     }
 
-    onStateChanged: {
-        if (state === "keybinds") {
-            keybindsList.active = true;
-        } else {
-            keybindsList.active = false;
-        }
-        if (state === "animations") {
-            animationsList.active = true;
-        } else {
-            animationsList.active = false;
-        }
-    }
-
     states: [
         State {
             name: "apps"
@@ -103,7 +100,6 @@ Item {
                 target: appList
                 active: true
             }
-
         },
         State {
             name: "wallpapers"
@@ -111,7 +107,7 @@ Item {
             PropertyChanges {
                 target: root
                 implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, wallpaperList.implicitWidth)
-                implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56 // Extra space for color buttons
+                implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56 
             }
             PropertyChanges {
                 target: wallpaperList
@@ -143,7 +139,6 @@ Item {
                 target: keybindsList
                 active: true
             }
-
         },
         State {
             name: "animations"
@@ -157,7 +152,25 @@ Item {
                 target: animationsList
                 active: true
             }
+        },
+        State {
+            name: "chat"
 
+            PropertyChanges {
+                target: root
+                implicitWidth: {
+                    if (chatList.item && chatList.item.expanded) {
+                        return GlobalConfig.launcher.aiFullScreen ? (root.screenWidth - root.padding * 2) : GlobalConfig.launcher.aiExpandedWidth;
+                    }
+                    return GlobalConfig.launcher.aiDefaultWidth || Math.min(850, root.screenWidth - root.padding * 2);
+                }
+                implicitHeight: {
+                    if (chatList.item && chatList.item.expanded) {
+                        return GlobalConfig.launcher.aiFullScreen ? root.maxHeight : Math.min(root.maxHeight, GlobalConfig.launcher.aiExpandedHeight);
+                    }
+                    return Math.min(root.maxHeight, GlobalConfig.launcher.aiDefaultHeight || 600);
+                }
+            }
         }
     ]
 
@@ -369,11 +382,27 @@ Item {
         }
     }
 
+    Loader {
+        id: chatList
+
+        active: root.chatActivated
+        visible: root.state === "chat"
+
+        anchors.fill: parent
+
+        sourceComponent: ChatList {
+            search: root.search
+            visibilities: root.visibilities
+            screenWidth: root.screenWidth
+            maxHeight: root.maxHeight
+        }
+    }
+
     Row {
         id: empty
 
-        opacity: root.currentList?.count === 0 ? 1 : 0
-        scale: root.currentList?.count === 0 ? 1 : 0.5
+        opacity: root.state !== "chat" && root.currentList?.count === 0 ? 1 : 0
+        scale: root.state !== "chat" && root.currentList?.count === 0 ? 1 : 0.5
 
         spacing: Tokens.spacing.medium
         padding: Tokens.padding.large

@@ -155,6 +155,20 @@ Scope {
     // qmllint disable unresolved-type
     CustomShortcut {
         // qmllint enable unresolved-type
+        name: "cortana"
+        description: "Open Cortana assistant"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}cortana `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
         name: "windowSwitcher"
         description: "Open window switcher"
         onPressed: {

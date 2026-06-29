@@ -73,6 +73,61 @@ PageBase {
             onMoved: v => GlobalConfig.launcher.dragThreshold = v
         }
 
+        // AI
+        SectionHeader {
+            text: qsTr("Cortana AI")
+        }
+
+        StepperRow {
+            first: true
+            label: qsTr("Default width")
+            value: Config.launcher.aiDefaultWidth
+            from: 200
+            to: 4000
+            stepSize: 10
+            onMoved: v => GlobalConfig.launcher.aiDefaultWidth = v
+        }
+
+        StepperRow {
+            label: qsTr("Default height")
+            value: Config.launcher.aiDefaultHeight
+            from: 200
+            to: 4000
+            stepSize: 10
+            onMoved: v => GlobalConfig.launcher.aiDefaultHeight = v
+        }
+
+        StepperRow {
+            label: qsTr("Expanded width")
+            value: Config.launcher.aiExpandedWidth
+            from: 200
+            to: 4000
+            stepSize: 10
+            onMoved: v => GlobalConfig.launcher.aiExpandedWidth = v
+        }
+
+        StepperRow {
+            label: qsTr("Expanded height")
+            value: Config.launcher.aiExpandedHeight
+            from: 200
+            to: 4000
+            stepSize: 10
+            onMoved: v => GlobalConfig.launcher.aiExpandedHeight = v
+        }
+
+        ToggleRow {
+            text: qsTr("Full screen")
+            checked: Config.launcher.aiFullScreen
+            onToggled: GlobalConfig.launcher.aiFullScreen = checked
+        }
+
+        ToggleRow {
+            last: true
+            text: qsTr("History grid view")
+            checked: Config.launcher.aiHistoryGridView
+            onToggled: GlobalConfig.launcher.aiHistoryGridView = checked
+        }
+
         // Behaviour
         SectionHeader {
             text: qsTr("Behaviour")

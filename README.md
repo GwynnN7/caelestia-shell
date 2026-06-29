@@ -367,17 +367,7 @@ For example, to disable the bar on DP-1:
 ```json
 {
     "ai": {
-        "activeOllamaModel": "llama3",
-        "activeProvider": "ollama",
-        "defaultOllamaModel": "llama3",
-        "defaultProvider": "ollama",
-        "enableCelestialMode": false,
-        "enableOllama": true,
-        "ollamaHistoryJson": "[]",
-        "ollamaModel": "llama3",
-        "ollamaUrl": "http://localhost:11434",
-        "saveChatHistory": true,
-        "snapToDefaultOllama": true
+        "systemPrompt": ""
     },
     "appearance": {
         "anim": {

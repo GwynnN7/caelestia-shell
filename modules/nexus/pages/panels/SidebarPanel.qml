@@ -44,29 +44,5 @@ PageBase {
             stepSize: 5
             onMoved: v => GlobalConfig.sidebar.dragThreshold = v
         }
-
-        // AI Assistant
-        SectionHeader {
-            text: qsTr("AI Assistant")
-        }
-
-        ToggleRow {
-            Layout.fillWidth: true
-            first: true
-            text: qsTr("Enable Assistant")
-            subtext: qsTr("Show the AI Assistant in the sidebar")
-            checked: GlobalConfig.ai.enableOllama
-            onToggled: GlobalConfig.ai.enableOllama = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            last: true
-            text: qsTr("Enable Tool Usage")
-            subtext: qsTr("Allow the assistant to search the web, take screenshots, etc.")
-            checked: GlobalConfig.ai.enableCelestialMode
-            onToggled: GlobalConfig.ai.enableCelestialMode = checked
-        }
     }
 }

@@ -25,6 +25,10 @@ ShellRoot {
 
     GSFLoader {}
 
+    AiController { 
+        id: sharedAiController 
+    }
+
     Background {}
     BadAppleOverlay {}
 

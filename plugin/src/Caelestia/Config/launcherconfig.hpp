@@ -35,6 +35,14 @@ class LauncherConfig : public ConfigObject {
     CONFIG_PROPERTY(bool, showOnHover, false)
     CONFIG_PROPERTY(int, maxShown, 7)
     CONFIG_PROPERTY(int, maxWallpapers, 9)
+
+    CONFIG_PROPERTY(int, aiDefaultWidth, 850)
+    CONFIG_PROPERTY(int, aiDefaultHeight, 600)
+    CONFIG_PROPERTY(int, aiExpandedWidth, 850)
+    CONFIG_PROPERTY(int, aiExpandedHeight, 600)
+    CONFIG_PROPERTY(bool, aiFullScreen, false)
+    CONFIG_PROPERTY(bool, aiHistoryGridView, true)
+
     CONFIG_GLOBAL_PROPERTY(QString, specialPrefix, u"@"_s)
     CONFIG_GLOBAL_PROPERTY(QString, actionPrefix, u">"_s)
     CONFIG_GLOBAL_PROPERTY(bool, enableDangerousActions, false)
@@ -139,6 +147,12 @@ class LauncherConfig : public ConfigObject {
                 { u"icon"_s, u"content_paste"_s },
                 { u"description"_s, u"View clipboard history"_s },
                 { u"command"_s, QStringList{ u"autocomplete"_s, u"clipboard"_s } },
+            }),
+            vmap({
+                { u"name"_s, u"Cortana"_s },
+                { u"icon"_s, u"network_intel_node"_s },
+                { u"description"_s, u"Open Cortana assistant"_s },
+                { u"command"_s, QStringList{ u"autocomplete"_s, u"cortana"_s } },
             }),
             vmap({
                 { u"name"_s, u"Windows"_s },

@@ -21,29 +21,13 @@ Item {
     property string activeTab: "notifications"
 
     Connections {
-        target: GlobalConfig.ai
-        function onEnableOllamaChanged() { checkAiTab(); }
-    }
-
-    Connections {
         target: root.visibilities
         function onSidebarChanged() {
             if (root.visibilities.sidebar) {
                 root.activeTab = Visibilities.initialSidebarTab;
-                checkAiTab();
             }
         }
     }
-
-    function checkAiTab() {
-        if (!GlobalConfig.ai.enableOllama) {
-            if (root.activeTab === "ai") {
-                root.activeTab = "notifications";
-            }
-        }
-    }
-
-    Component.onCompleted: checkAiTab()
 
     GridLayout {
         id: layout
@@ -81,12 +65,11 @@ Item {
                             id: tabRepeater
                             model: {
                                 var tabs = [
-                                    { id: "notifications", label: qsTr("Notifications"), icon: "notifications" }
+                                    { id: "notifications", label: qsTr("Notifications"), icon: "notifications" },
+                                    { id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" },
+                                    { id: "news", label: qsTr("News"), icon: "newspaper" }
                                 ];
-                                if (GlobalConfig.ai.enableOllama) {
-                                    tabs.push({ id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" });
-                                }
-                                tabs.push({ id: "news", label: qsTr("News"), icon: "newspaper" });
+                                tabs.push();
                                 return tabs;
                             }
 

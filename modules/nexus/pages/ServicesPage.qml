@@ -200,26 +200,33 @@ PageBase {
 
         NavRow {
             first: true
+            icon: "network_intel_node"
+            label: qsTr("Cortana AI")
+            status: qsTr("Configure Cortana AI behavior")
+            onClicked: root.nState.openSubPage(2)
+        }
+
+        NavRow {
             icon: "sports_esports"
             label: qsTr("Game mode")
             status: qsTr("Manage how Caelestia behaves while gaming")
-            onClicked: root.nState.openSubPage(2)
+            onClicked: root.nState.openSubPage(3)
         }
 
         NavRow {
             icon: "chat" // Using chat since discord icon might not be available in Material icons
             label: qsTr("Discord Rich Presence")
             status: qsTr("Broadcast your status to Vesktop")
-            onClicked: root.nState.openSubPage(4)
+            onClicked: root.nState.openSubPage(5)
         }
 
         NavRow {
             icon: "picture_in_picture"
             label: qsTr("Picture in Picture")
             status: qsTr("Configure PiP positioning and focus behavior")
-            onClicked: root.nState.openSubPage(5)
+            onClicked: root.nState.openSubPage(6)
         }
-
+        
         StepperRow {
             label: qsTr("Visualiser bars")
             subtext: qsTr("Number of bars in the audio visualisers")
