@@ -448,7 +448,7 @@ Item {
 
     function queryOllama(aiIndex, iteration, messages, thinkingText, resetCount) {
         if (resetCount === undefined) resetCount = 0;
-        if (iteration > 8) {
+        if (iteration > 4) {
             chatModel.setProperty(aiIndex, "text", "Error: Agent reached maximum tool execution limit (8 iterations).");
             chatModel.setProperty(aiIndex, "thinking", thinkingText);
             chatModel.setProperty(aiIndex, "loading", false);
@@ -556,11 +556,19 @@ Item {
                             executeTool(tCall, function(toolResult) {
                                 if (aiController.generationStopped) return;
                                 
-                                var textOutput = "";
                                 if (typeof toolResult === 'object' && toolResult !== null && toolResult.image) {
-                                    messages.push({ role: "tool", content: toolResult.text, images: [toolResult.image] });
+                                    messages.push({ 
+                                        role: "tool", 
+                                        name: tCall.function.name, 
+                                        content: toolResult.text, 
+                                        images: [toolResult.image] 
+                                    });
                                 } else {
-                                    messages.push({ role: "tool", content: toolResult });
+                                    messages.push({ 
+                                        role: "tool", 
+                                        name: tCall.function.name, 
+                                        content: String(toolResult) 
+                                    });
                                 }
                                 
                                 completedCount++;
