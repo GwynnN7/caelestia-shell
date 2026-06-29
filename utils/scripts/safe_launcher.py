@@ -33,7 +33,7 @@ def launch_app(app_name):
             break
 
     if best_match_exec:
-        cmd_parts = ["app2unit -- "] + [p for p in best_match_exec.split() if not p.startswith('%')]
+        cmd_parts = ["app2unit", "--"] + [p for p in best_match_exec.split() if not p.startswith('%')]
         try:
             subprocess.Popen(cmd_parts, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
             print(f"Successfully launched: {app_name}")
