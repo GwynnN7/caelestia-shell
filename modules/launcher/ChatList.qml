@@ -1079,6 +1079,13 @@ Item {
             model: chatModel
             spacing: Tokens.spacing.medium
             clip: true
+
+            Component.onCompleted: {
+                Qt.callLater(function () {
+                    listView.positionViewAtEnd();
+                });
+            }
+
             footer: Item {
                 width: listView.width
                 height: root.calculateFooterHeight()

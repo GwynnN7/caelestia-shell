@@ -480,6 +480,12 @@ Item {
                     model: aiController.chatModel
                     boundsBehavior: Flickable.StopAtBounds
 
+                    Component.onCompleted: {
+                        Qt.callLater(function () {
+                            listView.positionViewAtEnd();
+                        });
+                    }
+
                     ColumnLayout {
                         anchors.centerIn: parent
                         opacity: aiController.chatModel.count === 0 && !aiController.isGenerating ? 1.0 : 0.0
