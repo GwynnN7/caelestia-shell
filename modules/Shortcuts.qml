@@ -100,8 +100,8 @@ Scope {
     // qmllint disable unresolved-type
     CustomShortcut {
         // qmllint enable unresolved-type
-        name: "aiAssistant"
-        description: "Toggle AI Assistant"
+        name: "cortanaSidebar"
+        description: "Open Cortana AI Sidebar"
         onPressed: {
             if (root.hasFullscreen)
                 return;
@@ -156,7 +156,7 @@ Scope {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "cortana"
-        description: "Open Cortana assistant"
+        description: "Open Cortana AI"
         onPressed: {
             if (root.hasFullscreen)
                 return;
