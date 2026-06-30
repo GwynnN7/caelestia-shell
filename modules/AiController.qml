@@ -332,9 +332,9 @@ Item {
         let instructions = basePrompt;
 
         if (GlobalConfig.ai.agentDateTime)
-            instructions += "\n- Current Host Context Date/Time: " + new Date().toString();
+            instructions += "\n- [Context] Current Date/Time: " + new Date().toString();
         if (GlobalConfig.ai.agentLocation && (Weather.city || Weather.loc))
-            instructions += "\n- Geolocation Node: " + (Weather.city || "") + " (" + (Weather.loc || "") + ")";
+            instructions += "\n- [Context] Geolocation: " + (Weather.city || "") + " (" + (Weather.loc || "") + ")";
 
         return instructions;
     }
@@ -471,21 +471,25 @@ Item {
                 type: "function",
                 function: {
                     name: "cortana_api",
-                    description: "Control smart automation and room sensors via Cortana API.",
+                    description: "Control smart automation and room sensors via Cortana API. Use the 'route' parameter to specify the device, sensor or setting to interact with. If only the 'route' is provided, it will return the current status or value. Use the other parameters to perform actions or set values. For computer control, use the 'command' parameter.",
                     parameters: {
                         type: "object",
                         properties: {
                             route: {
                                 type: "string",
-                                description: "Route like devices/Lamp, sensors/Temperature"
+                                description: "Route to call: devices/{device} (device: Computer, Lamp, Power, Generic), sensors/{sensor} (sensor: Temperature, Humidity, Light, Motion), raspberry/{info} (info: Temperature, Location, Ip), settings/{setting} (setting: LightThreshold, AutomaticMode), computer (use command parameter)"
                             },
                             action: {
                                 type: "string",
-                                description: "on, off, toggle"
+                                description: "Action to perform on devices: on, off, toggle"
                             },
                             value: {
                                 type: "string",
-                                description: "Integer value or 1/0"
+                                description: "Integer value to set for settings. For booleans use 1 or 0"
+                            },
+                            command: {
+                                type: "string",
+                                description: "Command string to pass to the computer: shutdown, restart, suspend, system (rebooting to Windows OS)"
                             }
                         },
                         required: ["route"]
