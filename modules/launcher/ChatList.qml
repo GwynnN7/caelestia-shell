@@ -41,7 +41,7 @@ Item {
     }
 
     property var aiController: sharedAiController
-    
+
     property var chatModel: aiController.chatModel
     property var historyModel: aiController.historyModel
 
@@ -50,7 +50,7 @@ Item {
 
     property bool showSettings: false
     property bool hasUnsavedPromptChanges: false
-    
+
     property bool isGenerating: aiController.isGenerating
 
     onIsGeneratingChanged: {
@@ -76,15 +76,18 @@ Item {
         if (!root.userScrolledUp) {
             root.isAutoScrolling = true;
             listView.positionViewAtEnd();
-            Qt.callLater(function() { root.isAutoScrolling = false; });
+            Qt.callLater(function () {
+                root.isAutoScrolling = false;
+            });
         }
     }
 
     function sendMessage(text) {
-        if (!text || text.trim() === "") return;
+        if (!text || text.trim() === "")
+            return;
         root.userScrolledUp = false;
         let userIndex = aiController.sendMessage(text);
-        Qt.callLater(function() {
+        Qt.callLater(function () {
             listView.positionViewAtIndex(userIndex, ListView.Beginning);
         });
     }
@@ -120,8 +123,10 @@ Item {
             selectByMouse: true
             cursorVisible: false
 
-            onLinkActivated: (link) => Qt.openUrlExternally(link)
-            onLinkHovered: (link) => { root.hoverLinkUrl = link; }
+            onLinkActivated: link => Qt.openUrlExternally(link)
+            onLinkHovered: link => {
+                root.hoverLinkUrl = link;
+            }
 
             function updateText() {
                 if (!blockData || !blockData.content) {
@@ -136,7 +141,7 @@ Item {
                 var colorStr = isUserMsg ? (Colours.palette.m3onPrimaryContainer + "") : (Colours.palette.m3onSurface + "");
 
                 var html = root.markdownToHtml(content, colorStr);
-                processedText = root.processInlineMathHtml(html, colorStr, isUserMsg, function() {
+                processedText = root.processInlineMathHtml(html, colorStr, isUserMsg, function () {
                     if (textEdit) {
                         textEdit.updateText();
                     }
@@ -166,10 +171,7 @@ Item {
             width: parent ? parent.width : 0
             height: codeHeader.height + codeBody.height
 
-            color: Qt.tint(Colours.palette.m3surfaceContainerLowest,
-                           Qt.rgba(Colours.palette.m3primary.r,
-                                   Colours.palette.m3primary.g,
-                                   Colours.palette.m3primary.b, 0.08))
+            color: Qt.tint(Colours.palette.m3surfaceContainerLowest, Qt.rgba(Colours.palette.m3primary.r, Colours.palette.m3primary.g, Colours.palette.m3primary.b, 0.08))
             radius: Tokens.rounding.medium
             clip: true
 
@@ -177,10 +179,7 @@ Item {
                 id: codeHeader
                 width: parent.width
                 height: 32
-                color: Qt.tint(Colours.palette.m3surfaceContainerLow,
-                               Qt.rgba(Colours.palette.m3primary.r,
-                                       Colours.palette.m3primary.g,
-                                       Colours.palette.m3primary.b, 0.13))
+                color: Qt.tint(Colours.palette.m3surfaceContainerLow, Qt.rgba(Colours.palette.m3primary.r, Colours.palette.m3primary.g, Colours.palette.m3primary.b, 0.13))
                 radius: Tokens.rounding.medium
 
                 Row {
@@ -190,7 +189,9 @@ Item {
                     spacing: Tokens.spacing.extraSmall
 
                     Rectangle {
-                        width: 8; height: 8; radius: 4
+                        width: 8
+                        height: 8
+                        radius: 4
                         color: Colours.palette.m3primary
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -211,11 +212,12 @@ Item {
                     property bool copied: false
                     icon: copied ? "check" : "content_copy"
                     type: IconButton.Text
-                    width: 24; height: 24
+                    width: 24
+                    height: 24
                     anchors.right: parent.right
                     anchors.rightMargin: Tokens.spacing.small
                     anchors.verticalCenter: parent.verticalCenter
-                    
+
                     activeOnColour: Colours.palette.m3primary
                     inactiveOnColour: Colours.palette.m3onSurfaceVariant
 
@@ -259,8 +261,10 @@ Item {
                     anchors.fill: parent
                     anchors.margins: Tokens.padding.medium
 
-                    onLinkActivated: (link) => Qt.openUrlExternally(link)
-                    onLinkHovered: (link) => { root.hoverLinkUrl = link; }
+                    onLinkActivated: link => Qt.openUrlExternally(link)
+                    onLinkHovered: link => {
+                        root.hoverLinkUrl = link;
+                    }
 
                     MouseArea {
                         anchors.fill: parent
@@ -286,9 +290,7 @@ Item {
             implicitWidth: mathImage.visible ? mathImage.implicitWidth + 16 : 120
             width: parent ? parent.width : 0
             readonly property int vGap: 6
-            height: loading
-                ? Math.max(30, rawMathText.implicitHeight) + vGap * 2
-                : (rendering ? 40 + vGap * 2 : Math.max(30, mathImage.implicitHeight + 16) + vGap * 2)
+            height: loading ? Math.max(30, rawMathText.implicitHeight) + vGap * 2 : (rendering ? 40 + vGap * 2 : Math.max(30, mathImage.implicitHeight + 16) + vGap * 2)
 
             function updateMath() {
                 if (!blockData || !blockData.content) {
@@ -321,8 +323,9 @@ Item {
                 lastCacheKey = cacheKey;
 
                 var scriptPath = "/etc/xdg/quickshell/caelestia/utils/scripts/render_math.py";
-                aiController.runCommand([scriptPath, currentLatex, colorStr, "9"], function(stdout) {
-                    if (!mathBlock) return;
+                aiController.runCommand([scriptPath, currentLatex, colorStr, "9"], function (stdout) {
+                    if (!mathBlock)
+                        return;
                     var path = stdout.trim();
                     if (path.indexOf("/tmp") === 0) {
                         mathBlock.imagePath = "file://" + path;
@@ -379,14 +382,17 @@ Item {
     }
 
     function parseStreamingBlocks(raw) {
-        if (!raw || raw === "Cortana Thinking...") return { committed: "", tail: "" };
+        if (!raw || raw === "Cortana is thinking...")
+            return {
+                committed: "",
+                tail: ""
+            };
 
         var committed = "";
         var tail = raw;
         var i = 0;
 
         while (i < tail.length) {
-
             var fenceOpen = tail.indexOf("```", i);
             var mathOpen = tail.indexOf("$$", i);
 
@@ -415,7 +421,6 @@ Item {
             }
 
             if (firstOpen !== -1) {
-
                 var closeIndex = -1;
                 if (isMath) {
                     closeIndex = tail.indexOf("$$", firstOpen + 2);
@@ -424,16 +429,15 @@ Item {
                 }
 
                 if (closeIndex !== -1) {
-
                     var blockEnd = closeIndex + (isMath ? 2 : 3);
 
-                    if (blockEnd < tail.length && tail[blockEnd] === "\n") blockEnd++;
+                    if (blockEnd < tail.length && tail[blockEnd] === "\n")
+                        blockEnd++;
                     committed += tail.substring(0, blockEnd);
                     tail = tail.substring(blockEnd);
                     i = 0;
                     continue;
                 } else {
-
                     var beforeBlock = tail.substring(0, firstOpen);
 
                     var lastPara = beforeBlock.lastIndexOf("\n\n");
@@ -464,7 +468,10 @@ Item {
             }
         }
 
-        return { committed: committed.trim(), tail: tail };
+        return {
+            committed: committed.trim(),
+            tail: tail
+        };
     }
 
     function parseMessageBlocks(raw) {
@@ -476,58 +483,83 @@ Item {
             if (match.index > last) {
                 var txt = raw.substring(last, match.index).trim();
                 if (txt.length > 0)
-                    blocks.push({ type: "text", content: txt, language: "" });
+                    blocks.push({
+                        type: "text",
+                        content: txt,
+                        language: ""
+                    });
             }
             if (match[1]) {
-                blocks.push({ type: "code", content: match[3] || "", language: match[2] || "code" });
+                blocks.push({
+                    type: "code",
+                    content: match[3] || "",
+                    language: match[2] || "code"
+                });
             } else if (match[4]) {
-                blocks.push({ type: "math", content: match[5] || "", language: "" });
+                blocks.push({
+                    type: "math",
+                    content: match[5] || "",
+                    language: ""
+                });
             }
             last = match.index + match[0].length;
         }
         if (last < raw.length) {
             var rest = raw.substring(last).trim();
             if (rest.length > 0)
-                blocks.push({ type: "text", content: rest, language: "" });
+                blocks.push({
+                    type: "text",
+                    content: rest,
+                    language: ""
+                });
         }
-        return blocks.length > 0 ? blocks : [{ type: "text", content: raw, language: "" }];
+        return blocks.length > 0 ? blocks : [
+            {
+                type: "text",
+                content: raw,
+                language: ""
+            }
+        ];
     }
 
     function highlightCode(code, lang) {
         var l = (lang || "").toLowerCase();
 
-        function bright(c, f) { return Qt.lighter(c, f || 2.0) + ""; }
+        function bright(c, f) {
+            return Qt.lighter(c, f || 2.0) + "";
+        }
         var C = {
-            keyword:  bright(Colours.palette.m3primary,   2.0),
-            builtin:  bright(Colours.palette.m3primary,   1.7),
-            string:   bright(Colours.palette.m3tertiary,  2.0),
-            number:   bright(Colours.palette.m3error,     2.2),
-            comment:  Colours.palette.m3onSurfaceVariant + "",
+            keyword: bright(Colours.palette.m3primary, 2.0),
+            builtin: bright(Colours.palette.m3primary, 1.7),
+            string: bright(Colours.palette.m3tertiary, 2.0),
+            number: bright(Colours.palette.m3error, 2.2),
+            comment: Colours.palette.m3onSurfaceVariant + "",
             operator: bright(Colours.palette.m3secondary, 2.0),
-            func:     bright(Colours.palette.m3primary,   1.85),
-            normal:   Colours.palette.m3onSurface + ""
+            func: bright(Colours.palette.m3primary, 1.85),
+            normal: Colours.palette.m3onSurface + ""
         };
 
         var keywords = {
-            python:     ["False","None","True","and","as","assert","async","await","break","class","continue","def","del","elif","else","except","finally","for","from","global","if","import","in","is","lambda","nonlocal","not","or","pass","raise","return","try","while","with","yield"],
-            javascript: ["async","await","break","case","catch","class","const","continue","debugger","default","delete","do","else","export","extends","finally","for","function","if","import","in","instanceof","let","new","of","return","static","super","switch","this","throw","try","typeof","var","void","while","with","yield","true","false","null","undefined"],
-            typescript: ["abstract","any","as","async","await","boolean","break","case","catch","class","const","constructor","continue","declare","default","delete","do","else","enum","export","extends","false","finally","for","from","function","if","implements","import","in","instanceof","interface","let","module","namespace","new","null","number","of","private","protected","public","readonly","return","static","string","super","switch","this","throw","true","try","type","typeof","undefined","var","void","while","yield"],
-            rust:       ["as","async","await","break","const","continue","crate","dyn","else","enum","extern","false","fn","for","if","impl","in","let","loop","match","mod","move","mut","pub","ref","return","self","Self","static","struct","super","trait","true","type","union","unsafe","use","where","while"],
-            go:         ["break","case","chan","const","continue","default","defer","else","fallthrough","for","func","go","goto","if","import","interface","map","package","range","return","select","struct","switch","type","var","true","false","nil"],
-            java:       ["abstract","assert","boolean","break","byte","case","catch","char","class","const","continue","default","do","double","else","enum","extends","final","finally","float","for","goto","if","implements","import","instanceof","int","interface","long","native","new","null","package","private","protected","public","return","short","static","strictfp","super","switch","synchronized","this","throw","throws","transient","true","try","void","volatile","while"],
-            kotlin:     ["abstract","actual","annotation","as","break","by","catch","class","companion","const","constructor","continue","crossinline","data","do","dynamic","else","enum","expect","external","false","field","final","finally","for","fun","get","if","import","in","infix","init","inline","inner","interface","internal","is","it","lateinit","noinline","null","object","open","operator","out","override","package","private","protected","public","reified","return","sealed","set","super","suspend","tailrec","this","throw","true","try","typealias","typeof","val","var","vararg","when","where","while"],
-            swift:      ["as","break","case","catch","class","continue","default","defer","deinit","do","else","enum","extension","fallthrough","false","fileprivate","final","for","func","guard","if","import","in","init","inout","internal","is","lazy","let","mutating","nil","open","operator","override","private","protocol","public","repeat","required","rethrows","return","self","Self","static","struct","subscript","super","switch","throw","throws","true","try","typealias","var","weak","where","while"],
-            bash:       ["if","then","else","elif","fi","for","while","do","done","case","esac","in","function","return","export","local","readonly","unset","shift","break","continue","exit","echo","source","alias","declare","typeset","true","false"],
-            cpp:        ["alignas","alignof","and","and_eq","asm","auto","bitand","bitor","bool","break","case","catch","char","char8_t","char16_t","char32_t","class","compl","concept","const","consteval","constexpr","constinit","const_cast","continue","co_await","co_return","co_yield","decltype","default","delete","do","double","dynamic_cast","else","enum","explicit","export","extern","false","float","for","friend","goto","if","inline","int","long","mutable","namespace","new","noexcept","not","not_eq","nullptr","operator","or","or_eq","private","protected","public","reinterpret_cast","requires","return","short","signed","sizeof","static","static_assert","static_cast","struct","switch","template","this","thread_local","throw","true","try","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","wchar_t","while","xor","xor_eq"],
-            sql:        ["SELECT","FROM","WHERE","INSERT","UPDATE","DELETE","CREATE","DROP","ALTER","TABLE","INDEX","VIEW","TRIGGER","PROCEDURE","FUNCTION","DATABASE","SCHEMA","JOIN","INNER","LEFT","RIGHT","FULL","OUTER","ON","AS","GROUP","BY","ORDER","HAVING","LIMIT","OFFSET","UNION","ALL","DISTINCT","AND","OR","NOT","IN","IS","NULL","LIKE","BETWEEN","CASE","WHEN","THEN","ELSE","END","EXISTS","PRIMARY","KEY","FOREIGN","REFERENCES","UNIQUE","CHECK","DEFAULT","AUTO_INCREMENT","SET","VALUES","INTO","BEGIN","COMMIT","ROLLBACK","TRANSACTION","INT","VARCHAR","TEXT","BOOLEAN","FLOAT","DOUBLE","DATETIME","DATE","TIMESTAMP"]
+            python: ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"],
+            javascript: ["async", "await", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "let", "new", "of", "return", "static", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "true", "false", "null", "undefined"],
+            typescript: ["abstract", "any", "as", "async", "await", "boolean", "break", "case", "catch", "class", "const", "constructor", "continue", "declare", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "from", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "module", "namespace", "new", "null", "number", "of", "private", "protected", "public", "readonly", "return", "static", "string", "super", "switch", "this", "throw", "true", "try", "type", "typeof", "undefined", "var", "void", "while", "yield"],
+            rust: ["as", "async", "await", "break", "const", "continue", "crate", "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct", "super", "trait", "true", "type", "union", "unsafe", "use", "where", "while"],
+            go: ["break", "case", "chan", "const", "continue", "default", "defer", "else", "fallthrough", "for", "func", "go", "goto", "if", "import", "interface", "map", "package", "range", "return", "select", "struct", "switch", "type", "var", "true", "false", "nil"],
+            java: ["abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "null", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "true", "try", "void", "volatile", "while"],
+            kotlin: ["abstract", "actual", "annotation", "as", "break", "by", "catch", "class", "companion", "const", "constructor", "continue", "crossinline", "data", "do", "dynamic", "else", "enum", "expect", "external", "false", "field", "final", "finally", "for", "fun", "get", "if", "import", "in", "infix", "init", "inline", "inner", "interface", "internal", "is", "it", "lateinit", "noinline", "null", "object", "open", "operator", "out", "override", "package", "private", "protected", "public", "reified", "return", "sealed", "set", "super", "suspend", "tailrec", "this", "throw", "true", "try", "typealias", "typeof", "val", "var", "vararg", "when", "where", "while"],
+            swift: ["as", "break", "case", "catch", "class", "continue", "default", "defer", "deinit", "do", "else", "enum", "extension", "fallthrough", "false", "fileprivate", "final", "for", "func", "guard", "if", "import", "in", "init", "inout", "internal", "is", "lazy", "let", "mutating", "nil", "open", "operator", "override", "private", "protocol", "public", "repeat", "required", "rethrows", "return", "self", "Self", "static", "struct", "subscript", "super", "switch", "throw", "throws", "true", "try", "typealias", "var", "weak", "where", "while"],
+            bash: ["if", "then", "else", "elif", "fi", "for", "while", "do", "done", "case", "esac", "in", "function", "return", "export", "local", "readonly", "unset", "shift", "break", "continue", "exit", "echo", "source", "alias", "declare", "typeset", "true", "false"],
+            cpp: ["alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand", "bitor", "bool", "break", "case", "catch", "char", "char8_t", "char16_t", "char32_t", "class", "compl", "concept", "const", "consteval", "constexpr", "constinit", "const_cast", "continue", "co_await", "co_return", "co_yield", "decltype", "default", "delete", "do", "double", "dynamic_cast", "else", "enum", "explicit", "export", "extern", "false", "float", "for", "friend", "goto", "if", "inline", "int", "long", "mutable", "namespace", "new", "noexcept", "not", "not_eq", "nullptr", "operator", "or", "or_eq", "private", "protected", "public", "reinterpret_cast", "requires", "return", "short", "signed", "sizeof", "static", "static_assert", "static_cast", "struct", "switch", "template", "this", "thread_local", "throw", "true", "try", "typedef", "typeid", "typename", "union", "unsigned", "using", "virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq"],
+            sql: ["SELECT", "FROM", "WHERE", "INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "TABLE", "INDEX", "VIEW", "TRIGGER", "PROCEDURE", "FUNCTION", "DATABASE", "SCHEMA", "JOIN", "INNER", "LEFT", "RIGHT", "FULL", "OUTER", "ON", "AS", "GROUP", "BY", "ORDER", "HAVING", "LIMIT", "OFFSET", "UNION", "ALL", "DISTINCT", "AND", "OR", "NOT", "IN", "IS", "NULL", "LIKE", "BETWEEN", "CASE", "WHEN", "THEN", "ELSE", "END", "EXISTS", "PRIMARY", "KEY", "FOREIGN", "REFERENCES", "UNIQUE", "CHECK", "DEFAULT", "AUTO_INCREMENT", "SET", "VALUES", "INTO", "BEGIN", "COMMIT", "ROLLBACK", "TRANSACTION", "INT", "VARCHAR", "TEXT", "BOOLEAN", "FLOAT", "DOUBLE", "DATETIME", "DATE", "TIMESTAMP"]
         };
 
         var kw = keywords[l] || keywords[l === "js" ? "javascript" : l === "ts" ? "typescript" : l === "sh" || l === "shell" ? "bash" : l === "c" || l === "c++" ? "cpp" : l === "kt" ? "kotlin" : ""] || [];
         var kwSet = {};
-        for (var ki = 0; ki < kw.length; ki++) kwSet[kw[ki]] = true;
+        for (var ki = 0; ki < kw.length; ki++)
+            kwSet[kw[ki]] = true;
 
         function esc(s) {
-            return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
         function span(color, text) {
             return '<font color="' + color + '">' + esc(text) + '</font>';
@@ -537,13 +569,18 @@ Item {
         var out = [];
 
         var lineComment = "//";
-        var blockCommentStart = "/*"; var blockCommentEnd = "*/";
+        var blockCommentStart = "/*";
+        var blockCommentEnd = "*/";
         if (l === "python" || l === "py" || l === "bash" || l === "sh" || l === "shell" || l === "ruby" || l === "rb") {
-            lineComment = "#"; blockCommentStart = ""; blockCommentEnd = "";
+            lineComment = "#";
+            blockCommentStart = "";
+            blockCommentEnd = "";
         } else if (l === "sql") {
             lineComment = "--";
         } else if (l === "html" || l === "xml") {
-            lineComment = ""; blockCommentStart = "<!--"; blockCommentEnd = "-->";
+            lineComment = "";
+            blockCommentStart = "<!--";
+            blockCommentEnd = "-->";
         }
 
         var inBlockComment = false;
@@ -554,7 +591,6 @@ Item {
             var i = 0;
 
             while (i < line.length) {
-
                 if (inBlockComment) {
                     var endIdx = blockCommentEnd ? line.indexOf(blockCommentEnd, i) : -1;
                     if (endIdx !== -1) {
@@ -592,8 +628,14 @@ Item {
                     var quote = ch;
                     var j = i + 1;
                     while (j < line.length) {
-                        if (line[j] === '\\') { j += 2; continue; }
-                        if (line[j] === quote) { j++; break; }
+                        if (line[j] === '\\') {
+                            j += 2;
+                            continue;
+                        }
+                        if (line[j] === quote) {
+                            j++;
+                            break;
+                        }
                         j++;
                     }
                     result += span(C.string, line.substring(i, j));
@@ -604,8 +646,14 @@ Item {
                 if (ch === '`' && (l === "javascript" || l === "js" || l === "typescript" || l === "ts")) {
                     var j2 = i + 1;
                     while (j2 < line.length) {
-                        if (line[j2] === '\\') { j2 += 2; continue; }
-                        if (line[j2] === '`') { j2++; break; }
+                        if (line[j2] === '\\') {
+                            j2 += 2;
+                            continue;
+                        }
+                        if (line[j2] === '`') {
+                            j2++;
+                            break;
+                        }
                         j2++;
                     }
                     result += span(C.string, line.substring(i, j2));
@@ -613,9 +661,10 @@ Item {
                     continue;
                 }
 
-                if (/[0-9]/.test(ch) || (ch === '.' && /[0-9]/.test(line[i+1] || ''))) {
+                if (/[0-9]/.test(ch) || (ch === '.' && /[0-9]/.test(line[i + 1] || ''))) {
                     var j3 = i;
-                    while (j3 < line.length && /[0-9a-fA-FxXoObB_\.]/.test(line[j3])) j3++;
+                    while (j3 < line.length && /[0-9a-fA-FxXoObB_\.]/.test(line[j3]))
+                        j3++;
                     result += span(C.number, line.substring(i, j3));
                     i = j3;
                     continue;
@@ -623,7 +672,8 @@ Item {
 
                 if (/[a-zA-Z_$]/.test(ch)) {
                     var j4 = i;
-                    while (j4 < line.length && /[\w$]/.test(line[j4])) j4++;
+                    while (j4 < line.length && /[\w$]/.test(line[j4]))
+                        j4++;
                     var word = line.substring(i, j4);
 
                     var rest2 = line.substring(j4).replace(/^\s+/, "");
@@ -655,7 +705,8 @@ Item {
     }
 
     function calculateFooterHeight() {
-        if (!listView || !listView.contentItem) return 0;
+        if (!listView || !listView.contentItem)
+            return 0;
         var lastUserIndex = -1;
         for (var i = chatModel.count - 1; i >= 0; i--) {
             var item = chatModel.get(i);
@@ -664,7 +715,8 @@ Item {
                 break;
             }
         }
-        if (lastUserIndex === -1) return 0;
+        if (lastUserIndex === -1)
+            return 0;
 
         var heightBelowUser = 0;
         for (var c = 0; c < listView.contentItem.children.length; c++) {
@@ -820,7 +872,11 @@ Item {
             visible: opacity > 0
             opacity: !root.showHistory ? 1 : 0
 
-            Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
 
             StyledText {
                 text: "Model"
@@ -837,7 +893,9 @@ Item {
                 minLeftWidth: 150
 
                 active: menuItems.find(m => m.modelData === GlobalConfig.ai.activeModel) ?? menuItems[0] ?? null
-                menu.onItemSelected: item => { aiController.changeModel(item.modelData); }
+                menu.onItemSelected: item => {
+                    aiController.changeModel(item.modelData);
+                }
 
                 menuItems: modelVariants.instances
                 fallbackIcon: "smart_toy"
@@ -846,9 +904,12 @@ Item {
                 Variants {
                     id: modelVariants
                     model: aiController.availableModels
-                    delegate: MenuItem { required property string modelData; text: modelData }
+                    delegate: MenuItem {
+                        required property string modelData
+                        text: modelData
+                    }
                 }
-             }
+            }
         }
 
         Row {
@@ -859,7 +920,11 @@ Item {
             visible: opacity > 0
             opacity: root.showHistory && !root.showSettings ? 1 : 0
 
-            Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
 
             StyledRect {
                 id: viewTogglePill
@@ -951,7 +1016,11 @@ Item {
             visible: opacity > 0
             opacity: root.showHistory ? 1 : 0
 
-            Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
 
             onClicked: {
                 root.showSettings = !root.showSettings;
@@ -969,7 +1038,11 @@ Item {
             visible: opacity > 0
             opacity: root.showHistory ? 1 : 0
 
-            Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
 
             onClicked: {
                 aiController.createNewChat();
@@ -1023,8 +1096,20 @@ Item {
             }
 
             add: Transition {
-                NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200; easing.type: Easing.OutCubic }
-                NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 200; easing.type: Easing.OutCubic }
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
+                NumberAnimation {
+                    property: "scale"
+                    from: 0.95
+                    to: 1.0
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
             }
 
             delegate: Item {
@@ -1038,7 +1123,7 @@ Item {
                 required property int index
 
                 readonly property bool isUser: sender === "user"
-                readonly property bool isStatusText: text === "Cortana Thinking..." || text.startsWith("🔍") || text.startsWith("🌐") || text.startsWith("💻") || text.startsWith("📖") || text.startsWith("✍️") || text.startsWith("⚙️")
+                readonly property bool isStatusText: text === "Cortana is thinking..." || text.startsWith("🔍") || text.startsWith("🌐") || text.startsWith("💻") || text.startsWith("📖") || text.startsWith("✍️") || text.startsWith("⚙️")
                 property string messageThinking: model.thinking || ""
                 property string messageModelUsed: (index >= 0 && index < chatModel.count && chatModel.get(index)) ? (chatModel.get(index).modelUsed || "") : ""
 
@@ -1064,7 +1149,8 @@ Item {
                                     var child = bubbleColumn.children[i];
                                     if (child.visible && child.hasOwnProperty("blockWidth")) {
                                         var bw = child.blockWidth;
-                                        if (bw > maxW) maxW = bw;
+                                        if (bw > maxW)
+                                            maxW = bw;
                                     }
                                 }
                                 if (delegateItem.loading) {
@@ -1073,10 +1159,12 @@ Item {
                                         if (schild.visible) {
                                             if (schild.hasOwnProperty("blockWidth")) {
                                                 var sbw = schild.blockWidth;
-                                                if (sbw > maxW) maxW = sbw;
+                                                if (sbw > maxW)
+                                                    maxW = sbw;
                                             } else if (schild.hasOwnProperty("text")) {
                                                 var stw = schild.implicitWidth;
-                                                if (stw > maxW) maxW = stw;
+                                                if (stw > maxW)
+                                                    maxW = stw;
                                             }
                                         }
                                     }
@@ -1119,10 +1207,63 @@ Item {
                                 anchors.rightMargin: Tokens.padding.medium + 20 + (delegateItem.loading ? 24 : 0)
                                 anchors.bottomMargin: delegateItem.loading ? Tokens.padding.small : Tokens.padding.medium
                                 topPadding: 0
+                                spacing: Tokens.spacing.small
+
+                                Item {
+                                    id: thoughtContentWrapper
+                                    readonly property real blockWidth: bubbleColumn.isExpanded ? thoughtContent.implicitWidth : 0
+                                    width: thoughtContent.width
+                                    height: bubbleColumn.isExpanded ? thoughtContent.implicitHeight : 0
+                                    clip: true
+
+                                    Behavior on height {
+                                        NumberAnimation {
+                                            duration: 200
+                                            easing.type: Easing.InOutQuad
+                                        }
+                                    }
+
+                                    TextEdit {
+                                        id: thoughtContent
+                                        width: Math.min(implicitWidth, listView.width * 0.85 - Tokens.padding.medium * 2)
+                                        textFormat: Text.MarkdownText
+                                        property string fullThought: bubbleColumn.delegateThought
+                                        property bool cursorVisible: true
+
+                                        Timer {
+                                            running: delegateItem.loading
+                                            repeat: true
+                                            interval: 400
+                                            onTriggered: thoughtContent.cursorVisible = !thoughtContent.cursorVisible
+                                        }
+
+                                        text: !delegateItem.loading ? fullThought : fullThought + (cursorVisible ? "▌" : "")
+                                        color: Colours.palette.m3onSurfaceVariant
+                                        font: Tokens.font.body.small
+                                        wrapMode: Text.Wrap
+                                        readOnly: true
+                                        selectByMouse: true
+                                        selectionColor: Colours.palette.m3primary
+                                        selectedTextColor: Colours.palette.m3onPrimary
+                                        opacity: bubbleColumn.isExpanded ? 1.0 : 0.0
+
+                                        Behavior on opacity {
+                                            SequentialAnimation {
+                                                PauseAnimation {
+                                                    duration: bubbleColumn.isExpanded ? 100 : 0
+                                                }
+                                                NumberAnimation {
+                                                    duration: 150
+                                                    easing.type: Easing.InOutQuad
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
 
                                 Row {
                                     id: thinkingRow
-                                    visible: delegateItem.loading && (delegateItem.text.trim() === "" || delegateItem.isStatusText)
+                                    visible: delegateItem.loading && bubbleColumn.delegateThought === "" && (delegateItem.text.trim() === "" || delegateItem.isStatusText)
                                     spacing: Tokens.spacing.medium
                                     height: 20
                                     readonly property real blockWidth: implicitWidth
@@ -1137,7 +1278,7 @@ Item {
                                     }
 
                                     StyledText {
-                                        text: (delegateItem.text.trim() === "" || delegateItem.text === "Cortana Thinking...") ? "Cortana Thinking..." : delegateItem.text
+                                        text: (delegateItem.text.trim() === "" || delegateItem.text === "Cortana is thinking...") ? "Cortana is thinking..." : delegateItem.text
                                         font: Tokens.font.body.medium
                                         color: Colours.palette.m3onSurfaceVariant
                                         anchors.verticalCenter: parent.verticalCenter
@@ -1146,14 +1287,36 @@ Item {
                                     SequentialAnimation {
                                         running: thinkingRow.visible
                                         loops: Animation.Infinite
-                                        NumberAnimation { target: thinkingRow; property: "opacity"; from: 1.0; to: 0.4; duration: 800; easing.type: Easing.InOutSine }
-                                        NumberAnimation { target: thinkingRow; property: "opacity"; from: 0.4; to: 1.0; duration: 800; easing.type: Easing.InOutSine }
+                                        NumberAnimation {
+                                            target: thinkingRow
+                                            property: "opacity"
+                                            from: 1.0
+                                            to: 0.4
+                                            duration: 800
+                                            easing.type: Easing.InOutSine
+                                        }
+                                        NumberAnimation {
+                                            target: thinkingRow
+                                            property: "opacity"
+                                            from: 0.4
+                                            to: 1.0
+                                            duration: 800
+                                            easing.type: Easing.InOutSine
+                                        }
                                         onRunningChanged: {
                                             if (!running) {
                                                 thinkingRow.opacity = 1.0;
                                             }
                                         }
                                     }
+                                }
+
+                                LoadingIndicator {
+                                    width: 16
+                                    height: 16
+                                    visible: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
+                                    animated: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
+                                    color: Colours.palette.m3onSurfaceVariant
                                 }
 
                                 LoadingIndicator {
@@ -1184,7 +1347,9 @@ Item {
                                                 if (item.hasOwnProperty("isUserMsg"))
                                                     item.isUserMsg = blockHolder.isUserMsg;
                                                 if (item.hasOwnProperty("loading"))
-                                                    item.loading = Qt.binding(function() { return delegateItem.loading; });
+                                                    item.loading = Qt.binding(function () {
+                                                        return delegateItem.loading;
+                                                    });
                                             }
                                         }
                                     }
@@ -1196,14 +1361,13 @@ Item {
                                     width: parent.width
                                     spacing: Tokens.spacing.small
 
-                                    property var streamSplit: delegateItem.loading
-                                        ? parseStreamingBlocks(delegateItem.text)
-                                        : { committed: "", tail: "" }
+                                    property var streamSplit: delegateItem.loading ? parseStreamingBlocks(delegateItem.text) : {
+                                        committed: "",
+                                        tail: ""
+                                    }
 
                                     Repeater {
-                                        model: streamingView.streamSplit.committed !== ""
-                                            ? parseMessageBlocks(streamingView.streamSplit.committed)
-                                            : []
+                                        model: streamingView.streamSplit.committed !== "" ? parseMessageBlocks(streamingView.streamSplit.committed) : []
 
                                         Item {
                                             id: committedHolder
@@ -1234,9 +1398,7 @@ Item {
                                         width: parent.width
                                         wrapMode: Text.WordWrap
                                         font: Tokens.font.body.medium
-                                        color: delegateItem.isUser
-                                            ? Colours.palette.m3onPrimaryContainer
-                                            : Colours.palette.m3onSurface
+                                        color: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
                                         text: streamingView.streamSplit.tail + (cursorBlink.cursorVisible ? "▌" : " ")
 
                                         property bool cursorVisible: true
@@ -1271,7 +1433,11 @@ Item {
                                 activeOnColour: delegateItem.isUser ? Colours.palette.m3primaryContainer : Colours.palette.m3onPrimary
                                 inactiveOnColour: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
 
-                                Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+                                Behavior on opacity {
+                                    Anim {
+                                        type: Anim.DefaultEffects
+                                    }
+                                }
 
                                 onClicked: {
                                     Quickshell.clipboardText = delegateItem.text;
@@ -1305,8 +1471,22 @@ Item {
 
                 ParallelAnimation {
                     id: fadeInAnim
-                    NumberAnimation { target: delegateItem; property: "opacity"; from: 0; to: 1; duration: 250; easing.type: Easing.OutQuad }
-                    NumberAnimation { target: column; property: "y"; from: 10; to: 0; duration: 250; easing.type: Easing.OutQuad }
+                    NumberAnimation {
+                        target: delegateItem
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 250
+                        easing.type: Easing.OutQuad
+                    }
+                    NumberAnimation {
+                        target: column
+                        property: "y"
+                        from: 10
+                        to: 0
+                        duration: 250
+                        easing.type: Easing.OutQuad
+                    }
                 }
             }
 
@@ -1367,7 +1547,11 @@ Item {
 
             opacity: GlobalConfig.launcher.aiHistoryGridView && !root.showSettings ? 1 : 0
             visible: opacity > 0
-            Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
 
             readonly property real baseMargin: Tokens.spacing.medium
             readonly property real availableWidth: parent.width - baseMargin * 2
@@ -1468,7 +1652,11 @@ Item {
                         anchors.margins: Tokens.spacing.extraSmall
                         visible: opacity > 0
                         opacity: hoverArea.containsMouse || deleteBtn.hovered ? 1 : 0
-                        Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultEffects
+                            }
+                        }
                         onClicked: aiController.deleteConversation(convId)
                     }
                 }
@@ -1485,7 +1673,11 @@ Item {
 
             opacity: !GlobalConfig.launcher.aiHistoryGridView && !root.showSettings ? 1 : 0
             visible: opacity > 0
-            Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
 
             spacing: Tokens.spacing.small
             clip: true
@@ -1549,7 +1741,11 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         visible: opacity > 0
                         opacity: listHoverArea.containsMouse || listDeleteBtn.hovered ? 1 : 0
-                        Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultEffects
+                            }
+                        }
                         onClicked: aiController.deleteConversation(convId)
                     }
 
@@ -1562,7 +1758,10 @@ Item {
                         spacing: 2
 
                         Behavior on anchors.rightMargin {
-                            NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                            NumberAnimation {
+                                duration: 150
+                                easing.type: Easing.OutQuad
+                            }
                         }
 
                         StyledText {
@@ -1645,7 +1844,7 @@ Item {
                     Item {
                         width: parent.width
                         height: 36
-                        
+
                         StyledText {
                             text: "INTERFACE & FEATURES"
                             font: Tokens.font.label.medium
@@ -1755,7 +1954,7 @@ Item {
                                     id: settingsViewActiveIndicator
                                     x: GlobalConfig.launcher.aiHistoryGridView ? 3 : 39
                                     y: 3
-                                    width: 34;
+                                    width: 34
                                     height: 32
                                     radius: Tokens.rounding.full
                                     color: Colours.palette.m3secondaryContainer
@@ -1979,7 +2178,8 @@ Item {
                             StyledSlider {
                                 id: expandedHeightSlider
                                 width: parent.width
-                                from: 400; to: root.maxHeight
+                                from: 400
+                                to: root.maxHeight
                                 value: GlobalConfig.launcher.aiExpandedHeight
                                 enabled: !GlobalConfig.launcher.aiFullScreen
                                 onInteraction: v => {
@@ -2039,7 +2239,7 @@ Item {
                             StyledSlider {
                                 id: expandedWidthSlider
                                 width: parent.width
-                                from: 630; 
+                                from: 630
                                 to: root.screenWidth - 32
                                 value: GlobalConfig.launcher.aiExpandedWidth
                                 enabled: !GlobalConfig.launcher.aiFullScreen
@@ -2053,7 +2253,7 @@ Item {
                     Item {
                         width: parent.width
                         height: 56
-                        
+
                         StyledText {
                             text: "AI ENGINE & MODEL"
                             font: Tokens.font.label.medium
@@ -2154,7 +2354,8 @@ Item {
                                 checked: GlobalConfig.ai.agentLocation
                                 onToggled: {
                                     GlobalConfig.ai.agentLocation = checked;
-                                    if (checked) Weather.reload();
+                                    if (checked)
+                                        Weather.reload();
                                 }
                             }
                         }
@@ -2623,7 +2824,7 @@ Item {
                     Item {
                         width: parent.width
                         height: 56
-                        
+
                         StyledText {
                             text: "MODEL CONFIGURATION"
                             font: Tokens.font.label.medium
@@ -2815,13 +3016,15 @@ Item {
         property string displayUrl: ""
 
         onOpacityChanged: {
-            if (opacity === 0) displayUrl = "";
+            if (opacity === 0)
+                displayUrl = "";
         }
 
         Connections {
             target: root
             function onHoverLinkUrlChanged() {
-                if (root.hoverLinkUrl !== "") linkStatusHover.displayUrl = root.hoverLinkUrl;
+                if (root.hoverLinkUrl !== "")
+                    linkStatusHover.displayUrl = root.hoverLinkUrl;
             }
         }
 
@@ -2834,7 +3037,11 @@ Item {
         opacity: root.hoverLinkUrl !== "" ? 1 : 0
         visible: opacity > 0
 
-        Behavior on opacity { Anim { type: Anim.DefaultEffects } }
+        Behavior on opacity {
+            Anim {
+                type: Anim.DefaultEffects
+            }
+        }
 
         clip: true
 
@@ -2863,35 +3070,33 @@ Item {
             }
         }
     }
-    
+
     property var renderingInlineMath: ({})
     property var compiledInlineMath: ({})
 
     function markdownToHtml(md, colorStr) {
-        if (!md) return "";
+        if (!md)
+            return "";
 
         function esc(s) {
-            return s.replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;");
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         function inlineHtml(line) {
-
             var codePlaceholders = [];
-            line = line.replace(/`([^`]+)`/g, function(m, code) {
+            line = line.replace(/`([^`]+)`/g, function (m, code) {
                 var idx = codePlaceholders.length;
                 codePlaceholders.push("<code>" + esc(code) + "</code>");
                 return "\x00CODE" + idx + "\x00";
             });
 
             var mathPlaceholders = [];
-            line = line.replace(/\$([^\$\n]+)\$/g, function(m, formula) {
+            line = line.replace(/\$([^\$\n]+)\$/g, function (m, formula) {
                 var idx = mathPlaceholders.length;
                 mathPlaceholders.push(m);
                 return "\x00MATH" + idx + "\x00";
             });
-            line = line.replace(/\\\([\s\S]*?\\\)/g, function(m) {
+            line = line.replace(/\\\([\s\S]*?\\\)/g, function (m) {
                 var idx = mathPlaceholders.length;
                 mathPlaceholders.push(m);
                 return "\x00MATH" + idx + "\x00";
@@ -2908,10 +3113,10 @@ Item {
             line = line.replace(/~~(.+?)~~/g, "<s>$1</s>");
             line = line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>');
 
-            line = line.replace(/\x00MATH(\d+)\x00/g, function(m, idx) {
+            line = line.replace(/\x00MATH(\d+)\x00/g, function (m, idx) {
                 return mathPlaceholders[parseInt(idx)];
             });
-            line = line.replace(/\x00CODE(\d+)\x00/g, function(m, idx) {
+            line = line.replace(/\x00CODE(\d+)\x00/g, function (m, idx) {
                 return codePlaceholders[parseInt(idx)];
             });
             return line;
@@ -2926,8 +3131,14 @@ Item {
         var listDepth = 0;
 
         function closeList() {
-            if (inList)  { html += "</ul>"; inList = false; }
-            if (inOList) { html += "</ol>"; inOList = false; }
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+            if (inOList) {
+                html += "</ol>";
+                inOList = false;
+            }
         }
 
         function closeTable() {
@@ -2957,8 +3168,10 @@ Item {
                 }
 
                 var cells = line.split("|");
-                if (cells[0] === "") cells.shift();
-                if (cells[cells.length - 1] === "") cells.pop();
+                if (cells[0] === "")
+                    cells.shift();
+                if (cells[cells.length - 1] === "")
+                    cells.pop();
 
                 html += "<tr>";
                 for (var c = 0; c < cells.length; c++) {
@@ -2998,14 +3211,22 @@ Item {
 
             var ulm = line.match(/^[-*+]\s+(.*)$/);
             if (ulm) {
-                if (!inList) { closeList(); html += "<ul>"; inList = true; }
+                if (!inList) {
+                    closeList();
+                    html += "<ul>";
+                    inList = true;
+                }
                 html += "<li>" + inlineHtml(ulm[1]) + "</li>";
                 continue;
             }
 
             var olm = line.match(/^\d+\.\s+(.*)$/);
             if (olm) {
-                if (!inOList) { closeList(); html += "<ol>"; inOList = true; }
+                if (!inOList) {
+                    closeList();
+                    html += "<ol>";
+                    inOList = true;
+                }
                 html += "<li>" + inlineHtml(olm[1]) + "</li>";
                 continue;
             }
@@ -3025,7 +3246,8 @@ Item {
     }
 
     function processInlineMathHtml(html, colorStr, isUserMsg, callback) {
-        if (!html) return "";
+        if (!html)
+            return "";
 
         var fg = colorStr;
         if (fg.startsWith("#") && fg.length === 9) {
@@ -3035,9 +3257,10 @@ Item {
         var size = "18";
         var processed = html;
 
-        processed = processed.replace(/\\\(([^\)]*?)\\\)/g, function(match, formula) {
+        processed = processed.replace(/\\\(([^\)]*?)\\\)/g, function (match, formula) {
             formula = formula.trim();
-            if (formula.length === 0) return match;
+            if (formula.length === 0)
+                return match;
 
             var cacheKey = formula + "|" + fg + "|" + size;
 
@@ -3047,22 +3270,26 @@ Item {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
                     var scriptPath = "/etc/xdg/quickshell/caelestia/utils/scripts/render_math.py";
-                    aiController.runCommand([scriptPath, formula, colorStr, size], function(stdout) {
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
-                            if (root.renderingInlineMath) delete root.renderingInlineMath[cacheKey];
-                            if (root.compiledInlineMath) root.compiledInlineMath[cacheKey] = path;
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
                         }
-                        if (callback) callback();
+                        if (callback)
+                            callback();
                     });
                 }
                 return match;
             }
         });
 
-        processed = processed.replace(/\$([^\$\n]+)\$/g, function(match, formula) {
+        processed = processed.replace(/\$([^\$\n]+)\$/g, function (match, formula) {
             formula = formula.trim();
-            if (formula.length === 0) return match;
+            if (formula.length === 0)
+                return match;
             if (/^[0-9.,\s+\-*\/=()]+$/.test(formula) && !/[\^\\_{]/.test(formula)) {
                 return match;
             }
@@ -3075,13 +3302,16 @@ Item {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
                     var scriptPath = "/etc/xdg/quickshell/caelestia/utils/scripts/render_math.py";
-                    aiController.runCommand([scriptPath, formula, colorStr, size], function(stdout) {
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
-                            if (root.renderingInlineMath) delete root.renderingInlineMath[cacheKey];
-                            if (root.compiledInlineMath) root.compiledInlineMath[cacheKey] = path;
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
                         }
-                        if (callback) callback();
+                        if (callback)
+                            callback();
                     });
                 }
                 return match;
@@ -3092,7 +3322,8 @@ Item {
     }
 
     function processInlineMath(content, colorStr, isUserMsg, callback) {
-        if (!content) return "";
+        if (!content)
+            return "";
 
         var fg = colorStr;
         if (fg.startsWith("#") && fg.length === 9) {
@@ -3102,9 +3333,10 @@ Item {
         var size = "18";
         var processed = content;
 
-        processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, function(match, formula) {
+        processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, function (match, formula) {
             formula = formula.trim();
-            if (formula.length === 0) return match;
+            if (formula.length === 0)
+                return match;
 
             var cacheKey = formula + "|" + fg + "|" + size;
 
@@ -3114,22 +3346,26 @@ Item {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
                     var scriptPath = "/etc/xdg/quickshell/caelestia/utils/scripts/render_math.py";
-                    aiController.runCommand([scriptPath, formula, colorStr, size], function(stdout) {
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
-                            if (root.renderingInlineMath) delete root.renderingInlineMath[cacheKey];
-                            if (root.compiledInlineMath) root.compiledInlineMath[cacheKey] = path;
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
                         }
-                        if (callback) callback();
+                        if (callback)
+                            callback();
                     });
                 }
                 return match;
             }
         });
 
-        processed = processed.replace(/\$([^\$\n]+)\$/g, function(match, formula) {
+        processed = processed.replace(/\$([^\$\n]+)\$/g, function (match, formula) {
             formula = formula.trim();
-            if (formula.length === 0) return match;
+            if (formula.length === 0)
+                return match;
             if (/^[0-9.,\s+\-*\/=()]+$/.test(formula) && !/[\^\\_]/.test(formula)) {
                 return match;
             }
@@ -3142,13 +3378,16 @@ Item {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
                     var scriptPath = "/etc/xdg/quickshell/caelestia/utils/scripts/render_math.py";
-                    aiController.runCommand([scriptPath, formula, colorStr, size], function(stdout) {
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
-                            if (root.renderingInlineMath) delete root.renderingInlineMath[cacheKey];
-                            if (root.compiledInlineMath) root.compiledInlineMath[cacheKey] = path;
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
                         }
-                        if (callback) callback();
+                        if (callback)
+                            callback();
                     });
                 }
                 return match;
