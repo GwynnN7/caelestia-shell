@@ -18,7 +18,7 @@ Item {
     readonly property bool isBarHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property bool showPopoutSeparator: isBarHorizontal && root.visibilities.sidebar && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow" && popouts.currentName !== "github"
 
-    property string activeTab: "notifications"
+    property string activeTab: Visibilities.initialSidebarTab
 
     Connections {
         target: root.visibilities
@@ -65,9 +65,21 @@ Item {
                             id: tabRepeater
                             model: {
                                 var tabs = [
-                                    { id: "notifications", label: qsTr("Notifications"), icon: "notifications" },
-                                    { id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" },
-                                    { id: "news", label: qsTr("News"), icon: "newspaper" }
+                                    {
+                                        id: "notifications",
+                                        label: qsTr("Notifications"),
+                                        icon: "notifications"
+                                    },
+                                    {
+                                        id: "ai",
+                                        label: qsTr("AI Assistant"),
+                                        icon: "smart_toy"
+                                    },
+                                    {
+                                        id: "news",
+                                        label: qsTr("News"),
+                                        icon: "newspaper"
+                                    }
                                 ];
                                 tabs.push();
                                 return tabs;
@@ -102,7 +114,11 @@ Item {
                                         color: tabBtn.active ? Colours.palette.m3primary : stateLayer.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                                         fontStyle: Tokens.font.icon.small
                                         fill: tabBtn.active ? 1 : 0
-                                        Behavior on fill { Anim { type: Anim.DefaultEffects } }
+                                        Behavior on fill {
+                                            Anim {
+                                                type: Anim.DefaultEffects
+                                            }
+                                        }
                                     }
 
                                     StyledText {
@@ -121,11 +137,12 @@ Item {
                         id: indicator
                         anchors.verticalCenter: parent.bottom
                         implicitHeight: 6
-                        
+
                         property int activeIndex: {
                             var arr = tabRepeater.model;
                             for (var i = 0; i < arr.length; i++) {
-                                if (arr[i].id === root.activeTab) return i;
+                                if (arr[i].id === root.activeTab)
+                                    return i;
                             }
                             return 0;
                         }
@@ -171,9 +188,17 @@ Item {
                         visible: opacity > 0
                         props: root.props
                         visibilities: root.visibilities
-                        
-                        Behavior on x { Anim { type: Anim.DefaultSpatial } }
-                        Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
+
+                        Behavior on x {
+                            Anim {
+                                type: Anim.DefaultSpatial
+                            }
+                        }
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultSpatial
+                            }
+                        }
                     }
 
                     AiAssistant {
@@ -192,8 +217,16 @@ Item {
                             }
                         }
 
-                        Behavior on x { Anim { type: Anim.DefaultSpatial } }
-                        Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
+                        Behavior on x {
+                            Anim {
+                                type: Anim.DefaultSpatial
+                            }
+                        }
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultSpatial
+                            }
+                        }
                     }
 
                     News {
@@ -203,9 +236,17 @@ Item {
                         x: root.activeTab === "news" ? 0 : width
                         opacity: root.activeTab === "news" ? 1 : 0
                         visible: opacity > 0
-                        
-                        Behavior on x { Anim { type: Anim.DefaultSpatial } }
-                        Behavior on opacity { Anim { type: Anim.DefaultSpatial } }
+
+                        Behavior on x {
+                            Anim {
+                                type: Anim.DefaultSpatial
+                            }
+                        }
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultSpatial
+                            }
+                        }
                     }
                 }
             }

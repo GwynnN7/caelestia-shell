@@ -92,7 +92,9 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const visibilities = Visibilities.getForActive();
-            Visibilities.initialSidebarTab = "notifications";
+            if (!visibilities.sidebar) {
+                Visibilities.initialSidebarTab = "notifications";
+            }
             visibilities.sidebar = !visibilities.sidebar;
         }
     }
@@ -106,8 +108,10 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const visibilities = Visibilities.getForActive();
-            Visibilities.initialSidebarTab = "ai";
-            visibilities.sidebar = true;
+            if (!visibilities.sidebar) {
+                Visibilities.initialSidebarTab = "ai";
+            }
+            visibilities.sidebar = !visibilities.sidebar;
         }
     }
 
@@ -132,9 +136,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}emoji `;
             const visibilities = Visibilities.getForActive();
-            visibilities.launcher = true;
+            if (!visibilities.launcher) {
+                Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}emoji `;
+            }
+
+            visibilities.launcher = !visibilities.launcher;
         }
     }
 
@@ -146,9 +153,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}clipboard `;
             const visibilities = Visibilities.getForActive();
-            visibilities.launcher = true;
+            if (!visibilities.launcher) {
+                Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}clipboard `;
+            }
+
+            visibilities.launcher = !visibilities.launcher;
         }
     }
 
@@ -160,9 +170,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}cortana `;
             const visibilities = Visibilities.getForActive();
-            visibilities.launcher = true;
+            if (!visibilities.launcher) {
+                Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}cortana `;
+            }
+
+            visibilities.launcher = !visibilities.launcher;
         }
     }
 
@@ -174,9 +187,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}windows `;
             const visibilities = Visibilities.getForActive();
-            visibilities.launcher = true;
+            if (!visibilities.launcher) {
+                Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}windows `;
+            }
+
+            visibilities.launcher = !visibilities.launcher;
         }
     }
 
@@ -188,9 +204,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
             const visibilities = Visibilities.getForActive();
-            visibilities.launcher = true;
+            if (!visibilities.launcher) {
+                Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
+            }
+
+            visibilities.launcher = !visibilities.launcher;
         }
     }
 
@@ -202,9 +221,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}keybinds `;
             const visibilities = Visibilities.getForActive();
-            visibilities.launcher = true;
+            if (!visibilities.launcher) {
+                Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}keybinds `;
+            }
+
+            visibilities.launcher = !visibilities.launcher;
         }
     }
 
