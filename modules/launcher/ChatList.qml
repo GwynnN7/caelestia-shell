@@ -1121,12 +1121,13 @@ Item {
                 required property string text
                 required property bool loading
                 required property int index
+                required property string thinking
 
                 readonly property bool isUser: sender === "user"
-                readonly property bool isStatusText: text === "Cortana is thinking..." || text.startsWith("🔍") || text.startsWith("🌐") || text.startsWith("💻") || text.startsWith("📖") || text.startsWith("✍️") || text.startsWith("⚙️")
-                property string messageThinking: model.thinking || ""
-                property string messageModelUsed: (index >= 0 && index < chatModel.count && chatModel.get(index)) ? (chatModel.get(index).modelUsed || "") : ""
+                readonly property bool isStatusText: text === "Cortana Thinking..." || text.startsWith("🔍") || text.startsWith("🌐") || text.startsWith("💻") || text.startsWith("📖") || text.startsWith("✍️") || text.startsWith("⚙️")
 
+                readonly property string thoughtText: thinking
+                property string messageModelUsed: (index >= 0 && index < chatModel.count && chatModel.get(index)) ? (chatModel.get(index).modelUsed || "") : ""
                 Column {
                     id: column
                     width: parent.width
@@ -1153,7 +1154,7 @@ Item {
                                             maxW = bw;
                                     }
                                 }
-                                if (delegateItem.loading) {
+                                if (delegateItem.loading && typeof streamingView !== "undefined") {
                                     for (var j = 0; j < streamingView.children.length; j++) {
                                         var schild = streamingView.children[j];
                                         if (schild.visible) {
@@ -1209,8 +1210,54 @@ Item {
                                 topPadding: 0
                                 spacing: Tokens.spacing.small
 
+                                property string delegateThought: delegateItem.thoughtText
+                                property bool isExpanded: false
+
+                                Item {
+                                    visible: bubbleColumn.delegateThought !== ""
+                                    readonly property real blockWidth: thoughtRow.implicitWidth
+                                    implicitWidth: thoughtRow.implicitWidth
+                                    implicitHeight: thoughtRow.implicitHeight
+                                    height: visible ? implicitHeight : 0
+
+                                    Row {
+                                        id: thoughtRow
+                                        spacing: Tokens.spacing.small
+
+                                        StyledText {
+                                            text: "Thought Process"
+                                            color: Colours.palette.m3onSurfaceVariant
+                                            font: Tokens.font.body.small
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+
+                                        MaterialIcon {
+                                            id: thoughtArrow
+                                            text: "expand_more"
+                                            color: Colours.palette.m3onSurfaceVariant
+                                            fontStyle: Tokens.font.icon.small
+                                            rotation: bubbleColumn.isExpanded ? 180 : 0
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            Behavior on rotation {
+                                                NumberAnimation {
+                                                    duration: 150
+                                                    easing.type: Easing.OutQuad
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: bubbleColumn.isExpanded = !bubbleColumn.isExpanded
+                                    }
+                                }
+
                                 Item {
                                     id: thoughtContentWrapper
+
                                     readonly property real blockWidth: bubbleColumn.isExpanded ? thoughtContent.implicitWidth : 0
                                     width: thoughtContent.width
                                     height: bubbleColumn.isExpanded ? thoughtContent.implicitHeight : 0
@@ -1278,7 +1325,7 @@ Item {
                                     }
 
                                     StyledText {
-                                        text: (delegateItem.text.trim() === "" || delegateItem.text === "Cortana is thinking...") ? "Cortana is thinking..." : delegateItem.text
+                                        text: (delegateItem.text.trim() === "" || delegateItem.text === "Cortana Thinking...") ? "Cortana Thinking..." : delegateItem.text
                                         font: Tokens.font.body.medium
                                         color: Colours.palette.m3onSurfaceVariant
                                         anchors.verticalCenter: parent.verticalCenter
@@ -1319,17 +1366,8 @@ Item {
                                     color: Colours.palette.m3onSurfaceVariant
                                 }
 
-                                LoadingIndicator {
-                                    width: 16
-                                    height: 16
-                                    visible: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
-                                    animated: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
-                                    color: Colours.palette.m3onSurfaceVariant
-                                }
-
                                 Repeater {
-                                    model: delegateItem.loading ? [] : parseMessageBlocks(delegateItem.text)
-
+                                    model: delegateItem.loading ? [] : root.parseMessageBlocks(delegateItem.text)
                                     Item {
                                         id: blockHolder
                                         required property var modelData
@@ -1361,13 +1399,13 @@ Item {
                                     width: parent.width
                                     spacing: Tokens.spacing.small
 
-                                    property var streamSplit: delegateItem.loading ? parseStreamingBlocks(delegateItem.text) : {
+                                    property var streamSplit: delegateItem.loading ? root.parseStreamingBlocks(delegateItem.text) : {
                                         committed: "",
                                         tail: ""
                                     }
 
                                     Repeater {
-                                        model: streamingView.streamSplit.committed !== "" ? parseMessageBlocks(streamingView.streamSplit.committed) : []
+                                        model: streamingView.streamSplit.committed !== "" ? root.parseMessageBlocks(streamingView.streamSplit.committed) : []
 
                                         Item {
                                             id: committedHolder

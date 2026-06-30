@@ -576,19 +576,24 @@ Item {
 
                     delegate: Item {
                         id: delegateItem
+                        width: listView.width - Tokens.padding.large
+                        height: visible ? mainColumn.implicitHeight : 0
+
                         required property string text
                         required property string sender
                         required property bool loading
                         required property string thinking
+                        required property int index
 
                         readonly property bool isUser: sender === "user"
                         readonly property bool isFinished: !loading
                         readonly property string thoughtText: thinking
                         readonly property bool isStatusText: text === "Cortana is thinking..." || text.startsWith("🔍") || text.startsWith("🌐") || text.startsWith("💻") || text.startsWith("📖") || text.startsWith("✍️") || text.startsWith("⚙️")
 
-                        width: listView.width - Tokens.padding.large
+                        property string messageModelUsed: (index >= 0 && index < aiController.chatModel.count && aiController.chatModel.get(index)) ? (aiController.chatModel.get(index).modelUsed || "") : ""
+
                         visible: (!delegateItem.isFinished && aiController.isGenerating) ? false : (delegateItem.text !== "" || delegateItem.thoughtText !== "")
-                        height: visible ? bubbleRect.height : 0
+
                         scale: 0.0
                         opacity: 0.0
                         Component.onCompleted: {
@@ -640,242 +645,263 @@ Item {
                                 popDoneAnim.start();
                         }
 
-                        StyledRect {
-                            id: bubbleRect
-                            readonly property real maxBubbleWidth: delegateItem.width * 0.95
-                            anchors.right: delegateItem.isUser ? parent.right : undefined
-                            anchors.left: delegateItem.isUser ? undefined : parent.left
+                        Column {
+                            id: mainColumn
+                            width: parent.width
+                            spacing: Tokens.spacing.extraSmall
 
-                            width: {
-                                var maxW = 120;
-                                for (var i = 0; i < bubbleLayout.children.length; i++) {
-                                    var child = bubbleLayout.children[i];
-                                    if (child.visible && child.hasOwnProperty("blockWidth")) {
-                                        if (child.blockWidth > maxW)
-                                            maxW = child.blockWidth;
-                                    }
-                                }
-                                if (delegateItem.loading && streamingView) {
-                                    for (var j = 0; j < streamingView.children.length; j++) {
-                                        var schild = streamingView.children[j];
-                                        if (schild.visible) {
-                                            if (schild.hasOwnProperty("blockWidth") && schild.blockWidth > maxW)
-                                                maxW = schild.blockWidth;
-                                            else if (schild.hasOwnProperty("text") && schild.implicitWidth > maxW)
-                                                maxW = schild.implicitWidth;
+                            Row {
+                                width: parent.width
+                                layoutDirection: delegateItem.isUser ? Qt.RightToLeft : Qt.LeftToRight
+
+                                StyledRect {
+                                    id: bubbleRect
+                                    readonly property real maxBubbleWidth: delegateItem.width * 0.95
+
+                                    width: {
+                                        var maxW = 120;
+                                        for (var i = 0; i < bubbleLayout.children.length; i++) {
+                                            var child = bubbleLayout.children[i];
+                                            if (child.visible && child.hasOwnProperty("blockWidth")) {
+                                                if (child.blockWidth > maxW)
+                                                    maxW = child.blockWidth;
+                                            }
                                         }
-                                    }
-                                }
-                                var paddedWidth = maxW + Tokens.padding.medium * 2 + (delegateItem.loading ? 24 : 0);
-                                return Math.min(maxBubbleWidth, Math.max(120, paddedWidth));
-                            }
-
-                            height: bubbleLayout.implicitHeight + (delegateItem.loading ? Tokens.padding.small * 2 : Tokens.padding.medium * 2)
-                            radius: Tokens.rounding.large
-                            color: delegateItem.isUser ? Colours.palette.m3primary : Colours.tPalette.m3surfaceContainer
-                            topLeftRadius: Tokens.rounding.large
-                            topRightRadius: Tokens.rounding.large
-                            bottomLeftRadius: delegateItem.isUser ? Tokens.rounding.large : 4
-                            bottomRightRadius: delegateItem.isUser ? 4 : Tokens.rounding.large
-
-                            Behavior on width {
-                                enabled: opacity === 1
-                                NumberAnimation {
-                                    duration: 150
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
-                            Behavior on height {
-                                enabled: opacity === 1
-                                NumberAnimation {
-                                    duration: 150
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
-
-                            Column {
-                                id: bubbleLayout
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.topMargin: delegateItem.loading ? Tokens.padding.small : Tokens.padding.medium
-                                anchors.leftMargin: Tokens.padding.medium
-                                anchors.rightMargin: Tokens.padding.medium + (delegateItem.loading && !delegateItem.isUser ? 24 : 0)
-                                anchors.bottomMargin: delegateItem.loading ? Tokens.padding.small : Tokens.padding.medium
-                                spacing: Tokens.spacing.small
-
-                                property string delegateThought: delegateItem.thoughtText
-                                property bool isExpanded: false
-
-                                Item {
-                                    visible: bubbleLayout.delegateThought !== ""
-                                    implicitWidth: thoughtRow.implicitWidth
-                                    implicitHeight: thoughtRow.implicitHeight
-                                    height: visible ? implicitHeight : 0
-                                    Row {
-                                        id: thoughtRow
-                                        spacing: Tokens.spacing.small
-                                        Text {
-                                            text: "Thought Process"
-                                            color: Colours.palette.m3onSurfaceVariant
-                                            font: Tokens.font.body.small
-                                        }
-                                        MaterialIcon {
-                                            id: thoughtArrow
-                                            text: "expand_more"
-                                            color: Colours.palette.m3onSurfaceVariant
-                                            font: Tokens.font.icon.small
-                                            rotation: bubbleLayout.isExpanded ? 180 : 0
-                                            Behavior on rotation {
-                                                NumberAnimation {
-                                                    duration: 150
-                                                    easing.type: Easing.OutQuad
+                                        if (delegateItem.loading && typeof streamingView !== "undefined") {
+                                            for (var j = 0; j < streamingView.children.length; j++) {
+                                                var schild = streamingView.children[j];
+                                                if (schild.visible) {
+                                                    if (schild.hasOwnProperty("blockWidth") && schild.blockWidth > maxW)
+                                                        maxW = schild.blockWidth;
+                                                    else if (schild.hasOwnProperty("text") && schild.implicitWidth > maxW)
+                                                        maxW = schild.implicitWidth;
                                                 }
                                             }
                                         }
+                                        var paddedWidth = maxW + Tokens.padding.medium * 2 + (delegateItem.loading ? 24 : 0);
+                                        return Math.min(maxBubbleWidth, Math.max(120, paddedWidth));
                                     }
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: bubbleLayout.isExpanded = !bubbleLayout.isExpanded
-                                    }
-                                }
 
-                                Item {
-                                    id: thoughtContentWrapper
-                                    width: thoughtContent.width
-                                    height: bubbleLayout.isExpanded ? thoughtContent.implicitHeight : 0
-                                    clip: true
-                                    Behavior on height {
+                                    height: bubbleLayout.implicitHeight + (delegateItem.loading ? Tokens.padding.small * 2 : Tokens.padding.medium * 2)
+                                    radius: Tokens.rounding.large
+                                    color: delegateItem.isUser ? Colours.palette.m3primaryContainer : Colours.layer(Colours.palette.m3surfaceContainer, 1)
+                                    topLeftRadius: Tokens.rounding.large
+                                    topRightRadius: Tokens.rounding.large
+                                    bottomLeftRadius: delegateItem.isUser ? Tokens.rounding.large : 4
+                                    bottomRightRadius: delegateItem.isUser ? 4 : Tokens.rounding.large
+
+                                    Behavior on width {
+                                        enabled: opacity === 1
                                         NumberAnimation {
-                                            duration: 200
-                                            easing.type: Easing.InOutQuad
+                                            duration: 150
+                                            easing.type: Easing.OutCubic
                                         }
                                     }
-                                    TextEdit {
-                                        id: thoughtContent
-                                        width: Math.min(implicitWidth, bubbleRect.maxBubbleWidth - Tokens.padding.medium * 2)
-                                        textFormat: Text.MarkdownText
-                                        property string fullThought: bubbleLayout.delegateThought
-                                        property bool cursorVisible: true
-                                        Timer {
-                                            running: !delegateItem.isFinished
-                                            repeat: true
-                                            interval: 400
-                                            onTriggered: thoughtContent.cursorVisible = !thoughtContent.cursorVisible
+                                    Behavior on height {
+                                        enabled: opacity === 1
+                                        NumberAnimation {
+                                            duration: 150
+                                            easing.type: Easing.OutCubic
                                         }
-                                        text: delegateItem.isFinished ? fullThought : fullThought + (cursorVisible ? "▌" : "")
-                                        color: Colours.palette.m3onSurfaceVariant
-                                        font: Tokens.font.body.small
-                                        wrapMode: Text.Wrap
-                                        readOnly: true
-                                        selectByMouse: true
-                                        selectionColor: Colours.palette.m3primary
-                                        selectedTextColor: Colours.palette.m3onPrimary
-                                        opacity: bubbleLayout.isExpanded ? 1.0 : 0.0
-                                        Behavior on opacity {
-                                            SequentialAnimation {
-                                                PauseAnimation {
-                                                    duration: bubbleLayout.isExpanded ? 100 : 0
+                                    }
+
+                                    Column {
+                                        id: bubbleLayout
+                                        anchors.top: parent.top
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.topMargin: delegateItem.loading ? Tokens.padding.small : Tokens.padding.medium
+                                        anchors.leftMargin: Tokens.padding.medium
+                                        anchors.rightMargin: Tokens.padding.medium + (delegateItem.loading && !delegateItem.isUser ? 24 : 0)
+                                        anchors.bottomMargin: delegateItem.loading ? Tokens.padding.small : Tokens.padding.medium
+                                        spacing: Tokens.spacing.small
+
+                                        property string delegateThought: delegateItem.thoughtText
+                                        property bool isExpanded: false
+
+                                        Item {
+                                            visible: bubbleLayout.delegateThought !== ""
+                                            implicitWidth: thoughtRow.implicitWidth
+                                            implicitHeight: thoughtRow.implicitHeight
+                                            height: visible ? implicitHeight : 0
+
+                                            Row {
+                                                id: thoughtRow
+                                                spacing: Tokens.spacing.small
+                                                Text {
+                                                    text: "Thought Process"
+                                                    color: Colours.palette.m3onSurfaceVariant
+                                                    font: Tokens.font.body.small
                                                 }
+                                                MaterialIcon {
+                                                    id: thoughtArrow
+                                                    text: "expand_more"
+                                                    color: Colours.palette.m3onSurfaceVariant
+                                                    font: Tokens.font.icon.small
+                                                    rotation: bubbleLayout.isExpanded ? 180 : 0
+                                                    Behavior on rotation {
+                                                        NumberAnimation {
+                                                            duration: 150
+                                                            easing.type: Easing.OutQuad
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: bubbleLayout.isExpanded = !bubbleLayout.isExpanded
+                                            }
+                                        }
+
+                                        Item {
+                                            id: thoughtContentWrapper
+                                            readonly property real blockWidth: bubbleLayout.isExpanded ? thoughtContent.implicitWidth : 0
+                                            width: thoughtContent.width
+                                            height: bubbleLayout.isExpanded ? thoughtContent.implicitHeight : 0
+                                            clip: true
+                                            Behavior on height {
                                                 NumberAnimation {
-                                                    duration: 150
+                                                    duration: 200
                                                     easing.type: Easing.InOutQuad
                                                 }
                                             }
-                                        }
-                                    }
-                                }
 
-                                LoadingIndicator {
-                                    width: 16
-                                    height: 16
-                                    visible: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
-                                    animated: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
-                                    color: Colours.palette.m3onSurfaceVariant
-                                }
-
-                                Repeater {
-                                    model: delegateItem.loading ? [] : root.parseMessageBlocks(delegateItem.text)
-                                    Item {
-                                        id: blockHolder
-                                        required property var modelData
-                                        readonly property bool isUserMsg: delegateItem.isUser
-                                        readonly property real blockWidth: blockLoader.item ? blockLoader.item.implicitWidth : 0
-                                        width: bubbleLayout.width
-                                        height: blockLoader.item ? blockLoader.item.height : 0
-
-                                        Loader {
-                                            id: blockLoader
-                                            width: parent.width
-                                            sourceComponent: blockHolder.modelData.type === "code" ? codeBlockComponent : (blockHolder.modelData.type === "math" ? mathBlockComponent : textBlockComponent)
-                                            onLoaded: {
-                                                item.blockData = blockHolder.modelData;
-                                                if (item.hasOwnProperty("isUserMsg"))
-                                                    item.isUserMsg = blockHolder.isUserMsg;
-                                                if (item.hasOwnProperty("loading"))
-                                                    item.loading = Qt.binding(function () {
-                                                        return delegateItem.loading;
-                                                    });
+                                            TextEdit {
+                                                id: thoughtContent
+                                                width: Math.min(implicitWidth, bubbleRect.maxBubbleWidth - Tokens.padding.medium * 2)
+                                                textFormat: Text.MarkdownText
+                                                property string fullThought: bubbleLayout.delegateThought
+                                                property bool cursorVisible: true
+                                                Timer {
+                                                    running: !delegateItem.isFinished
+                                                    repeat: true
+                                                    interval: 400
+                                                    onTriggered: thoughtContent.cursorVisible = !thoughtContent.cursorVisible
+                                                }
+                                                text: delegateItem.isFinished ? fullThought : fullThought + (cursorVisible ? "▌" : "")
+                                                color: Colours.palette.m3onSurfaceVariant
+                                                font: Tokens.font.body.small
+                                                wrapMode: Text.Wrap
+                                                readOnly: true
+                                                selectByMouse: true
+                                                selectionColor: Colours.palette.m3primary
+                                                selectedTextColor: Colours.palette.m3onPrimary
+                                                opacity: bubbleLayout.isExpanded ? 1.0 : 0.0
+                                                Behavior on opacity {
+                                                    SequentialAnimation {
+                                                        PauseAnimation {
+                                                            duration: bubbleLayout.isExpanded ? 100 : 0
+                                                        }
+                                                        NumberAnimation {
+                                                            duration: 150
+                                                            easing.type: Easing.InOutQuad
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
-                                }
 
-                                Column {
-                                    id: streamingView
-                                    visible: delegateItem.loading && !delegateItem.isStatusText
-                                    width: parent.width
-                                    spacing: Tokens.spacing.small
-                                    property var streamSplit: delegateItem.loading ? root.parseStreamingBlocks(delegateItem.text) : {
-                                        committed: "",
-                                        tail: ""
-                                    }
+                                        LoadingIndicator {
+                                            width: 16
+                                            height: 16
+                                            visible: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
+                                            animated: delegateItem.loading === true && delegateItem.text.trim() !== "" && !delegateItem.isStatusText
+                                            color: Colours.palette.m3onSurfaceVariant
+                                        }
 
-                                    Repeater {
-                                        model: streamingView.streamSplit.committed !== "" ? root.parseMessageBlocks(streamingView.streamSplit.committed) : []
-                                        Item {
-                                            id: committedHolder
-                                            required property var modelData
-                                            readonly property bool isUserMsg: delegateItem.isUser
-                                            readonly property real blockWidth: committedLoader.item ? committedLoader.item.implicitWidth : 0
-                                            width: streamingView.width
-                                            height: committedLoader.item ? committedLoader.item.height : 0
+                                        Repeater {
+                                            model: delegateItem.loading ? [] : root.parseMessageBlocks(delegateItem.text)
+                                            Item {
+                                                id: blockHolder
+                                                required property var modelData
+                                                readonly property bool isUserMsg: delegateItem.isUser
+                                                readonly property real blockWidth: blockLoader.item ? blockLoader.item.implicitWidth : 0
+                                                width: bubbleLayout.width
+                                                height: blockLoader.item ? blockLoader.item.height : 0
 
-                                            Loader {
-                                                id: committedLoader
+                                                Loader {
+                                                    id: blockLoader
+                                                    width: parent.width
+                                                    sourceComponent: blockHolder.modelData.type === "code" ? codeBlockComponent : (blockHolder.modelData.type === "math" ? mathBlockComponent : textBlockComponent)
+                                                    onLoaded: {
+                                                        item.blockData = blockHolder.modelData;
+                                                        if (item.hasOwnProperty("isUserMsg"))
+                                                            item.isUserMsg = blockHolder.isUserMsg;
+                                                        if (item.hasOwnProperty("loading"))
+                                                            item.loading = Qt.binding(function () {
+                                                                return delegateItem.loading;
+                                                            });
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        Column {
+                                            id: streamingView
+                                            visible: delegateItem.loading && !delegateItem.isStatusText
+                                            width: parent.width
+                                            spacing: Tokens.spacing.small
+
+                                            property var streamSplit: delegateItem.loading ? root.parseStreamingBlocks(delegateItem.text) : {
+                                                committed: "",
+                                                tail: ""
+                                            }
+
+                                            Repeater {
+                                                model: streamingView.streamSplit.committed !== "" ? root.parseMessageBlocks(streamingView.streamSplit.committed) : []
+                                                Item {
+                                                    id: committedHolder
+                                                    required property var modelData
+                                                    readonly property bool isUserMsg: delegateItem.isUser
+                                                    readonly property real blockWidth: committedLoader.item ? committedLoader.item.implicitWidth : 0
+                                                    width: streamingView.width
+                                                    height: committedLoader.item ? committedLoader.item.height : 0
+
+                                                    Loader {
+                                                        id: committedLoader
+                                                        width: parent.width
+                                                        sourceComponent: committedHolder.modelData.type === "code" ? codeBlockComponent : (committedHolder.modelData.type === "math" ? mathBlockComponent : textBlockComponent)
+                                                        onLoaded: {
+                                                            item.blockData = committedHolder.modelData;
+                                                            if (item.hasOwnProperty("isUserMsg"))
+                                                                item.isUserMsg = committedHolder.isUserMsg;
+                                                            if (item.hasOwnProperty("loading"))
+                                                                item.loading = false;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            StyledText {
+                                                id: streamTail
+                                                visible: streamingView.streamSplit.tail !== ""
                                                 width: parent.width
-                                                sourceComponent: committedHolder.modelData.type === "code" ? codeBlockComponent : (committedHolder.modelData.type === "math" ? mathBlockComponent : textBlockComponent)
-                                                onLoaded: {
-                                                    item.blockData = committedHolder.modelData;
-                                                    if (item.hasOwnProperty("isUserMsg"))
-                                                        item.isUserMsg = committedHolder.isUserMsg;
-                                                    if (item.hasOwnProperty("loading"))
-                                                        item.loading = false;
+                                                wrapMode: Text.WordWrap
+                                                font: Tokens.font.body.medium
+                                                color: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
+                                                text: streamingView.streamSplit.tail + (cursorBlink.cursorVisible ? "▌" : " ")
+                                                property bool cursorVisible: true
+                                                Timer {
+                                                    id: cursorBlink
+                                                    property bool cursorVisible: true
+                                                    interval: 530
+                                                    repeat: true
+                                                    running: delegateItem.loading
+                                                    onTriggered: cursorVisible = !cursorVisible
                                                 }
                                             }
                                         }
                                     }
-
-                                    StyledText {
-                                        id: streamTail
-                                        visible: streamingView.streamSplit.tail !== ""
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                        font: Tokens.font.body.medium
-                                        color: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
-                                        text: streamingView.streamSplit.tail + (cursorBlink.cursorVisible ? "▌" : " ")
-                                        property bool cursorVisible: true
-                                        Timer {
-                                            id: cursorBlink
-                                            property bool cursorVisible: true
-                                            interval: 530
-                                            repeat: true
-                                            running: delegateItem.loading
-                                            onTriggered: cursorVisible = !cursorVisible
-                                        }
-                                    }
                                 }
+                            }
+                            StyledText {
+                                id: timeText
+                                text: delegateItem.isUser ? "You" : (delegateItem.messageModelUsed !== "" ? ("AI (" + delegateItem.messageModelUsed + ")") : "AI")
+                                color: Colours.palette.m3onSurfaceVariant
+                                font: Tokens.font.label.small
+                                horizontalAlignment: delegateItem.isUser ? Text.AlignRight : Text.AlignLeft
+                                width: parent.width
                             }
                         }
                     }
