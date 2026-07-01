@@ -600,11 +600,11 @@ Item {
         if (name === "web_search") {
             if (!GlobalConfig.ai.agentWebSearch)
                 return callback("Error: Disabled.");
-            runCommand(["python3", "/etc/xdg/quickshell/caelestia/utils/scripts/web_search.py", args.query || ""], callback);
+            runCommand(["python3", Quickshell.shellDir + "/utils/scripts/web_search.py", args.query || ""], callback);
         } else if (name === "read_webpage") {
             if (!GlobalConfig.ai.agentReadWebpage)
                 return callback("Error: Disabled.");
-            runCommand(["python3", "/etc/xdg/quickshell/caelestia/utils/scripts/fetch_url.py", args.url || ""], callback);
+            runCommand(["python3", Quickshell.shellDir + "/utils/scripts/fetch_url.py", args.url || ""], callback);
         } else if (name === "take_screenshot") {
             if (!GlobalConfig.ai.agentTakeScreenshot)
                 return callback("Error: Disabled.");
@@ -622,7 +622,7 @@ Item {
         } else if (name === "open_app") {
             if (!GlobalConfig.ai.agentOpenApp)
                 return callback("Error: Disabled.");
-            runCommand(["python3", "/etc/xdg/quickshell/caelestia/utils/scripts/safe_launcher.py", args.app_name || ""], callback);
+            runCommand(["python3", Quickshell.shellDir + "/utils/scripts/safe_launcher.py", args.app_name || ""], callback);
         } else if (name === "set_timer") {
             if (!GlobalConfig.ai.agentSetTimer)
                 return callback("Error: Disabled.");
@@ -677,10 +677,6 @@ Item {
             return;
         }
 
-        var tempThinking = thinkingText !== "" ? thinkingText + "\n" : "";
-        tempThinking += "- **Cortana is thinking (Step " + iteration + ")**: Querying LLM...";
-        chatModel.setProperty(aiIndex, "thinking", tempThinking);
-
         var xhr = new XMLHttpRequest();
         aiController.activeXhr = xhr;
         xhr.open("POST", ollamaHost + "/api/chat", true);
@@ -714,8 +710,12 @@ Item {
                                 if (data.message) {
                                     if (data.message.content)
                                         currentText += data.message.content;
-                                    if (data.message.reasoning_content)
+
+                                    if (data.message.thinking)
+                                        currentReasoning += data.message.thinking;
+                                    else if (data.message.reasoning_content)
                                         currentReasoning += data.message.reasoning_content;
+
                                     if (data.message.tool_calls) {
                                         for (var tc = 0; tc < data.message.tool_calls.length; tc++) {
                                             toolCallsQueue.push(data.message.tool_calls[tc]);
@@ -725,10 +725,9 @@ Item {
                             } catch (e) {}
                         }
 
-                        var displayThinking = currentReasoning !== "" ? currentReasoning : tempThinking;
-                        chatModel.setProperty(aiIndex, "thinking", displayThinking);
+                        chatModel.setProperty(aiIndex, "thinking", currentReasoning);
                         if (xhr.readyState === 3) {
-                            chatModel.setProperty(aiIndex, "text", currentText !== "" ? currentText : "Cortana is thinking...");
+                            chatModel.setProperty(aiIndex, "text", currentText);
                         }
                     }
                 }
@@ -839,6 +838,7 @@ Item {
             model: GlobalConfig.ai.activeModel,
             messages: messages,
             stream: true,
+            think: true,
             tools: getSystemTools(),
             options: {
                 num_ctx: GlobalConfig.ai.contextWindow
@@ -864,7 +864,7 @@ Item {
 
         chatModel.append({
             sender: "ai",
-            text: "Cortana is thinking...",
+            text: "",
             loading: true,
             thinking: "",
             modelUsed: GlobalConfig.ai.activeModel
@@ -879,7 +879,7 @@ Item {
 
         for (var i = 0; i < chatModel.count - 1; i++) {
             var msg = chatModel.get(i);
-            if (msg.sender === "ai" && (msg.text === "Cortana is thinking..." || msg.text.startsWith("⚙️")))
+            if (msg.sender === "ai" && (msg.text === "" || msg.text.startsWith("⚙️")))
                 continue;
             messages.push({
                 role: msg.sender === "user" ? "user" : "assistant",
@@ -923,7 +923,7 @@ Item {
             if (msg && msg.sender === "ai" && msg.loading) {
                 chatModel.setProperty(i, "loading", false);
                 var currentText = msg.text || "";
-                if (currentText === "Cortana is thinking..." || currentText.startsWith("⚙️")) {
+                if (currentText === "" || currentText.startsWith("⚙️")) {
                     chatModel.setProperty(i, "text", "Generation stopped.");
                 } else if (currentText.trim() !== "") {
                     chatModel.setProperty(i, "text", currentText + "\n\n*— stopped*");
@@ -937,5 +937,623 @@ Item {
         Qt.callLater(function () {
             generationStopped = false;
         });
+    }
+
+    property var renderingInlineMath: ({})
+    property var compiledInlineMath: ({})
+
+    function parseStreamingBlocks(raw) {
+        if (!raw || raw === "")
+            return {
+                committed: "",
+                tail: ""
+            };
+        var committed = "";
+        var tail = raw;
+        var i = 0;
+        while (i < tail.length) {
+            var fenceOpen = tail.indexOf("```", i);
+            var mathOpen = tail.indexOf("$$", i);
+            var firstOpen = -1;
+            var isMath = false;
+            var markerLength = 3;
+            if (fenceOpen !== -1 && mathOpen !== -1) {
+                if (fenceOpen < mathOpen) {
+                    firstOpen = fenceOpen;
+                    isMath = false;
+                    markerLength = 3;
+                } else {
+                    firstOpen = mathOpen;
+                    isMath = true;
+                    markerLength = 2;
+                }
+            } else if (fenceOpen !== -1) {
+                firstOpen = fenceOpen;
+                isMath = false;
+                markerLength = 3;
+            } else if (mathOpen !== -1) {
+                firstOpen = mathOpen;
+                isMath = true;
+                markerLength = 2;
+            }
+
+            if (firstOpen !== -1) {
+                var closeIndex = -1;
+                if (isMath) {
+                    closeIndex = tail.indexOf("$$", firstOpen + 2);
+                } else {
+                    closeIndex = tail.indexOf("```", firstOpen + 3);
+                }
+
+                if (closeIndex !== -1) {
+                    var blockEnd = closeIndex + (isMath ? 2 : 3);
+                    if (blockEnd < tail.length && tail[blockEnd] === "\n")
+                        blockEnd++;
+                    committed += tail.substring(0, blockEnd);
+                    tail = tail.substring(blockEnd);
+                    i = 0;
+                    continue;
+                } else {
+                    var beforeBlock = tail.substring(0, firstOpen);
+                    var lastPara = beforeBlock.lastIndexOf("\n\n");
+                    if (lastPara !== -1) {
+                        committed += beforeBlock.substring(0, lastPara + 2);
+                        tail = beforeBlock.substring(lastPara + 2) + tail.substring(firstOpen);
+                    }
+                    break;
+                }
+            }
+
+            var lastDouble = tail.lastIndexOf("\n\n");
+            if (lastDouble !== -1) {
+                committed += tail.substring(0, lastDouble + 2);
+                tail = tail.substring(lastDouble + 2);
+            }
+            break;
+        }
+
+        var headingRe = /^(#{1,6} .+)\n/m;
+        var hm;
+        while ((hm = headingRe.exec(tail)) !== null) {
+            if (hm.index === 0) {
+                committed += hm[0];
+                tail = tail.substring(hm[0].length);
+            } else {
+                break;
+            }
+        }
+        return {
+            committed: committed.trim(),
+            tail: tail
+        };
+    }
+
+    function parseMessageBlocks(raw) {
+        var blocks = [];
+        var pattern = /(```([\w]*)?\n?([\s\S]*?)```)|(\$\$([\s\S]*?)\$\$)/g;
+        var last = 0;
+        var match;
+        while ((match = pattern.exec(raw)) !== null) {
+            if (match.index > last) {
+                var txt = raw.substring(last, match.index).trim();
+                if (txt.length > 0)
+                    blocks.push({
+                        type: "text",
+                        content: txt,
+                        language: ""
+                    });
+            }
+            if (match[1]) {
+                blocks.push({
+                    type: "code",
+                    content: match[3] || "",
+                    language: match[2] || "code"
+                });
+            } else if (match[4]) {
+                blocks.push({
+                    type: "math",
+                    content: match[5] || "",
+                    language: ""
+                });
+            }
+            last = match.index + match[0].length;
+        }
+        if (last < raw.length) {
+            var rest = raw.substring(last).trim();
+            if (rest.length > 0)
+                blocks.push({
+                    type: "text",
+                    content: rest,
+                    language: ""
+                });
+        }
+        return blocks.length > 0 ? blocks : [
+            {
+                type: "text",
+                content: raw,
+                language: ""
+            }
+        ];
+    }
+
+    function highlightCode(code, lang) {
+        var l = (lang || "").toLowerCase();
+        function bright(c, f) {
+            return Qt.lighter(c, f || 2.0) + "";
+        }
+        var C = {
+            keyword: bright(Colours.palette.m3primary, 2.0),
+            builtin: bright(Colours.palette.m3primary, 1.7),
+            string: bright(Colours.palette.m3tertiary, 2.0),
+            number: bright(Colours.palette.m3error, 2.2),
+            comment: Colours.palette.m3onSurfaceVariant + "",
+            operator: bright(Colours.palette.m3secondary, 2.0),
+            func: bright(Colours.palette.m3primary, 1.85),
+            normal: Colours.palette.m3onSurface + ""
+        };
+        var keywords = {
+            python: ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"],
+            javascript: ["async", "await", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "let", "new", "of", "return", "static", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "true", "false", "null", "undefined"],
+            typescript: ["abstract", "any", "as", "async", "await", "boolean", "break", "case", "catch", "class", "const", "constructor", "continue", "declare", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "from", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "module", "namespace", "new", "null", "number", "of", "private", "protected", "public", "readonly", "return", "static", "string", "super", "switch", "this", "throw", "true", "try", "type", "typeof", "undefined", "var", "void", "while", "yield"],
+            rust: ["as", "async", "await", "break", "const", "continue", "crate", "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct", "super", "trait", "true", "type", "union", "unsafe", "use", "where", "while"],
+            go: ["break", "case", "chan", "const", "continue", "default", "defer", "else", "fallthrough", "for", "func", "go", "goto", "if", "import", "interface", "map", "package", "range", "return", "select", "struct", "switch", "type", "var", "true", "false", "nil"],
+            java: ["abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "null", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "true", "try", "void", "volatile", "while"],
+            kotlin: ["abstract", "actual", "annotation", "as", "break", "by", "catch", "class", "companion", "const", "constructor", "continue", "crossinline", "data", "do", "dynamic", "else", "enum", "expect", "external", "false", "field", "final", "finally", "for", "fun", "get", "if", "import", "in", "infix", "init", "inline", "inner", "interface", "internal", "is", "it", "lateinit", "noinline", "null", "object", "open", "operator", "out", "override", "package", "private", "protected", "public", "reified", "return", "sealed", "set", "super", "suspend", "tailrec", "this", "throw", "true", "try", "typealias", "typeof", "val", "var", "vararg", "when", "where", "while"],
+            swift: ["as", "break", "case", "catch", "class", "continue", "default", "defer", "deinit", "do", "else", "enum", "extension", "fallthrough", "false", "fileprivate", "final", "for", "func", "guard", "if", "import", "in", "init", "inout", "internal", "is", "lazy", "let", "mutating", "nil", "open", "operator", "override", "private", "protocol", "public", "repeat", "required", "rethrows", "return", "self", "Self", "static", "struct", "subscript", "super", "switch", "throw", "throws", "true", "try", "typealias", "var", "weak", "where", "while"],
+            bash: ["if", "then", "else", "elif", "fi", "for", "while", "do", "done", "case", "esac", "in", "function", "return", "export", "local", "readonly", "unset", "shift", "break", "continue", "exit", "echo", "source", "alias", "declare", "typeset", "true", "false"],
+            cpp: ["alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand", "bitor", "bool", "break", "case", "catch", "char", "char8_t", "char16_t", "char32_t", "class", "compl", "concept", "const", "consteval", "constexpr", "constinit", "const_cast", "continue", "co_await", "co_return", "co_yield", "decltype", "default", "delete", "do", "double", "dynamic_cast", "else", "enum", "explicit", "export", "extern", "false", "float", "for", "friend", "goto", "if", "inline", "int", "long", "mutable", "namespace", "new", "noexcept", "not", "not_eq", "nullptr", "operator", "or", "or_eq", "private", "protected", "public", "reinterpret_cast", "requires", "return", "short", "signed", "sizeof", "static", "static_assert", "static_cast", "struct", "switch", "template", "this", "thread_local", "throw", "true", "try", "typedef", "typeid", "typename", "union", "unsigned", "using", "virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq"],
+            sql: ["SELECT", "FROM", "WHERE", "INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "TABLE", "INDEX", "VIEW", "TRIGGER", "PROCEDURE", "FUNCTION", "DATABASE", "SCHEMA", "JOIN", "INNER", "LEFT", "RIGHT", "FULL", "OUTER", "ON", "AS", "GROUP", "BY", "ORDER", "HAVING", "LIMIT", "OFFSET", "UNION", "ALL", "DISTINCT", "AND", "OR", "NOT", "IN", "IS", "NULL", "LIKE", "BETWEEN", "CASE", "WHEN", "THEN", "ELSE", "END", "EXISTS", "PRIMARY", "KEY", "FOREIGN", "REFERENCES", "UNIQUE", "CHECK", "DEFAULT", "AUTO_INCREMENT", "SET", "VALUES", "INTO", "BEGIN", "COMMIT", "ROLLBACK", "TRANSACTION", "INT", "VARCHAR", "TEXT", "BOOLEAN", "FLOAT", "DOUBLE", "DATETIME", "DATE", "TIMESTAMP"]
+        };
+        var kw = keywords[l] || keywords[l === "js" ? "javascript" : l === "ts" ? "typescript" : l === "sh" || l === "shell" ? "bash" : l === "c" || l === "c++" ? "cpp" : l === "kt" ? "kotlin" : ""] || [];
+        var kwSet = {};
+        for (var ki = 0; ki < kw.length; ki++)
+            kwSet[kw[ki]] = true;
+        function esc(s) {
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        function span(color, text) {
+            return '<font color="' + color + '">' + esc(text) + '</font>';
+        }
+
+        var lines = code.split("\n");
+        var out = [];
+
+        var lineComment = "//";
+        var blockCommentStart = "/*";
+        var blockCommentEnd = "*/";
+        if (l === "python" || l === "py" || l === "bash" || l === "sh" || l === "shell" || l === "ruby" || l === "rb") {
+            lineComment = "#";
+            blockCommentStart = "";
+            blockCommentEnd = "";
+        } else if (l === "sql") {
+            lineComment = "--";
+        } else if (l === "html" || l === "xml") {
+            lineComment = "";
+            blockCommentStart = "";
+        }
+
+        var inBlockComment = false;
+        for (var li = 0; li < lines.length; li++) {
+            var line = lines[li];
+            var result = "";
+            var i = 0;
+
+            while (i < line.length) {
+                if (inBlockComment) {
+                    var endIdx = blockCommentEnd ? line.indexOf(blockCommentEnd, i) : -1;
+                    if (endIdx !== -1) {
+                        result += span(C.comment, line.substring(i, endIdx + blockCommentEnd.length));
+                        i = endIdx + blockCommentEnd.length;
+                        inBlockComment = false;
+                    } else {
+                        result += span(C.comment, line.substring(i));
+                        i = line.length;
+                    }
+                    continue;
+                }
+
+                if (blockCommentStart && line.startsWith(blockCommentStart, i)) {
+                    var bcEnd = blockCommentEnd ? line.indexOf(blockCommentEnd, i + blockCommentStart.length) : -1;
+                    if (bcEnd !== -1) {
+                        result += span(C.comment, line.substring(i, bcEnd + blockCommentEnd.length));
+                        i = bcEnd + blockCommentEnd.length;
+                    } else {
+                        result += span(C.comment, line.substring(i));
+                        i = line.length;
+                        inBlockComment = true;
+                    }
+                    continue;
+                }
+
+                if (lineComment && line.startsWith(lineComment, i)) {
+                    result += span(C.comment, line.substring(i));
+                    i = line.length;
+                    continue;
+                }
+
+                var ch = line[i];
+                if (ch === '"' || ch === "'") {
+                    var quote = ch;
+                    var j = i + 1;
+                    while (j < line.length) {
+                        if (line[j] === '\\') {
+                            j += 2;
+                            continue;
+                        }
+                        if (line[j] === quote) {
+                            j++;
+                            break;
+                        }
+                        j++;
+                    }
+                    result += span(C.string, line.substring(i, j));
+                    i = j;
+                    continue;
+                }
+
+                if (ch === '`' && (l === "javascript" || l === "js" || l === "typescript" || l === "ts")) {
+                    var j2 = i + 1;
+                    while (j2 < line.length) {
+                        if (line[j2] === '\\') {
+                            j2 += 2;
+                            continue;
+                        }
+                        if (line[j2] === '`') {
+                            j2++;
+                            break;
+                        }
+                        j2++;
+                    }
+                    result += span(C.string, line.substring(i, j2));
+                    i = j2;
+                    continue;
+                }
+
+                if (/[0-9]/.test(ch) || (ch === '.' && /[0-9]/.test(line[i + 1] || ''))) {
+                    var j3 = i;
+                    while (j3 < line.length && /[0-9a-fA-FxXoObB_\.]/.test(line[j3]))
+                        j3++;
+                    result += span(C.number, line.substring(i, j3));
+                    i = j3;
+                    continue;
+                }
+
+                if (/[a-zA-Z_$]/.test(ch)) {
+                    var j4 = i;
+                    while (j4 < line.length && /[\w$]/.test(line[j4]))
+                        j4++;
+                    var word = line.substring(i, j4);
+                    var rest2 = line.substring(j4).replace(/^\s+/, "");
+                    if (kwSet[word]) {
+                        result += span(C.keyword, word);
+                    } else if (rest2[0] === '(') {
+                        result += span(C.func, word);
+                    } else {
+                        result += span(C.normal, word);
+                    }
+                    i = j4;
+                    continue;
+                }
+
+                if (/[+\-*/%=<>!&|^~?:;,\.\[\]{}()]/.test(ch)) {
+                    result += span(C.operator, ch);
+                    i++;
+                    continue;
+                }
+
+                result += esc(ch);
+                i++;
+            }
+            out.push(result);
+        }
+        return out.join("<br/>");
+    }
+
+    function markdownToHtml(md, colorStr) {
+        if (!md)
+            return "";
+        function esc(s) {
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function inlineHtml(line) {
+            var codePlaceholders = [];
+            line = line.replace(/`([^`]+)`/g, function (m, code) {
+                var idx = codePlaceholders.length;
+                codePlaceholders.push("<code>" + esc(code) + "</code>");
+                return "\x00CODE" + idx + "\x00";
+            });
+            var mathPlaceholders = [];
+            line = line.replace(/\$([^\$\n]+)\$/g, function (m, formula) {
+                var idx = mathPlaceholders.length;
+                mathPlaceholders.push(m);
+                return "\x00MATH" + idx + "\x00";
+            });
+            line = line.replace(/\\\([\s\S]*?\\\)/g, function (m) {
+                var idx = mathPlaceholders.length;
+                mathPlaceholders.push(m);
+                return "\x00MATH" + idx + "\x00";
+            });
+            line = esc(line);
+
+            line = line.replace(/\*\*\*(.+?)\*\*\*/g, "<b><i>$1</i></b>");
+            line = line.replace(/___(.+?)___/g, "<b><i>$1</i></b>");
+            line = line.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+            line = line.replace(/__(.+?)__/g, "<b>$1</b>");
+            line = line.replace(/\*([^\*]+?)\*/g, "<i>$1</i>");
+            line = line.replace(/_([^_]+?)_/g, "<i>$1</i>");
+            line = line.replace(/~~(.+?)~~/g, "<s>$1</s>");
+            line = line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>');
+            line = line.replace(/\x00MATH(\d+)\x00/g, function (m, idx) {
+                return mathPlaceholders[parseInt(idx)];
+            });
+            line = line.replace(/\x00CODE(\d+)\x00/g, function (m, idx) {
+                return codePlaceholders[parseInt(idx)];
+            });
+            return line;
+        }
+
+        var lines = md.split("\n");
+        var html = "";
+        var inList = false;
+        var inOList = false;
+        var inTable = false;
+        var tableHeaderActive = false;
+
+        function closeList() {
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+            if (inOList) {
+                html += "</ol>";
+                inOList = false;
+            }
+        }
+
+        function closeTable() {
+            if (inTable) {
+                html += "</table>";
+                inTable = false;
+                tableHeaderActive = false;
+            }
+        }
+
+        for (var i = 0; i < lines.length; i++) {
+            var raw = lines[i];
+            var line = raw.replace(/^\s+/, "");
+
+            var isTableRow = (line.startsWith("|") && line.endsWith("|")) || (line.includes("|") && inTable);
+            if (isTableRow) {
+                closeList();
+                var isSeparator = /^\|?([\s\-\:\*\|]+)\|?$/.test(line) && line.indexOf("-") !== -1;
+                if (isSeparator) {
+                    continue;
+                }
+
+                if (!inTable) {
+                    html += "<table border='1' style='border-collapse: collapse; margin: 8px 0;'>";
+                    inTable = true;
+                    tableHeaderActive = true;
+                }
+
+                var cells = line.split("|");
+                if (cells[0] === "")
+                    cells.shift();
+                if (cells[cells.length - 1] === "")
+                    cells.pop();
+                html += "<tr>";
+                for (var c = 0; c < cells.length; c++) {
+                    var cellText = inlineHtml(cells[c].trim());
+                    if (tableHeaderActive) {
+                        html += "<th>" + cellText + "</th>";
+                    } else {
+                        html += "<td>" + cellText + "</td>";
+                    }
+                }
+                html += "</tr>";
+                tableHeaderActive = false;
+                continue;
+            } else {
+                closeTable();
+            }
+
+            var hm = line.match(/^(#{1,6})\s+(.*)$/);
+            if (hm) {
+                closeList();
+                var level = hm[1].length;
+                html += "<h" + level + ">" + inlineHtml(hm[2]) + "</h" + level + ">";
+                continue;
+            }
+
+            if (/^[-*_]{3,}\s*$/.test(line)) {
+                closeList();
+                html += "<hr/>";
+                continue;
+            }
+
+            if (line.startsWith("> ")) {
+                closeList();
+                html += "<blockquote>" + inlineHtml(line.substring(2)) + "</blockquote>";
+                continue;
+            }
+
+            var ulm = line.match(/^[-*+]\s+(.*)$/);
+            if (ulm) {
+                if (!inList) {
+                    closeList();
+                    html += "<ul>";
+                    inList = true;
+                }
+                html += "<li>" + inlineHtml(ulm[1]) + "</li>";
+                continue;
+            }
+
+            var olm = line.match(/^\d+\.\s+(.*)$/);
+            if (olm) {
+                if (!inOList) {
+                    closeList();
+                    html += "<ol>";
+                    inOList = true;
+                }
+                html += "<li>" + inlineHtml(olm[1]) + "</li>";
+                continue;
+            }
+
+            if (line === "") {
+                closeList();
+                html += "<br/>";
+                continue;
+            }
+
+            closeList();
+            html += "<p style='margin:0'>" + inlineHtml(line) + "</p>";
+        }
+        closeList();
+        closeTable();
+        return html;
+    }
+
+    function processInlineMathHtml(html, colorStr, isUserMsg, callback) {
+        if (!html)
+            return "";
+        var fg = colorStr;
+        if (fg.startsWith("#") && fg.length === 9) {
+            fg = "#" + fg.substring(3, 9) + fg.substring(1, 3);
+        }
+
+        var size = "18";
+        var processed = html;
+        processed = processed.replace(/\\\(([^\)]*?)\\\)/g, function (match, formula) {
+            formula = formula.trim();
+            if (formula.length === 0)
+                return match;
+            var cacheKey = formula + "|" + fg + "|" + size;
+            if (root.compiledInlineMath[cacheKey]) {
+                return '<img src="file://' + root.compiledInlineMath[cacheKey] + '" height="22" align="middle" style="vertical-align:middle;margin:0 1px" />';
+            } else {
+                if (!root.renderingInlineMath[cacheKey]) {
+                    root.renderingInlineMath[cacheKey] = true;
+                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
+                        var path = stdout.trim();
+                        if (root) {
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
+                        }
+                        if (callback)
+                            callback();
+                    });
+                }
+                return match;
+            }
+        });
+
+        processed = processed.replace(/\$([^\$\n]+)\$/g, function (match, formula) {
+            formula = formula.trim();
+            if (formula.length === 0)
+                return match;
+            if (/^[0-9.,\s+\-*\/=()]+$/.test(formula) && !/[\^\\_{]/.test(formula)) {
+                return match;
+            }
+
+            var cacheKey = formula + "|" + fg + "|" + size;
+            if (root.compiledInlineMath[cacheKey]) {
+                return '<img src="file://' + root.compiledInlineMath[cacheKey] + '" height="22" align="middle" style="vertical-align:middle;margin:0 1px" />';
+            } else {
+                if (!root.renderingInlineMath[cacheKey]) {
+                    root.renderingInlineMath[cacheKey] = true;
+                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
+                        var path = stdout.trim();
+                        if (root) {
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
+                        }
+                        if (callback)
+                            callback();
+                    });
+                }
+                return match;
+            }
+        });
+
+        return processed;
+    }
+
+    function processInlineMath(content, colorStr, isUserMsg, callback) {
+        if (!content)
+            return "";
+        var fg = colorStr;
+        if (fg.startsWith("#") && fg.length === 9) {
+            fg = "#" + fg.substring(3, 9) + fg.substring(1, 3);
+        }
+
+        var size = "18";
+        var processed = content;
+        processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, function (match, formula) {
+            formula = formula.trim();
+            if (formula.length === 0)
+                return match;
+
+            var cacheKey = formula + "|" + fg + "|" + size;
+            if (root.compiledInlineMath[cacheKey]) {
+                return '<img src="file://' + root.compiledInlineMath[cacheKey] + '" height="22" align="middle" style="vertical-align:middle;margin:0 1px" />';
+            } else {
+                if (!root.renderingInlineMath[cacheKey]) {
+                    root.renderingInlineMath[cacheKey] = true;
+                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
+                        var path = stdout.trim();
+                        if (root) {
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
+                        }
+                        if (callback)
+                            callback();
+                    });
+                }
+                return match;
+            }
+        });
+
+        processed = processed.replace(/\$([^\$\n]+)\$/g, function (match, formula) {
+            formula = formula.trim();
+            if (formula.length === 0)
+                return match;
+            if (/^[0-9.,\s+\-*\/=()]+$/.test(formula) && !/[\^\\_]/.test(formula)) {
+                return match;
+            }
+
+            var cacheKey = formula + "|" + fg + "|" + size;
+            if (root.compiledInlineMath[cacheKey]) {
+                return '<img src="file://' + root.compiledInlineMath[cacheKey] + '" height="22" align="middle" style="vertical-align:middle;margin:0 1px" />';
+            } else {
+                if (!root.renderingInlineMath[cacheKey]) {
+                    root.renderingInlineMath[cacheKey] = true;
+                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
+                        var path = stdout.trim();
+                        if (root) {
+                            if (root.renderingInlineMath)
+                                delete root.renderingInlineMath[cacheKey];
+                            if (root.compiledInlineMath)
+                                root.compiledInlineMath[cacheKey] = path;
+                        }
+                        if (callback)
+                            callback();
+                    });
+                }
+                return match;
+            }
+        });
+
+        return processed;
     }
 }
