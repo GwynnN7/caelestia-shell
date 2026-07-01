@@ -14,7 +14,7 @@ import qs.utils
 Item {
     id: root
 
-    required property StyledTextField search
+    required property SearchBar search
     required property DrawerVisibilities visibilities
     required property real screenWidth
     required property real maxHeight
