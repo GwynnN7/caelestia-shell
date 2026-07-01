@@ -74,7 +74,7 @@ pkgit -i https://github.com/dim-ghub/caelestia-shell
 ```
 
 > [!TIP]
-> You can also use `pkgit -q -i https://github.com/dim-ghub/caelestia-shell` for a quiet installation.
+> You can also use `pkgit -qi https://github.com/dim-ghub/caelestia-shell` for a quiet installation.
 
 If you prefer to clone and install it manually:
 
