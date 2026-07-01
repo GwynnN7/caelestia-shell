@@ -825,7 +825,16 @@ Item {
                         isGenerating = false;
                     }
                 } else {
-                    chatModel.setProperty(aiIndex, "text", "Error: Could not connect to Ollama.");
+                    var errorMsg = "Error: Could not connect to Ollama.";
+                    if (xhr.status !== 0) {
+                        try {
+                            var errJson = JSON.parse(xhr.responseText);
+                            errorMsg = "Ollama API Error: " + (errJson.error || xhr.statusText);
+                        } catch (e) {
+                            errorMsg = "Ollama API Error " + xhr.status + ": " + xhr.responseText;
+                        }
+                    }
+                    chatModel.setProperty(aiIndex, "text", errorMsg);
                     chatModel.setProperty(aiIndex, "loading", false);
                     saveHistory();
                     reloadHistoryList();
@@ -834,16 +843,39 @@ Item {
             }
         };
 
+        var nonReasoningModels = ["llama3.1", "llama3.2", "deepseek-coder"];
+        var nonSupportingToolModels = ["deepseek-coder"];
+
+        var supportsThinking = true;
+        for (var i = 0; i < nonReasoningModels.length; i++) {
+            if (GlobalConfig.ai.activeModel.indexOf(nonReasoningModels[i]) !== -1) {
+                supportsThinking = false;
+                break;
+            }
+        }
+
+        var supportsTools = true;
+        for (var j = 0; j < nonSupportingToolModels.length; j++) {
+            if (GlobalConfig.ai.activeModel.indexOf(nonSupportingToolModels[j]) !== -1) {
+                supportsTools = false;
+                break;
+            }
+        }
+
         var requestData = {
             model: GlobalConfig.ai.activeModel,
             messages: messages,
             stream: true,
-            think: true,
-            tools: getSystemTools(),
+            think: supportsThinking,
             options: {
                 num_ctx: GlobalConfig.ai.contextWindow
             }
         };
+
+        if (supportsTools) {
+            requestData.tools = getSystemTools();
+        }
+
         xhr.send(JSON.stringify(requestData));
     }
 
