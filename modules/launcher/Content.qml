@@ -55,259 +55,190 @@ Item {
         anchors.margins: root.padding
         anchors.bottomMargin: CUtils.clamp(root.padding - Config.border.thickness, 0, root.padding)
 
-        implicitHeight: Math.max(searchIcon.implicitHeight, search.implicitHeight, clearIcon.implicitHeight)
+        topPadding: Math.round((Tokens.padding.medium + Tokens.padding.large) / 2)
+        bottomPadding: Math.round((Tokens.padding.medium + Tokens.padding.large) / 2)
 
-        MaterialIcon {
-            id: searchIcon
+        placeholderText: qsTr("Type \"%1\" for commands").arg(GlobalConfig.launcher.actionPrefix)
 
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: root.padding
+        property string prevText: ""
+        property var chatHistory: []
+        property int chatHistoryIndex: -1
+        property string tempInput: ""
 
-            text: "search"
-            color: Colours.palette.m3onSurfaceVariant
+        function updateChatHistoryFromModel() {
+            var newHistory = [];
+            var chatItem = (list && list.chatList && list.chatList.item);
+            if (chatItem && chatItem.chatModel) {
+                var model = chatItem.chatModel;
+                for (var i = 0; i < model.count; i++) {
+                    var msg = model.get(i);
+                    if (msg && msg.sender === "user" && msg.text) {
+                        var fullText = GlobalConfig.launcher.actionPrefix + "cortana " + msg.text.trim();
+                        if (newHistory.length === 0 || newHistory[newHistory.length - 1] !== fullText) {
+                            newHistory.push(fullText);
+                        }
+                    }
+                }
+            }
+            chatHistory = newHistory;
         }
 
-        StyledTextField {
-            id: search
+        onTextChanged: {
+            const commands = ["cortana", "wallpaper", "windows", "keybinds", "animations", "emoji", "clipboard", "calc"];
+            const prefix = GlobalConfig.launcher.actionPrefix;
 
-            property string prevText: ""
-            property var chatHistory: []
-            property int chatHistoryIndex: -1
-            property string tempInput: ""
+            for (let cmd of commands) {
+                const cmdText = prefix + cmd;
+                const cmdTextSpace = cmdText + " ";
 
-            function updateChatHistoryFromModel() {
-                var newHistory = [];
-                var chatItem = (list && list.chatList && list.chatList.item);
-                if (chatItem && chatItem.chatModel) {
-                    var model = chatItem.chatModel;
-                    for (var i = 0; i < model.count; i++) {
-                        var msg = model.get(i);
-                        if (msg && msg.sender === "user" && msg.text) {
-                            var fullText = GlobalConfig.launcher.actionPrefix + "cortana " + msg.text.trim();
-                            if (newHistory.length === 0 || newHistory[newHistory.length - 1] !== fullText) {
-                                newHistory.push(fullText);
-                            }
-                        }
+                if (text === cmdText) {
+                    if (prevText === cmdTextSpace) {
+                        text = "";
+                    } else if (prevText.length < text.length) {
+                        text = cmdTextSpace;
                     }
+                    break;
                 }
-                chatHistory = newHistory;
             }
+            prevText = text;
+        }
 
-            onTextChanged: {
-                const commands = ["cortana", "wallpaper", "windows", "keybinds", "animations", "emoji", "clipboard", "calc"];
-                const prefix = GlobalConfig.launcher.actionPrefix;
-
-                for (let cmd of commands) {
-                    const cmdText = prefix + cmd;
-                    const cmdTextSpace = cmdText + " ";
-
-                    if (text === cmdText) {
-                        if (prevText === cmdTextSpace) {
-                            text = "";
-                        } else if (prevText.length < text.length) {
-                            text = cmdTextSpace;
-                        }
-                        break;
-                    }
-                }
-                prevText = text;
-            }
-
-            anchors.left: searchIcon.right
-            anchors.right: clearIcon.left
-            anchors.leftMargin: Tokens.spacing.small
-            anchors.rightMargin: Tokens.spacing.small
-
-            bottomPadding: Math.round((Tokens.padding.medium + Tokens.padding.large) / 2)
-            topPadding: Math.round((Tokens.padding.medium + Tokens.padding.large) / 2)
-
-            placeholderText: qsTr("Type \"%1\" for commands").arg(GlobalConfig.launcher.actionPrefix)
-
-            onAccepted: {
-                if (list.showChat) {
-                    const chatItem = (list && list.chatList && list.chatList.item);
-                    if (chatItem && chatItem.isGenerating) {
-                        return;
-                    }
-                    const prefix = GlobalConfig.launcher.actionPrefix + "cortana ";
-                    const message = text.substring(prefix.length).trim();
-                    if (message.length > 0 && chatItem) {
-                        chatHistoryIndex = -1;
-                        tempInput = "";
-                        chatItem.sendMessage(message);
-                        text = prefix;
-                    }
+        onAccepted: {
+            if (list.showChat) {
+                const chatItem = (list && list.chatList && list.chatList.item);
+                if (chatItem && chatItem.isGenerating) {
                     return;
                 }
-                const currentItem = list.currentList?.currentItem;
-                if (currentItem) {
-                    if (list.showWallpapers) {
-                        if (Colours.scheme === "dynamic" && currentItem.modelData.path !== Wallpapers.actualCurrent)
-                            Wallpapers.previewColourLock = true;
-                        Wallpapers.setWallpaper(currentItem.modelData.path);
-                        root.visibilities.launcher = false;
-                    } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
-                        if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
-                            currentItem.onClicked();
-                        else if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}emoji `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}clipboard `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `))
-                            currentItem.clicked();
-                        else
-                            currentItem.modelData.onClicked(list.currentList);
-                    } else {
-                        Apps.launch(currentItem.modelData);
-                        root.visibilities.launcher = false;
-                    }
+                const prefix = GlobalConfig.launcher.actionPrefix + "cortana ";
+                const message = text.substring(prefix.length).trim();
+                if (message.length > 0 && chatItem) {
+                    chatHistoryIndex = -1;
+                    tempInput = "";
+                    chatItem.sendMessage(message);
+                    text = prefix;
                 }
+                return;
             }
 
-            Keys.onUpPressed: {
-                if (list.showChat) {
-                    if (chatHistoryIndex === -1) {
-                        updateChatHistoryFromModel();
-                        tempInput = text;
-                        chatHistoryIndex = chatHistory.length - 1;
-                    } else if (chatHistoryIndex > 0) {
-                        chatHistoryIndex--;
-                    }
-                    if (chatHistoryIndex >= 0 && chatHistoryIndex < chatHistory.length) {
+            const currentItem = list.currentList?.currentItem;
+            if (currentItem) {
+                if (list.showWallpapers) {
+                    if (Colours.scheme === "dynamic" && currentItem.modelData.path !== Wallpapers.actualCurrent)
+                        Wallpapers.previewColourLock = true;
+                    Wallpapers.setWallpaper(currentItem.modelData.path);
+                    root.visibilities.launcher = false;
+                } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
+                    if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
+                        currentItem.onClicked();
+                    else if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}emoji `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}clipboard `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `))
+                        currentItem.clicked();
+                    else
+                        currentItem.modelData.onClicked(list.currentList);
+                } else {
+                    Apps.launch(currentItem.modelData);
+                    root.visibilities.launcher = false;
+                }
+            }
+        }
+
+        Keys.onUpPressed: {
+            if (list.showChat) {
+                if (chatHistoryIndex === -1) {
+                    updateChatHistoryFromModel();
+                    tempInput = text;
+                    chatHistoryIndex = chatHistory.length - 1;
+                } else if (chatHistoryIndex > 0) {
+                    chatHistoryIndex--;
+                }
+                if (chatHistoryIndex >= 0 && chatHistoryIndex < chatHistory.length) {
+                    text = chatHistory[chatHistoryIndex];
+                    cursorPosition = text.length;
+                }
+            } else {
+                list.currentList?.decrementCurrentIndex();
+            }
+        }
+
+        Keys.onDownPressed: {
+            if (list.showChat) {
+                if (chatHistoryIndex !== -1) {
+                    if (chatHistoryIndex === chatHistory.length - 1) {
+                        chatHistoryIndex = -1;
+                        text = tempInput;
+                        cursorPosition = text.length;
+                    } else if (chatHistoryIndex < chatHistory.length - 1) {
+                        chatHistoryIndex++;
                         text = chatHistory[chatHistoryIndex];
                         cursorPosition = text.length;
                     }
-                } else {
-                    list.currentList?.decrementCurrentIndex();
                 }
-            }
-
-            Keys.onDownPressed: {
-                if (list.showChat) {
-                    if (chatHistoryIndex !== -1) {
-                        if (chatHistoryIndex === chatHistory.length - 1) {
-                            chatHistoryIndex = -1;
-                            text = tempInput;
-                            cursorPosition = text.length;
-                        } else if (chatHistoryIndex < chatHistory.length - 1) {
-                            chatHistoryIndex++;
-                            text = chatHistory[chatHistoryIndex];
-                            cursorPosition = text.length;
-                        }
-                    }
-                } else {
-                    list.currentList?.incrementCurrentIndex();
-                }
-            }
-
-            Keys.onEscapePressed: root.visibilities.launcher = false
-
-            Keys.onPressed: event => {
-                if (!GlobalConfig.launcher.vimKeybinds)
-                    return;
-
-                if (event.modifiers & Qt.ControlModifier) {
-                    if (event.key === Qt.Key_J || event.key === Qt.Key_N) {
-                        list.currentList?.incrementCurrentIndex();
-                        event.accepted = true;
-                    } else if (event.key === Qt.Key_K || event.key === Qt.Key_P) {
-                        list.currentList?.decrementCurrentIndex();
-                        event.accepted = true;
-                    }
-                } else if (event.key === Qt.Key_Tab) {
-                    list.currentList?.incrementCurrentIndex();
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                    list.currentList?.decrementCurrentIndex();
-                    event.accepted = true;
-                }
-            }
-
-            Component.onCompleted: {
-                if (Visibilities.launcherInitialSearch) {
-                    text = Visibilities.launcherInitialSearch;
-                    Visibilities.launcherInitialSearch = "";
-                }
-                forceActiveFocus();
-            }
-
-            Connections {
-                function onLauncherChanged(): void {
-                    if (root.visibilities.launcher) {
-                        search.forceActiveFocus();
-                        if (Visibilities.launcherInitialSearch) {
-                            search.text = Visibilities.launcherInitialSearch;
-                            Visibilities.launcherInitialSearch = "";
-                        }
-                    } else {
-                        search.text = "";
-                        search.chatHistoryIndex = -1;
-                        search.tempInput = "";
-                    }
-                }
-
-                function onSessionChanged(): void {
-                    if (!root.visibilities.session)
-                        search.forceActiveFocus();
-                }
-
-                target: root.visibilities
+            } else {
+                list.currentList?.incrementCurrentIndex();
             }
         }
 
-        MaterialIcon {
-            id: clearIcon
+        Keys.onEscapePressed: root.visibilities.launcher = false
 
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: list.showChat ? (root.padding + sendBtn.width + Tokens.spacing.medium) : root.padding
+        Keys.onPressed: event => {
+            if (!GlobalConfig.launcher.vimKeybinds)
+                return;
 
-            width: search.text ? implicitWidth : implicitWidth / 2
-            opacity: {
-                if (!search.text)
-                    return 0;
-                if (mouse.pressed)
-                    return 0.7;
-                if (mouse.containsMouse)
-                    return 0.8;
-                return 1;
-            }
-
-            text: "close"
-            color: Colours.palette.m3onSurfaceVariant
-
-            MouseArea {
-                id: mouse
-
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: search.text ? Qt.PointingHandCursor : undefined
-
-                onClicked: search.text = ""
-            }
-
-            Behavior on width {
-                Anim {
-                    type: Anim.StandardSmall
+            if (event.modifiers & Qt.ControlModifier) {
+                if (event.key === Qt.Key_J || event.key === Qt.Key_N) {
+                    list.currentList?.incrementCurrentIndex();
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_K || event.key === Qt.Key_P) {
+                    list.currentList?.decrementCurrentIndex();
+                    event.accepted = true;
                 }
-            }
-
-            Behavior on opacity {
-                Anim {
-                    type: Anim.StandardSmall
-                }
-            }
-
-            Behavior on anchors.rightMargin {
-                Anim {
-                    type: Anim.StandardSmall
-                }
+            } else if (event.key === Qt.Key_Tab) {
+                list.currentList?.incrementCurrentIndex();
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+                list.currentList?.decrementCurrentIndex();
+                event.accepted = true;
             }
         }
+
+        Component.onCompleted: {
+            if (Visibilities.launcherInitialSearch) {
+                text = Visibilities.launcherInitialSearch;
+                Visibilities.launcherInitialSearch = "";
+            }
+            forceActiveFocus();
+        }
+
+        Connections {
+            function onLauncherChanged(): void {
+                if (root.visibilities.launcher) {
+                    search.forceActiveFocus();
+                    if (Visibilities.launcherInitialSearch) {
+                        search.text = Visibilities.launcherInitialSearch;
+                        Visibilities.launcherInitialSearch = "";
+                    }
+                } else {
+                    search.text = "";
+                    search.chatHistoryIndex = -1;
+                    search.tempInput = "";
+                }
+            }
+
+            function onSessionChanged(): void {
+                if (!root.visibilities.session)
+                    search.forceActiveFocus();
+            }
+
+            target: root.visibilities
+        }
+
+        clearIcon.anchors.rightMargin: list.showChat ? (Tokens.padding.medium + sendBtn.width + Tokens.spacing.medium) : Tokens.padding.medium
 
         IconButton {
             id: sendBtn
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: list.showChat ? root.padding : 0
+            anchors.rightMargin: list.showChat ? Tokens.padding.medium : 0
 
             width: list.showChat ? 36 : 0
             height: list.showChat ? 36 : 0
@@ -356,19 +287,16 @@ Item {
                     type: Anim.StandardSmall
                 }
             }
-
             Behavior on width {
                 Anim {
                     type: Anim.StandardSmall
                 }
             }
-
             Behavior on height {
                 Anim {
                     type: Anim.StandardSmall
                 }
             }
-
             Behavior on opacity {
                 Anim {
                     type: Anim.StandardSmall
