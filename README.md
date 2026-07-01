@@ -85,13 +85,6 @@ cd caelestia
 pkgit -i .
 ```
 
-Alternatively, this fork can be installed and managed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr)'s
-`gh` plugin:
-
-```sh
-pkg install gh/dim-ghub/caelestia-shell-git
-```
-
 ### Nix
 
 You can run the shell directly via `nix run`:
@@ -293,12 +286,6 @@ the command.
 ## Updating
 
 If installed via the AUR package, simply update your system (e.g. using `yay`).
-
-If installed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr), run:
-
-```sh
-pkg update
-```
 
 If installed manually, pull the latest changes and re-run the installation:
 
