@@ -1115,7 +1115,10 @@ For example, to disable the bar on DP-1:
         "hideNotifs": false,
         "maxFprintTries": 3,
         "profilePicShape": 12,
-        "recolourLogo": true
+        "recolourLogo": true,
+        "enableHowdy": true,
+        "maxHowdyTries": 3,
+        "triggerHowdyOnWake": true
     },
     "nexus": {
         "networkRescanInterval": 15000,
