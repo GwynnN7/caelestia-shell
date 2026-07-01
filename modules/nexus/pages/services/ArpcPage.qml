@@ -122,23 +122,14 @@ PageBase {
                     }
                 }
 
-                StyledRect {
+                StyledTextField {
+                    id: tokenInput
                     Layout.preferredWidth: 200
-                    Layout.preferredHeight: 32
-                    radius: Tokens.rounding.small
-                    color: Colours.layer(Colours.palette.m3surfaceVariant, 2)
-                    
-                    StyledTextField {
-                        id: tokenInput
-                        anchors.fill: parent
-                        anchors.leftMargin: Tokens.padding.medium
-                        anchors.rightMargin: Tokens.padding.medium
-                        verticalAlignment: TextInput.AlignVCenter
-                        placeholderText: "API Key..."
-                        echoMode: TextInput.Password
-                        passwordCharacter: "•"
-                        onAccepted: root.saveToken(text)
-                    }
+                    Layout.alignment: Qt.AlignVCenter
+                    placeholderText: "API Key..."
+                    echoMode: TextInput.Password
+                    passwordCharacter: "•"
+                    onAccepted: root.saveToken(text)
                 }
 
                 IconButton {
@@ -381,59 +372,39 @@ PageBase {
                 anchors.margins: Tokens.padding.medium
                 spacing: Tokens.spacing.medium
 
-                ColumnLayout {
-                    spacing: Tokens.spacing.extraSmall
+                StyledTextField {
+                    id: manualAppName
                     Layout.fillWidth: true
-                    StyledText { text: "App/game name"; color: Colours.palette.m3onSurface }
-                    StyledTextField {
-                        id: manualAppName
-                        Layout.fillWidth: true
-                        text: GlobalConfig.services.arpcAppName
-                    }
+                    placeholderText: "App/game name"
+                    text: GlobalConfig.services.arpcAppName
                 }
 
-                ColumnLayout {
-                    spacing: Tokens.spacing.extraSmall
+                StyledTextField {
+                    id: manualDetails
                     Layout.fillWidth: true
-                    StyledText { text: "Details"; color: Colours.palette.m3onSurface }
-                    StyledTextField {
-                        id: manualDetails
-                        Layout.fillWidth: true
-                        text: GlobalConfig.services.arpcDetails
-                    }
+                    placeholderText: "Details"
+                    text: GlobalConfig.services.arpcDetails
                 }
 
-                ColumnLayout {
-                    spacing: Tokens.spacing.extraSmall
+                StyledTextField {
+                    id: manualState
                     Layout.fillWidth: true
-                    StyledText { text: "State"; color: Colours.palette.m3onSurface }
-                    StyledTextField {
-                        id: manualState
-                        Layout.fillWidth: true
-                        text: GlobalConfig.services.arpcState
-                    }
+                    placeholderText: "State"
+                    text: GlobalConfig.services.arpcState
                 }
 
-                ColumnLayout {
-                    spacing: Tokens.spacing.extraSmall
+                StyledTextField {
+                    id: manualLargeImage
                     Layout.fillWidth: true
-                    StyledText { text: "Large image key/URL"; color: Colours.palette.m3onSurface }
-                    StyledTextField {
-                        id: manualLargeImage
-                        Layout.fillWidth: true
-                        text: GlobalConfig.services.arpcLargeImage
-                    }
+                    placeholderText: "Large image key/URL"
+                    text: GlobalConfig.services.arpcLargeImage
                 }
 
-                ColumnLayout {
-                    spacing: Tokens.spacing.extraSmall
+                StyledTextField {
+                    id: manualSmallImage
                     Layout.fillWidth: true
-                    StyledText { text: "Small image key/URL"; color: Colours.palette.m3onSurface }
-                    StyledTextField {
-                        id: manualSmallImage
-                        Layout.fillWidth: true
-                        text: GlobalConfig.services.arpcSmallImage
-                    }
+                    placeholderText: "Small image key/URL"
+                    text: GlobalConfig.services.arpcSmallImage
                 }
 
                 Item {
