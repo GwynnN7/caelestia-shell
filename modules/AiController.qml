@@ -28,7 +28,7 @@ Item {
     property var activeXhr: null
     property bool isGenerating: false
     property bool generationStopped: false
-    property string ollamaHost: "http://127.0.0.1:11435"
+    property string ollamaHost: "http://127.0.0.1:11434"
 
     property int connectionRetries: 0
     property var availableModels: [GlobalConfig.ai.activeModel]
@@ -292,7 +292,7 @@ Item {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 0) {
-                    Quickshell.execDetached(["env", "OLLAMA_HOST=127.0.0.1:11435", "ollama", "serve"]);
+                    Quickshell.execDetached(["env", "OLLAMA_HOST=127.0.0.1:11434", "ollama", "serve"]);
                     connectionRetries = 0;
                     retryTimer.start();
                 } else {
@@ -908,14 +908,6 @@ Item {
             }
             activeProcesses = [];
         }
-
-        var unloadXhr = new XMLHttpRequest();
-        unloadXhr.open("POST", ollamaHost + "/api/generate", true);
-        unloadXhr.setRequestHeader("Content-Type", "application/json");
-        unloadXhr.send(JSON.stringify({
-            model: GlobalConfig.ai.activeModel,
-            keep_alive: 0
-        }));
 
         isGenerating = false;
         for (var i = chatModel.count - 1; i >= 0; i--) {
