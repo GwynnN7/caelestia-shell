@@ -396,17 +396,14 @@ Item {
         anchors.right: parent.right
         anchors.leftMargin: Tokens.spacing.small
         anchors.rightMargin: Tokens.spacing.small
-        height: 50
+        height: 40
 
         StyledRect {
             id: segmentControl
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            width: {
-                var w = modelSplitButton.width > 0 ? modelSplitButton.width : 188;
-                return w % 2 === 0 ? w : w + 1;
-            }
-            height: modelSplitButton.height > 0 ? modelSplitButton.height : 38
+            width: 200
+            height: parent.height
             radius: Tokens.rounding.full
             color: Colours.layer(Colours.palette.m3surfaceContainer, 1)
             border.width: 0
@@ -414,8 +411,8 @@ Item {
 
             StyledRect {
                 id: activeIndicator
-                x: root.currentView === "chat" ? 3 : (parent.width / 2 + 3)
-                y: 3
+                x: root.currentView === "chat" ? 4 : (parent.width / 2 + 4)
+                y: 2
                 width: parent.width / 2 - 6
                 height: parent.height - 6
                 radius: Tokens.rounding.full
@@ -493,7 +490,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             icon: GlobalConfig.launcher.aiFullScreen ? "close_fullscreen" : "open_in_full"
             width: 38
-            height: 38
+            height: parent.height
             isRound: true
             activeColour: Colours.palette.m3primary
             inactiveColour: Colours.layer(Colours.palette.m3surfaceContainer, 1)
@@ -507,6 +504,7 @@ Item {
             id: modelsRowWrapper
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
+            height: parent.height
             spacing: Tokens.spacing.medium
             visible: opacity > 0
             opacity: root.currentView === "chat" ? 1 : 0
@@ -516,32 +514,47 @@ Item {
                 }
             }
 
-            StyledText {
-                text: "Model"
-                anchors.verticalCenter: parent.verticalCenter
-                font: Tokens.font.label.medium
-                color: Colours.palette.m3onSurfaceVariant
-            }
-
             SplitButton {
-                id: modelSplitButton
-                anchors.verticalCenter: parent.verticalCenter
+                id: modelFamilySelector
+
                 type: SplitButton.Tonal
-                minLeftWidth: 150
-                active: menuItems.find(m => m.modelData === GlobalConfig.ai.activeModel) ?? menuItems[0] ?? null
+                active: menuItems.find(m => m.modelData === aiController.selectedModelFamily) ?? menuItems[0] ?? null
                 menu.onItemSelected: item => {
-                    aiController.changeModel(item.modelData);
+                    aiController.setModelFamily(item.modelData);
                 }
-                menuItems: modelVariants.instances
+                menuItems: modelFamilyVariants.instances
                 fallbackIcon: "smart_toy"
-                fallbackText: qsTr("Select Model")
+                fallbackText: qsTr("Family")
 
                 Variants {
-                    id: modelVariants
-                    model: aiController.availableModels
+                    id: modelFamilyVariants
+                    model: aiController.modelFamilies
                     delegate: MenuItem {
                         required property string modelData
                         text: modelData
+                    }
+                }
+            }
+
+            SplitButton {
+                id: modelVariantSelector
+
+                type: SplitButton.Tonal
+                active: menuItems.find(m => m.modelData.fullModel === aiController.selectedModelVariant) ?? menuItems[0] ?? null
+                enabled: aiController.selectedModelVariants.length > 0
+                menu.onItemSelected: item => {
+                    aiController.setModelVariant(item.modelData.fullModel);
+                }
+                menuItems: modelSizeVariants.instances
+                fallbackIcon: "tune"
+                fallbackText: qsTr("Variant")
+
+                Variants {
+                    id: modelSizeVariants
+                    model: aiController.selectedModelVariants
+                    delegate: MenuItem {
+                        required property var modelData
+                        text: modelData.label
                     }
                 }
             }
@@ -1022,9 +1035,8 @@ Item {
                             }
 
                             IconButton {
-                                id: copyBtn
-                                property bool copied: false
-                                icon: copied ? "check" : "content_copy"
+                                id: deleteBtn
+                                icon: "delete"
                                 type: IconButton.Filled
                                 width: 28
                                 height: 28
@@ -1033,10 +1045,10 @@ Item {
                                 anchors.right: parent.right
                                 anchors.margins: Tokens.spacing.extraSmall
                                 visible: opacity > 0
-                                opacity: (hoverArea.containsMouse || copyBtn.hovered) && !delegateItem.loading ? 1 : 0
-                                activeColour: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3primary
+                                opacity: (hoverArea.containsMouse || deleteBtn.hovered) && !delegateItem.loading ? 1 : 0
+                                activeColour: Colours.palette.m3error
                                 inactiveColour: delegateItem.isUser ? Qt.rgba(Colours.palette.m3onPrimaryContainer.r, Colours.palette.m3onPrimaryContainer.g, Colours.palette.m3onPrimaryContainer.b, 0.15) : Qt.rgba(Colours.palette.m3onSurface.r, Colours.palette.m3onSurface.g, Colours.palette.m3onSurface.b, 0.08)
-                                activeOnColour: delegateItem.isUser ? Colours.palette.m3primaryContainer : Colours.palette.m3onPrimary
+                                activeOnColour: Colours.palette.m3onError
                                 inactiveOnColour: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
                                 Behavior on opacity {
                                     Anim {
@@ -1045,16 +1057,8 @@ Item {
                                 }
 
                                 onClicked: {
-                                    Quickshell.clipboardText = delegateItem.text;
-                                    Toaster.toast("Copied", "Message copied to clipboard", "content_copy");
-                                    copied = true;
-                                    revertTimer.start();
-                                }
-
-                                Timer {
-                                    id: revertTimer
-                                    interval: 1500
-                                    onTriggered: copyBtn.copied = false
+                                    aiController.deleteMessage(delegateItem.index);
+                                    Toaster.toast("Deleted", "Message removed", "delete");
                                 }
                             }
                         }

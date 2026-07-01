@@ -337,6 +337,7 @@ Item {
 
                 Row {
                     anchors.fill: parent
+                    spacing: 0
                     Item {
                         width: parent.width / 2
                         height: parent.height
@@ -368,37 +369,58 @@ Item {
                 }
             }
 
-            SplitButton {
-                id: modelSelector
+            Item {
                 Layout.fillWidth: true
-                type: SplitButton.Tonal
-                verticalPadding: 4
-                active: menuItems.find(m => m.modelData === GlobalConfig.ai.activeModel) ?? menuItems[0] ?? null
-                menu.onItemSelected: item => {
-                    aiController.changeModel(item.modelData);
-                }
-                menuItems: modelVariants.instances
-                fallbackIcon: "smart_toy"
-                fallbackText: qsTr("Select Model")
-                stateLayer.disabled: true
-                Variants {
-                    id: modelVariants
-                    model: aiController.availableModels
-                    delegate: MenuItem {
-                        required property string modelData
-                        text: modelData
-                    }
-                }
             }
 
-            IconButton {
-                Layout.preferredWidth: 36
-                Layout.preferredHeight: 36
-                icon: "add"
-                activeColour: Colours.palette.m3primary
-                onClicked: {
-                    aiController.createNewChat();
-                    root.currentTab = "chat";
+            Row {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                height: parent.height
+                spacing: Tokens.spacing.medium
+                SplitButton {
+                    id: modelFamilySelector
+
+                    type: SplitButton.Tonal
+                    active: menuItems.find(m => m.modelData === aiController.selectedModelFamily) ?? menuItems[0] ?? null
+                    menu.onItemSelected: item => {
+                        aiController.setModelFamily(item.modelData);
+                    }
+                    menuItems: modelFamilyVariants.instances
+                    fallbackIcon: "smart_toy"
+                    fallbackText: qsTr("Family")
+
+                    Variants {
+                        id: modelFamilyVariants
+                        model: aiController.modelFamilies
+                        delegate: MenuItem {
+                            required property string modelData
+                            text: modelData
+                        }
+                    }
+                }
+
+                SplitButton {
+                    id: modelVariantSelector
+
+                    type: SplitButton.Tonal
+                    active: menuItems.find(m => m.modelData.fullModel === aiController.selectedModelVariant) ?? menuItems[0] ?? null
+                    enabled: aiController.selectedModelVariants.length > 0
+                    menu.onItemSelected: item => {
+                        aiController.setModelVariant(item.modelData.fullModel);
+                    }
+                    menuItems: modelSizeVariants.instances
+                    fallbackIcon: "tune"
+                    fallbackText: qsTr("Variant")
+
+                    Variants {
+                        id: modelSizeVariants
+                        model: aiController.selectedModelVariants
+                        delegate: MenuItem {
+                            required property var modelData
+                            text: modelData.label
+                        }
+                    }
                 }
             }
         }
@@ -735,9 +757,8 @@ Item {
                                     }
 
                                     IconButton {
-                                        id: copyBtn
-                                        property bool copied: false
-                                        icon: copied ? "check" : "content_copy"
+                                        id: deleteBtn
+                                        icon: "delete"
                                         type: IconButton.Filled
                                         width: 28
                                         height: 28
@@ -746,10 +767,10 @@ Item {
                                         anchors.right: parent.right
                                         anchors.margins: Tokens.spacing.extraSmall
                                         visible: opacity > 0
-                                        opacity: (hoverArea.containsMouse || copyBtn.hovered) && !delegateItem.loading ? 1 : 0
-                                        activeColour: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3primary
+                                        opacity: (hoverArea.containsMouse || deleteBtn.hovered) && !delegateItem.loading ? 1 : 0
+                                        activeColour: Colours.palette.m3error
                                         inactiveColour: delegateItem.isUser ? Qt.rgba(Colours.palette.m3onPrimaryContainer.r, Colours.palette.m3onPrimaryContainer.g, Colours.palette.m3onPrimaryContainer.b, 0.15) : Qt.rgba(Colours.palette.m3onSurface.r, Colours.palette.m3onSurface.g, Colours.palette.m3onSurface.b, 0.08)
-                                        activeOnColour: delegateItem.isUser ? Colours.palette.m3primaryContainer : Colours.palette.m3onPrimary
+                                        activeOnColour: Colours.palette.m3onError
                                         inactiveOnColour: delegateItem.isUser ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
                                         Behavior on opacity {
                                             Anim {
@@ -758,15 +779,8 @@ Item {
                                         }
 
                                         onClicked: {
-                                            Quickshell.clipboardText = delegateItem.text;
-                                            Toaster.toast("Copied", "Message copied to clipboard", "content_copy");
-                                            copied = true;
-                                            revertTimer.start();
-                                        }
-                                        Timer {
-                                            id: revertTimer
-                                            interval: 1500
-                                            onTriggered: copyBtn.copied = false
+                                            aiController.deleteMessage(delegateItem.index);
+                                            Toaster.toast("Deleted", "Message removed", "delete");
                                         }
                                     }
                                 }
@@ -954,15 +968,39 @@ Item {
                     }
                 }
 
-                IconTextButton {
+                Item {
+                    id: historyActions
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Clear History"
-                    icon: "delete"
-                    type: ButtonBase.Tonal
-                    onClicked: {
-                        aiController.conversationsList = [];
-                        aiController.createNewChat();
+                    anchors.margins: Tokens.padding.small
+                    height: 38
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: Tokens.spacing.small
+
+                        IconTextButton {
+                            Layout.fillWidth: true
+                            text: "Clear History"
+                            icon: "delete"
+                            type: ButtonBase.Tonal
+                            onClicked: {
+                                aiController.conversationsList = [];
+                                aiController.createNewChat();
+                            }
+                        }
+
+                        IconTextButton {
+                            Layout.fillWidth: true
+                            text: "New Chat"
+                            icon: "add"
+                            type: ButtonBase.Tonal
+                            onClicked: {
+                                aiController.createNewChat();
+                                root.currentTab = "chat";
+                            }
+                        }
                     }
                 }
             }

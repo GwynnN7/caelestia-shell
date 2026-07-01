@@ -32,13 +32,28 @@ Item {
 
     property int connectionRetries: 0
     property var availableModels: [GlobalConfig.ai.activeModel]
+    property var modelFamilies: []
+    property var selectedModelVariants: []
+    property string selectedModelFamily: ""
+    property string selectedModelVariant: ""
+    property var modelGroups: ({})
 
     signal chatLoaded
 
     Component.onCompleted: {
+        refreshModelCatalog();
         loadFromDB();
         reloadConversations();
         ensureOllamaRunning();
+    }
+
+    onAvailableModelsChanged: refreshModelCatalog()
+
+    Connections {
+        target: GlobalConfig.ai
+        function onActiveModelChanged() {
+            refreshModelCatalog();
+        }
     }
 
     Timer {
@@ -315,6 +330,9 @@ Item {
                             var modelsList = [];
                             for (var i = 0; i < res.models.length; i++)
                                 modelsList.push(res.models[i].name);
+                            modelsList.sort(function (a, b) {
+                                return compareStrings(a, b);
+                            });
                             availableModels = modelsList;
                         }
                     } catch (e) {}
@@ -554,25 +572,218 @@ Item {
     }
 
     function changeModel(newModel) {
-        if (availableModels.includes(newModel)) {
-            var currentModel = GlobalConfig.ai.activeModel;
+        if (!newModel || typeof newModel !== "string")
+            return;
+        if (availableModels.indexOf(newModel) === -1 && GlobalConfig.ai.activeModel !== newModel)
+            return;
 
-            if (currentModel && currentModel !== newModel) {
-                var unloadXhr = new XMLHttpRequest();
-                unloadXhr.open("POST", ollamaHost + "/api/generate", true);
-                unloadXhr.setRequestHeader("Content-Type", "application/json");
+        var currentModel = GlobalConfig.ai.activeModel;
 
-                unloadXhr.send(JSON.stringify({
-                    model: currentModel,
-                    keep_alive: 0
-                }));
+        if (currentModel && currentModel !== newModel) {
+            var unloadXhr = new XMLHttpRequest();
+            unloadXhr.open("POST", ollamaHost + "/api/generate", true);
+            unloadXhr.setRequestHeader("Content-Type", "application/json");
 
-                console.log("Unloaded model from VRAM: " + currentModel);
+            unloadXhr.send(JSON.stringify({
+                model: currentModel,
+                keep_alive: 0
+            }));
+
+            console.log("Unloaded model from VRAM: " + currentModel);
+        }
+
+        GlobalConfig.ai.activeModel = newModel;
+        console.log("Switched active model to: " + newModel);
+        refreshModelCatalog();
+    }
+
+    function compareStrings(a, b) {
+        var aa = (a || "").toLowerCase();
+        var bb = (b || "").toLowerCase();
+        if (aa < bb)
+            return -1;
+        if (aa > bb)
+            return 1;
+        return 0;
+    }
+
+    function parseVariantSize(label) {
+        var text = (label || "").toLowerCase();
+        var m = text.match(/(^|[^0-9])([0-9]+(?:\.[0-9]+)?)\s*([kmbt])(?![a-z])/);
+        if (!m) {
+            return {
+                hasSize: false,
+                sizeInB: 0
+            };
+        }
+
+        var base = parseFloat(m[2]);
+        var unit = m[3];
+        var multiplier = 1;
+        if (unit === "k")
+            multiplier = 0.000001;
+        else if (unit === "m")
+            multiplier = 0.001;
+        else if (unit === "b")
+            multiplier = 1;
+        else if (unit === "t")
+            multiplier = 1000;
+
+        return {
+            hasSize: true,
+            sizeInB: base * multiplier
+        };
+    }
+
+    function compareVariantLabels(a, b) {
+        var aMeta = parseVariantSize(a || "");
+        var bMeta = parseVariantSize(b || "");
+
+        if (aMeta.hasSize && bMeta.hasSize && aMeta.sizeInB !== bMeta.sizeInB)
+            return aMeta.sizeInB < bMeta.sizeInB ? -1 : 1;
+        if (aMeta.hasSize !== bMeta.hasSize)
+            return aMeta.hasSize ? -1 : 1;
+
+        return compareStrings(a, b);
+    }
+
+    function parseModelName(modelName) {
+        var raw = (modelName || "").trim();
+        var splitIndex = raw.indexOf(":");
+        if (splitIndex === -1) {
+            return {
+                family: raw,
+                variant: "default"
+            };
+        }
+        return {
+            family: raw.substring(0, splitIndex),
+            variant: raw.substring(splitIndex + 1)
+        };
+    }
+
+    function refreshModelCatalog() {
+        var models = [];
+        var seenModels = {};
+        for (var i = 0; i < availableModels.length; i++) {
+            var name = (availableModels[i] || "").trim();
+            if (name !== "" && !seenModels[name]) {
+                seenModels[name] = true;
+                models.push(name);
+            }
+        }
+
+        var activeName = (GlobalConfig.ai.activeModel || "").trim();
+        if (activeName !== "" && !seenModels[activeName]) {
+            seenModels[activeName] = true;
+            models.push(activeName);
+        }
+
+        models.sort(function (a, b) {
+            return compareStrings(a, b);
+        });
+
+        var grouped = {};
+        for (var j = 0; j < models.length; j++) {
+            var parsed = parseModelName(models[j]);
+            var fam = parsed.family || "Unknown";
+            if (!grouped[fam])
+                grouped[fam] = [];
+
+            var alreadyPresent = false;
+            for (var k = 0; k < grouped[fam].length; k++) {
+                if (grouped[fam][k].fullModel === models[j]) {
+                    alreadyPresent = true;
+                    break;
+                }
             }
 
-            GlobalConfig.ai.activeModel = newModel;
-            console.log("Switched active model to: " + newModel);
+            if (!alreadyPresent) {
+                grouped[fam].push({
+                    label: parsed.variant || "default",
+                    fullModel: models[j]
+                });
+            }
         }
+
+        var families = Object.keys(grouped);
+        families.sort(function (a, b) {
+            return compareStrings(a, b);
+        });
+
+        for (var f = 0; f < families.length; f++) {
+            grouped[families[f]].sort(function (a, b) {
+                return compareVariantLabels(a.label, b.label);
+            });
+        }
+
+        modelGroups = grouped;
+        modelFamilies = families;
+
+        if (families.length === 0) {
+            selectedModelFamily = "";
+            selectedModelVariant = "";
+            selectedModelVariants = [];
+            return;
+        }
+
+        var activeParsed = parseModelName(activeName);
+        var resolvedFamily = families.indexOf(activeParsed.family) !== -1 ? activeParsed.family : families[0];
+        selectedModelFamily = resolvedFamily;
+        selectedModelVariants = grouped[resolvedFamily] || [];
+
+        var resolvedVariant = "";
+        for (var m = 0; m < selectedModelVariants.length; m++) {
+            if (selectedModelVariants[m].fullModel === activeName) {
+                resolvedVariant = activeName;
+                break;
+            }
+        }
+        if (resolvedVariant === "" && selectedModelVariants.length > 0)
+            resolvedVariant = selectedModelVariants[0].fullModel;
+        selectedModelVariant = resolvedVariant;
+    }
+
+    function setModelFamily(family) {
+        if (!family || !modelGroups[family])
+            return;
+
+        selectedModelFamily = family;
+        selectedModelVariants = modelGroups[family] || [];
+        if (selectedModelVariants.length === 0) {
+            selectedModelVariant = "";
+            return;
+        }
+
+        var targetModel = selectedModelVariants[0].fullModel;
+        selectedModelVariant = targetModel;
+        changeModel(targetModel);
+    }
+
+    function setModelVariant(fullModel) {
+        if (!fullModel)
+            return;
+
+        var parsed = parseModelName(fullModel);
+        if (modelGroups[parsed.family]) {
+            selectedModelFamily = parsed.family;
+            selectedModelVariants = modelGroups[parsed.family] || [];
+        }
+        selectedModelVariant = fullModel;
+        changeModel(fullModel);
+    }
+
+    function deleteMessage(index) {
+        if (index < 0 || index >= chatModel.count)
+            return;
+
+        var msg = chatModel.get(index);
+        if (msg && msg.loading)
+            stopGeneration();
+
+        chatModel.remove(index, 1);
+        saveHistory();
+        reloadHistoryList();
     }
 
     function runCommand(cmdArgs, callback) {
