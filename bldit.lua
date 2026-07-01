@@ -52,7 +52,7 @@ targets = {
         pre_build = function() return install_arch_deps(false) end,
         build = function() 
             os.execute("rm -rf build")
-            os.execute("cmake -B build -DCMAKE_INSTALL_PREFIX=/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
+            os.execute("cmake -B build -DCMAKE_INSTALL_PREFIX=/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DVERSION=" .. package_version)
             os.execute("cmake --build build -j$(nproc)")
             return 0
         end,
@@ -78,7 +78,7 @@ targets = {
         pre_build = function() return install_arch_deps(true) end,
         build = function() 
             os.execute("rm -rf build >/dev/null 2>&1")
-            os.execute("cmake -B build -DCMAKE_INSTALL_PREFIX=/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >/dev/null 2>&1")
+            os.execute("cmake -B build -DCMAKE_INSTALL_PREFIX=/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DVERSION=" .. package_version .. " >/dev/null 2>&1")
             os.execute("cmake --build build -j$(nproc) >/dev/null 2>&1")
             return 0
         end,
