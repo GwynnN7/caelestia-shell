@@ -30,6 +30,7 @@ local paths_to_remove = {
 local function install_arch_deps(quiet)
     local q_flag = quiet and " >/dev/null 2>&1" or ""
     if os.execute("command -v pacman >/dev/null 2>&1") == 0 then
+        os.execute("sudo pacman -Rdd --noconfirm caelestia-shell caelestia-shell-git >/dev/null 2>&1")
         local deps = "ddcutil brightnessctl networkmanager lm_sensors fish aubio pipewire qt6-declarative qt6-base swappy libqalculate cmake ninja"
         local aur_deps = "quickshell-git app2unit libcava"
         
