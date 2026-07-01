@@ -115,9 +115,7 @@ ColumnLayout {
 
                     onClicked: {
                         if (model.entry) {
-                            const subCmd = model.entry.runInTerminal
-                                ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...model.entry.command]
-                                : model.entry.command;
+                            const subCmd = model.entry.runInTerminal ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/scripts/wrap_term_launch.sh`, ...model.entry.command] : model.entry.command;
                             const finalCmd = ["app2unit", "--", ...subCmd];
                             Quickshell.execDetached({
                                 command: finalCmd,

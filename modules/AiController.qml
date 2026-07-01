@@ -600,11 +600,11 @@ Item {
         if (name === "web_search") {
             if (!GlobalConfig.ai.agentWebSearch)
                 return callback("Error: Disabled.");
-            runCommand(["python3", Quickshell.shellDir + "/utils/scripts/web_search.py", args.query || ""], callback);
+            runCommand(["python3", `${Quickshell.shellDir}/scripts/web_search.py`, args.query || ""], callback);
         } else if (name === "read_webpage") {
             if (!GlobalConfig.ai.agentReadWebpage)
                 return callback("Error: Disabled.");
-            runCommand(["python3", Quickshell.shellDir + "/utils/scripts/fetch_url.py", args.url || ""], callback);
+            runCommand(["python3", `${Quickshell.shellDir}/scripts/fetch_url.py`, args.url || ""], callback);
         } else if (name === "take_screenshot") {
             if (!GlobalConfig.ai.agentTakeScreenshot)
                 return callback("Error: Disabled.");
@@ -622,7 +622,7 @@ Item {
         } else if (name === "open_app") {
             if (!GlobalConfig.ai.agentOpenApp)
                 return callback("Error: Disabled.");
-            runCommand(["python3", Quickshell.shellDir + "/utils/scripts/safe_launcher.py", args.app_name || ""], callback);
+            runCommand(["python3", `${Quickshell.shellDir}/scripts/safe_launcher.py`, args.app_name || ""], callback);
         } else if (name === "set_timer") {
             if (!GlobalConfig.ai.agentSetTimer)
                 return callback("Error: Disabled.");
@@ -1434,7 +1434,7 @@ Item {
             } else {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
-                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    var scriptPath = `${Quickshell.shellDir}/scripts/render_math.py`;
                     aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
@@ -1465,7 +1465,7 @@ Item {
             } else {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
-                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    var scriptPath = `${Quickshell.shellDir}/scripts/render_math.py`;
                     aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
@@ -1506,7 +1506,7 @@ Item {
             } else {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
-                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    var scriptPath = `${Quickshell.shellDir}/scripts/render_math.py`;
                     aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {
@@ -1537,7 +1537,7 @@ Item {
             } else {
                 if (!root.renderingInlineMath[cacheKey]) {
                     root.renderingInlineMath[cacheKey] = true;
-                    var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                    var scriptPath = `${Quickshell.shellDir}/scripts/render_math.py`;
                     aiController.runCommand([scriptPath, formula, colorStr, size], function (stdout) {
                         var path = stdout.trim();
                         if (root) {

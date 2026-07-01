@@ -245,7 +245,7 @@ Item {
                 imagePath = "";
                 rendering = true;
                 lastCacheKey = cacheKey;
-                var scriptPath = Quickshell.shellDir + "/utils/scripts/render_math.py";
+                var scriptPath = `${Quickshell.shellDir}/scripts/render_math.py`;
                 aiController.runCommand([scriptPath, currentLatex, colorStr, "9"], function (stdout) {
                     if (!mathBlock)
                         return;
