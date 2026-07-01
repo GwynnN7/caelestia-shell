@@ -13,11 +13,23 @@ Item {
 
     property var popouts
     property var utilities
+    property bool aiChatUsageAcquired: false
 
     readonly property bool isBarHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property bool showPopoutSeparator: isBarHorizontal && root.visibilities.sidebar && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow" && popouts.currentName !== "github"
 
     property string activeTab: Visibilities.initialSidebarTab
+
+    function syncAiChatUsage() {
+        var shouldUseChat = root.visibilities.sidebar && root.activeTab === "ai";
+        if (shouldUseChat && !aiChatUsageAcquired) {
+            aiChatUsageAcquired = true;
+            sharedAiController.acquireChatUsage();
+        } else if (!shouldUseChat && aiChatUsageAcquired) {
+            aiChatUsageAcquired = false;
+            sharedAiController.releaseChatUsage();
+        }
+    }
 
     Connections {
         target: root.visibilities
@@ -25,6 +37,18 @@ Item {
             if (root.visibilities.sidebar) {
                 root.activeTab = Visibilities.initialSidebarTab;
             }
+            syncAiChatUsage();
+        }
+    }
+
+    onActiveTabChanged: syncAiChatUsage()
+
+    Component.onCompleted: syncAiChatUsage()
+
+    Component.onDestruction: {
+        if (aiChatUsageAcquired) {
+            aiChatUsageAcquired = false;
+            sharedAiController.releaseChatUsage();
         }
     }
 

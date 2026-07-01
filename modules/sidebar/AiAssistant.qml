@@ -306,17 +306,19 @@ Item {
         anchors.fill: parent
         anchors.margins: Tokens.padding.medium
 
-        RowLayout {
+        Item {
             id: modeSwitcherRow
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             height: 40
-            spacing: Tokens.spacing.small
 
             StyledRect {
-                Layout.preferredWidth: 80
-                Layout.fillHeight: true
+                id: tabSwitcher
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                width: 80
+                height: parent.height
                 radius: Tokens.rounding.full
                 color: Colours.tPalette.m3surfaceContainer
 
@@ -369,15 +371,12 @@ Item {
                 }
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
-
             Row {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height
                 spacing: Tokens.spacing.medium
+
                 SplitButton {
                     id: modelFamilySelector
 

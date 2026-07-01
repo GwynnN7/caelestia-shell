@@ -37,14 +37,15 @@ Item {
     property string selectedModelFamily: ""
     property string selectedModelVariant: ""
     property var modelGroups: ({})
+    property bool chatInitialized: false
+    property bool chatLoadQueued: false
+    property int chatUsageCount: 0
+    property bool chatUnloadPending: false
 
     signal chatLoaded
 
     Component.onCompleted: {
         refreshModelCatalog();
-        loadFromDB();
-        reloadConversations();
-        ensureOllamaRunning();
     }
 
     onAvailableModelsChanged: refreshModelCatalog()
@@ -61,6 +62,16 @@ Item {
         interval: 1000
         repeat: false
         onTriggered: updateModel()
+    }
+
+    Timer {
+        id: chatUnloadTimer
+        interval: 5 * 60 * 1000
+        repeat: false
+        onTriggered: {
+            if (chatUsageCount === 0 && !isGenerating)
+                unloadChat();
+        }
     }
 
     Component {
@@ -88,6 +99,70 @@ Item {
 
     function getDatabase() {
         return Sql.LocalStorage.openDatabaseSync("CortanaAIChats", "", "Caelestia AI Chat Local Storage", 5000000);
+    }
+
+    function initializeChat() {
+        if (chatInitialized || chatLoadQueued)
+            return;
+
+        chatLoadQueued = true;
+        Qt.callLater(function () {
+            try {
+                if (chatInitialized || chatUsageCount === 0)
+                    return;
+
+                loadFromDB();
+                reloadConversations();
+                ensureOllamaRunning();
+                chatInitialized = true;
+            } catch (e) {
+                console.log("Error initializing AI chat:", e.toString());
+            } finally {
+                chatLoadQueued = false;
+            }
+        });
+    }
+
+    function acquireChatUsage() {
+        chatUnloadPending = false;
+        chatUnloadTimer.stop();
+        chatUsageCount++;
+        if (chatUsageCount === 1)
+            initializeChat();
+    }
+
+    function releaseChatUsage() {
+        if (chatUsageCount > 0)
+            chatUsageCount--;
+        console.log("Chat usage released. Current count: " + chatUsageCount);
+        if (chatUsageCount === 0)
+            scheduleChatUnload();
+    }
+
+    function scheduleChatUnload() {
+        chatUnloadPending = true;
+        chatUnloadTimer.restart();
+    }
+
+    function onChatGenerationFinished() {
+        if (chatUsageCount === 0)
+            scheduleChatUnload();
+    }
+
+    function unloadChat() {
+        console.log("Unloading AI chat due to inactivity.");
+        if (isGenerating)
+            stopGeneration();
+
+        chatUnloadPending = false;
+        chatUnloadTimer.stop();
+        chatModel.clear();
+        historyModel.clear();
+        conversationsList = [];
+        activeConversationId = "";
+        activeXhr = null;
+        chatInitialized = false;
+        chatLoadQueued = false;
     }
 
     function loadFromDB() {
@@ -878,7 +953,7 @@ Item {
         if (resetCount === undefined)
             resetCount = 0;
         if (iteration > 4) {
-            chatModel.setProperty(aiIndex, "text", "Error: Agent reached maximum tool execution limit (8 iterations).");
+            chatModel.setProperty(aiIndex, "text", "Error: Agent reached maximum tool execution limit (4 iterations).");
             chatModel.setProperty(aiIndex, "thinking", thinkingText);
             chatModel.setProperty(aiIndex, "loading", false);
 
@@ -953,7 +1028,7 @@ Item {
 
                 if (xhr.status === 200) {
                     if (!currentText && toolCallsQueue.length === 0) {
-                        if (iteration < 7) {
+                        if (iteration < 4) {
                             var nudge = iteration < 3 ? "Please answer the user's question directly." : "Output your answer now. Do not include any preamble.";
                             messages.push({
                                 role: "user",
@@ -1034,6 +1109,7 @@ Item {
                         saveHistory();
                         reloadHistoryList();
                         isGenerating = false;
+                        aiController.onChatGenerationFinished();
                     }
                 } else {
                     var errorMsg = "Error: Could not connect to Ollama.";
@@ -1050,6 +1126,7 @@ Item {
                     saveHistory();
                     reloadHistoryList();
                     isGenerating = false;
+                    aiController.onChatGenerationFinished();
                 }
             }
         };
@@ -1168,6 +1245,7 @@ Item {
 
         saveHistory();
         reloadHistoryList();
+        onChatGenerationFinished();
 
         Qt.callLater(function () {
             generationStopped = false;

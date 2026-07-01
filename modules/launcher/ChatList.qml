@@ -21,6 +21,7 @@ Item {
 
     implicitHeight: GlobalConfig.launcher.aiDefaultHeight
     implicitWidth: parent ? parent.width : GlobalConfig.launcher.aiDefaultWidth
+    property real calculatedFooterHeight: 0
 
     property bool expanded: GlobalConfig.launcher.aiFullScreen
     property bool userScrolledUp: false
@@ -685,6 +686,13 @@ Item {
             spacing: Tokens.spacing.medium
             clip: true
 
+            onContentHeightChanged: Qt.callLater(function () {
+                root.calculatedFooterHeight = root.calculateFooterHeight();
+            })
+            onHeightChanged: Qt.callLater(function () {
+                root.calculatedFooterHeight = root.calculateFooterHeight();
+            })
+
             Component.onCompleted: {
                 Qt.callLater(function () {
                     listView.positionViewAtEnd();
@@ -693,7 +701,7 @@ Item {
 
             footer: Item {
                 width: listView.width
-                height: root.calculateFooterHeight()
+                height: root.calculatedFooterHeight
             }
 
             onContentYChanged: {

@@ -31,10 +31,39 @@ Item {
 
     readonly property var currentList: showChat ? (chatList.item ? chatList.item.currentList : null) : (showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showAnimations ? animationsList.item : (showKeybinds ? keybindsList.item : appList.item))))
     readonly property alias chatList: chatList
+    property bool chatUsageAcquired: false
+
+    function syncChatUsage() {
+        var shouldUseChat = root.visibilities.launcher && root.showChat;
+        if (shouldUseChat && !chatUsageAcquired) {
+            chatUsageAcquired = true;
+            sharedAiController.acquireChatUsage();
+        } else if (!shouldUseChat && chatUsageAcquired) {
+            chatUsageAcquired = false;
+            sharedAiController.releaseChatUsage();
+        }
+    }
 
     onShowChatChanged: {
         if (showChat)
             chatActivated = true;
+        syncChatUsage();
+    }
+
+    Connections {
+        target: root.visibilities
+        function onLauncherChanged() {
+            syncChatUsage();
+        }
+    }
+
+    Component.onCompleted: syncChatUsage()
+
+    Component.onDestruction: {
+        if (chatUsageAcquired) {
+            chatUsageAcquired = false;
+            sharedAiController.releaseChatUsage();
+        }
     }
 
     onShowWallpapersChanged: {
