@@ -20,7 +20,7 @@ Item {
     readonly property int rounding: Tokens.rounding.extraLarge
 
     implicitWidth: listWrapper.width + padding * 2
-    implicitHeight: searchWrapper.height + listWrapper.height + padding + searchWrapper.anchors.bottomMargin
+    implicitHeight: search.height + listWrapper.height + padding + search.anchors.bottomMargin
 
     Item {
         id: listWrapper
@@ -29,7 +29,7 @@ Item {
         implicitHeight: list.implicitHeight + root.padding
 
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: searchWrapper.top
+        anchors.bottom: search.top
         anchors.bottomMargin: root.padding
 
         ContentList {
@@ -38,7 +38,7 @@ Item {
             content: root
             visibilities: root.visibilities
             panels: root.panels
-            maxHeight: root.maxHeight - searchWrapper.implicitHeight - root.padding * 3
+            maxHeight: root.maxHeight - search.implicitHeight - root.padding * 3
             screenWidth: root.screenWidth
             search: search
             padding: root.padding
@@ -46,11 +46,8 @@ Item {
         }
     }
 
-    StyledRect {
-        id: searchWrapper
-
-        color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
-        radius: Tokens.rounding.full
+    SearchBar {
+        id: search
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -181,7 +178,7 @@ Item {
                     list.currentList?.decrementCurrentIndex();
                 }
             }
-            
+
             Keys.onDownPressed: {
                 if (list.showChat) {
                     if (chatHistoryIndex !== -1) {

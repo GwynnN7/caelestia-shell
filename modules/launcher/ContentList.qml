@@ -17,7 +17,7 @@ Item {
     required property var panels
     required property real maxHeight
     required property real screenWidth
-    required property StyledTextField search
+    required property SearchBar search
     required property int padding
     required property int rounding
 
@@ -28,7 +28,7 @@ Item {
     readonly property bool showWindowSwitcher: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)
     readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
     readonly property bool showAnimations: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `)
-    
+
     readonly property var currentList: showChat ? (chatList.item ? chatList.item.currentList : null) : (showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showAnimations ? animationsList.item : (showKeybinds ? keybindsList.item : appList.item))))
     readonly property alias chatList: chatList
 
@@ -54,11 +54,14 @@ Item {
     readonly property var wallpaperTabs: {
         const res = [];
         for (let dir of Wallpapers.categories) {
-            res.push({ id: dir, text: dir });
+            res.push({
+                id: dir,
+                text: dir
+            });
         }
         return res;
     }
-    
+
     property string animState: showChat ? "chat" : (showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))))
 
     anchors.horizontalCenter: parent.horizontalCenter
@@ -107,7 +110,7 @@ Item {
             PropertyChanges {
                 target: root
                 implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, wallpaperList.implicitWidth)
-                implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56 
+                implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight + 56
             }
             PropertyChanges {
                 target: wallpaperList
@@ -235,7 +238,7 @@ Item {
             contentHeight: parent.height
             flickableDirection: Flickable.HorizontalFlick
             clip: true
-            
+
             ScrollBar.horizontal: StyledScrollBar {
                 flickable: tabsFlickable
                 active: tabsFlickable.moving || tabsFlickable.dragging
@@ -270,7 +273,7 @@ Item {
                                     idx = Math.min(idx + 1, root.wallpaperTabs.length - 1);
                                 else if (event.angleDelta.y > 0 || event.angleDelta.x > 0)
                                     idx = Math.max(idx - 1, 0);
-                                
+
                                 root.currentWallpaperTab = root.wallpaperTabs[idx].id;
                             }
 

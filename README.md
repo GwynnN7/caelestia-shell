@@ -65,28 +65,25 @@ Build dependencies:
 -   [`cmake`](https://cmake.org)
 -   [`ninja`](https://github.com/ninja-build/ninja)
 
-To install the shell manually, install all dependencies and clone **this fork** to `$XDG_CONFIG_HOME/quickshell/caelestia`.
-Then simply run the install script:
+To install the shell, first install the `pkgit` package manager (available on the AUR as `pkgit-git`).
+Then you can simply install the shell directly from GitHub without cloning it:
 
 ```sh
-sudo pacman -Rdd caelestia-shell
-
-cd $XDG_CONFIG_HOME/quickshell
-git clone https://github.com/dim-ghub/caelestia-shell.git caelestia
-
-cd caelestia
-./scripts/install.sh
-```
-
-Alternatively, this fork can be installed and managed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr)'s
-`gh` plugin:
-
-```sh
-pkg install gh/dim-ghub/caelestia-shell-git
+sudo pacman -Rdd caelestia-shell # if previously installed
+pkgit -i https://github.com/dim-ghub/caelestia-shell
 ```
 
 > [!TIP]
-> By default, the script will use the latest version tag from [upstream](https://github.com/caelestia-dots/shell) to set the version number for the build. It does not download anything from upstream - it builds your local fork. You can also specify a version manually: `./scripts/install.sh 2.0.2`
+> You can also use `pkgit -qi https://github.com/dim-ghub/caelestia-shell` for a quiet installation.
+
+If you prefer to clone and install it manually:
+
+```sh
+cd $XDG_CONFIG_HOME/quickshell
+git clone https://github.com/dim-ghub/caelestia-shell.git caelestia
+cd caelestia
+pkgit -i .
+```
 
 ### Nix
 
@@ -290,18 +287,20 @@ the command.
 
 If installed via the AUR package, simply update your system (e.g. using `yay`).
 
-If installed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr), run:
-
-```sh
-pkg update
-```
-
-If installed manually, pull the latest changes and re-run the install script:
+If installed manually, pull the latest changes and re-run the installation:
 
 ```sh
 cd $XDG_CONFIG_HOME/quickshell/caelestia
 git pull
-./scripts/install.sh
+pkgit -i .
+```
+
+## Uninstalling
+
+To cleanly uninstall the shell and its components, simply run `pkgit`'s uninstall command:
+
+```sh
+pkgit -r caelestia-shell
 ```
 
 ## Configuring
@@ -1106,7 +1105,10 @@ For example, to disable the bar on DP-1:
         "hideNotifs": false,
         "maxFprintTries": 3,
         "profilePicShape": 12,
-        "recolourLogo": true
+        "recolourLogo": true,
+        "enableHowdy": true,
+        "maxHowdyTries": 3,
+        "triggerHowdyOnWake": true
     },
     "nexus": {
         "networkRescanInterval": 15000,

@@ -12,7 +12,7 @@ import qs.utils
 PathView {
     id: root
 
-    required property StyledTextField search
+    required property SearchBar search
     required property var visibilities
     required property var panels
     required property var content
