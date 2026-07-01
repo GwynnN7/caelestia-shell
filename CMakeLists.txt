@@ -60,11 +60,9 @@ if("plugin" IN_LIST ENABLE_MODULES)
 endif()
 
 if("shell" IN_LIST ENABLE_MODULES)
-    foreach(dir assets components modules services utils)
+    foreach(dir assets components modules services utils scripts)
         install(DIRECTORY ${dir} DESTINATION "${INSTALL_QSCONFDIR}")
     endforeach()
-
-    install(PROGRAMS scripts/wrap_term_launch.sh DESTINATION "${INSTALL_QSCONFDIR}/scripts")
 
     file(READ shell.qml SHELL_QML)
     string(REPLACE "settings.watchFiles: true" "settings.watchFiles: false" SHELL_QML "${SHELL_QML}")
