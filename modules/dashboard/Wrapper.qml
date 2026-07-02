@@ -48,7 +48,6 @@ Item {
         anchors.bottom: parent.bottom
 
         active: root.shouldBeActive || root.visible
-        asynchronous: true
 
         sourceComponent: Content {
             visibilities: root.visibilities
