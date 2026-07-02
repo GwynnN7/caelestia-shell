@@ -149,8 +149,11 @@ Item {
 
                         sourceComponent: modelData.component
 
+                        property bool wasLoaded: false
+                        onActiveChanged: if (active) wasLoaded = true
+
                         Component.onCompleted: active = Qt.binding(() => {
-                            if (active) return true;
+                            if (wasLoaded) return true;
                             if (index === view.currentIndex)
                                 return true;
                             const vx = Math.floor(view.visibleArea.xPosition * view.contentWidth);
