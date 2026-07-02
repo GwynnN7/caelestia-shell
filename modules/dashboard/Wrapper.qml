@@ -31,10 +31,8 @@ Item {
     readonly property bool shouldBeActive: visibilities.dashboard && Config.dashboard.enabled
     property real offsetScale: shouldBeActive ? 0 : 1
 
-    clip: false
     visible: offsetScale < 1
-    anchors.topMargin: Config.bar.position === "top" ? 0 : (-implicitHeight - 5) * offsetScale
-    height: implicitHeight
+    anchors.topMargin: (-implicitHeight - 5) * offsetScale
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 854 // Hard coded fallback for first open
     opacity: 1 - offsetScale
@@ -43,25 +41,18 @@ Item {
         Anim {}
     }
 
-    Item {
-        anchors.fill: parent
-        clip: Config.bar.position === "top"
+    Loader {
+        id: content
 
-        Loader {
-            id: content
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: Config.bar.position === "top" ? undefined : parent.bottom
-            anchors.top: Config.bar.position === "top" ? parent.top : undefined
-            anchors.topMargin: Config.bar.position === "top" ? (-implicitHeight - 5) * root.offsetScale : 0
+        active: root.shouldBeActive || root.visible
 
-            active: root.shouldBeActive || root.visible
-
-            sourceComponent: Content {
-                visibilities: root.visibilities
-                dashState: root.dashState
-                facePicker: root.facePicker
-            }
+        sourceComponent: Content {
+            visibilities: root.visibilities
+            dashState: root.dashState
+            facePicker: root.facePicker
         }
     }
 }
