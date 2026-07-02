@@ -147,14 +147,10 @@ Item {
 
                         Layout.alignment: Qt.AlignTop
 
-                        sourceComponent: modelData.component
                         asynchronous: true
-
-                        property bool wasLoaded: false
-                        onActiveChanged: if (active) wasLoaded = true
+                        sourceComponent: modelData.component
 
                         Component.onCompleted: active = Qt.binding(() => {
-                            if (wasLoaded) return true;
                             if (index === view.currentIndex)
                                 return true;
                             const vx = Math.floor(view.visibleArea.xPosition * view.contentWidth);
