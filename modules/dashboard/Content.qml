@@ -148,6 +148,7 @@ Item {
                         Layout.alignment: Qt.AlignTop
 
                         sourceComponent: modelData.component
+                        asynchronous: true
 
                         property bool wasLoaded: false
                         onActiveChanged: if (active) wasLoaded = true
