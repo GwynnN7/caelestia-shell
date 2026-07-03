@@ -1,6 +1,16 @@
+local function get_version()
+    local handle = io.popen("git describe --tags --abbrev=0 2>/dev/null")
+    if not handle then return "unknown" end
+    local result = handle:read("*a")
+    handle:close()
+    local ver = result:gsub("\n", ""):gsub("^v", "")
+    if ver == "" then return "unknown" end
+    return ver
+end
+
 bldit_version = "0.1.3"
 package_name = "caelestia-shell"
-package_version = "2.0.3"
+package_version = get_version()
 global_dependencies = {
     caelestia_cli = {
         url = "https://github.com/dim-ghub/caelestia-cli.git",
