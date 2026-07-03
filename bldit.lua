@@ -1,5 +1,5 @@
 local function get_version()
-    local handle = io.popen("git describe --tags --abbrev=0 2>/dev/null")
+    local handle = io.popen("git ls-remote --tags --refs https://github.com/caelestia-dots/shell 2>/dev/null | awk -F/ '{print $3}' | grep '^v' | sort -V | tail -n 1")
     if not handle then return "unknown" end
     local result = handle:read("*a")
     handle:close()
