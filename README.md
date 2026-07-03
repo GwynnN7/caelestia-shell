@@ -1,5 +1,7 @@
 <h1 align=center>caelestia-shell</h1>
 
+<!-- test pkgit -->
+
 <div align=center>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/dim-ghub/caelestia-shell?style=for-the-badge&labelColor=101418&color=9ccbfb)
