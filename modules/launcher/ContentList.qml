@@ -341,7 +341,7 @@ Item {
 
         sourceComponent: WindowSwitcherList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
             panels: root.panels
             content: root.content
         }
@@ -356,7 +356,7 @@ Item {
 
         sourceComponent: KeybindsList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
         }
     }
 
@@ -369,7 +369,7 @@ Item {
 
         sourceComponent: AnimationsList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
         }
     }
 

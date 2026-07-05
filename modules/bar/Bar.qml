@@ -29,7 +29,10 @@ GridLayout {
             return;
 
         for (let i = 0; i < repeater.count; i++) {
-            const tray = (repeater.itemAt(i) as EntryWrapper).item as Tray;
+            const wrapper = repeater.itemAt(i) as EntryWrapper;
+            if (!wrapper)
+                continue;
+            const tray = wrapper.item as Tray;
             if (tray)
                 tray.expanded = false;
         }
@@ -171,7 +174,6 @@ GridLayout {
                 delegate: EntryWrapper {
                     Layout.fillHeight: !root.isHorizontal && enabled
                     Layout.fillWidth: root.isHorizontal && enabled
-                }
                 }
             }
             DelegateChoice {
