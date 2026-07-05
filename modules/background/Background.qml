@@ -16,6 +16,7 @@ Variants {
         id: win
 
         required property ShellScreen modelData
+        readonly property alias wallpaperLoader: wallpaper
 
         screen: modelData
         name: "background"
