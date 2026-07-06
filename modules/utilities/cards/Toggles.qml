@@ -196,8 +196,8 @@ StyledRect {
                         inactiveOnColour: Colours.palette.m3onSurfaceVariant
                         onClicked: {
                             Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
-                            const visibilities = Visibilities.getForActive();
-                            visibilities.launcher = true;
+                            const screenState = ShellState.forActive();
+                            screenState.launcher = true;
                         }
                     }
                 }

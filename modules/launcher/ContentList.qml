@@ -34,7 +34,7 @@ Item {
     property bool chatUsageAcquired: false
 
     function syncChatUsage() {
-        var shouldUseChat = root.visibilities.launcher && root.showChat;
+        var shouldUseChat = root.screenState.launcher && root.showChat;
         if (shouldUseChat && !chatUsageAcquired) {
             chatUsageAcquired = true;
             sharedAiController.acquireChatUsage();
@@ -51,7 +51,7 @@ Item {
     }
 
     Connections {
-        target: root.visibilities
+        target: root.screenState
         function onLauncherChanged() {
             syncChatUsage();
         }
@@ -428,7 +428,7 @@ Item {
 
         sourceComponent: ChatList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
             screenWidth: root.screenWidth
             maxHeight: root.maxHeight
         }
