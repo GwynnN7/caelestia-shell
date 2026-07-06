@@ -16,6 +16,7 @@ Variants {
         id: win
 
         required property ShellScreen modelData
+        readonly property alias wallpaperLoader: wallpaper
 
         screen: modelData
         name: "background"
@@ -28,6 +29,12 @@ Variants {
         anchors.bottom: true
         anchors.left: true
         anchors.right: true
+
+        ShellState.ComponentRef {
+            screen: win.screen
+            slot: "background"
+            component: win
+        }
 
         Item {
             id: behindClock

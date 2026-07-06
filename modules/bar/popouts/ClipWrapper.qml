@@ -13,7 +13,7 @@ Item {
     Config.screen: screen.name
     required property var bar
     required property real borderThickness
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     readonly property alias content: content
     readonly property bool isHorizontal: bar.isHorizontal
@@ -85,7 +85,7 @@ Item {
 
         screen: root.screen
         offsetScale: root.offsetScale
-        visibilities: root.visibilities
+        screenState: root.screenState
 
         // Apply slide animation margins based on edge
         anchors.leftMargin: bar.position === "left" ? (-implicitWidth - 5) * root.offsetScale : 0

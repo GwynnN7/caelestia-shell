@@ -18,7 +18,7 @@ Item {
 
     function clicked(): void {
         Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${root.modelData.address}" })` : `focuswindow address:0x${root.modelData.address}`);
-        root.list.visibilities.launcher = false;
+        root.list.screenState.launcher = false;
     }
 
     Component.onCompleted: {

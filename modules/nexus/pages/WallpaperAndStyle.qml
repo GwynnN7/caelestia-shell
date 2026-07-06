@@ -2,12 +2,14 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Caelestia
 import Caelestia.Components
 import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.components.images
 import qs.services
+import qs.utils
 import qs.modules.nexus.common
 
 PageBase {
@@ -135,6 +137,40 @@ PageBase {
                             wallLoadDebounceTimer.stop();
                             wallIndicatorLoader.opacity = 0;
                         }
+                    }
+                }
+            }
+
+            IconTextButton {
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.margins: Tokens.padding.medium
+
+                icon: "save"
+                text: qsTr("Save Recolored")
+                font: Tokens.font.body.large
+                isRound: true
+                shapeMorph: true
+                type: IconTextButton.Filled
+                horizontalPadding: Tokens.padding.large
+                verticalPadding: Tokens.padding.medium
+                
+                visible: Config.background.wallpaperEnabled && Config.background.wallpaperRecolor
+                opacity: visible ? 1 : 0
+
+                Behavior on opacity {
+                    Anim {
+                        type: Anim.DefaultEffects
+                    }
+                }
+
+                onClicked: {
+                    const bgWin = ShellState.componentsFor(root.nState.screen).background;
+                    if (bgWin && bgWin.wallpaperLoader && bgWin.wallpaperLoader.item && bgWin.wallpaperLoader.item.current) {
+                        const path = Paths.home + "/Downloads/recolored_wallpaper.png";
+                        CUtils.saveItem(bgWin.wallpaperLoader.item.current, "file://" + path, function() {
+                            Notifs.sendToast("Wallpaper Saved", "Saved to ~/Downloads/recolored_wallpaper.png", "image", null, null);
+                        });
                     }
                 }
             }

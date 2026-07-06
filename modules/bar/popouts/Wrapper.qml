@@ -15,7 +15,7 @@ Item {
 
     required property ShellScreen screen
     required property real offsetScale
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     readonly property alias content: content
     readonly property alias winfo: winfo
@@ -91,7 +91,7 @@ Item {
     PopoutState {
         id: popoutState
 
-        sidebarOpen: root.visibilities.sidebar
+        sidebarOpen: root.screenState.sidebar
         isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
         onDetachRequested: mode => root.detach(mode)

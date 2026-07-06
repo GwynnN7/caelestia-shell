@@ -14,7 +14,7 @@ Item {
     function clicked() {
         if (!root.modelData || !root.modelData.action)
             return;
-        root.list.visibilities.launcher = false;
+        root.list.screenState.launcher = false;
         Quickshell.execDetached(["sh", "-c", "hyprctl dispatch " + root.modelData.action]);
     }
 

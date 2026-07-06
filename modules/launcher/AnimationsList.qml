@@ -15,7 +15,7 @@ StyledListView {
     id: root
 
     required property StyledTextField search
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     readonly property string searchQuery: (search.text.slice((GlobalConfig.launcher.actionPrefix + "animations ").length)).toLowerCase()
 
