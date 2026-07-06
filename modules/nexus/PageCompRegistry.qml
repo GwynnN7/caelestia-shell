@@ -15,6 +15,8 @@ import qs.modules.nexus.pages.panels
 import qs.modules.nexus.pages.services
 import qs.modules.nexus.pages.wallandstyle
 import qs.modules.nexus.pages.panels.taskbar
+import qs.modules.nexus.pages.background
+import qs.modules.nexus.pages.tokens
 
 QtObject {
     id: root
@@ -41,6 +43,49 @@ QtObject {
                 }
                 Component {
                     WallpaperEnginePage {}
+                }
+            }
+        },
+        Component {
+            // Background elements
+            StackPage {
+                Component {
+                    BackgroundPage {}
+                }
+                Component {
+                    DesktopClockPage {}
+                }
+                Component {
+                    DesktopLyricsPage {}
+                }
+                Component {
+                    VisualiserPage {}
+                }
+                Component {
+                    ShimejiPage {}
+                }
+            }
+        },
+        Component {
+            // Shell Tokens
+            StackPage {
+                Component {
+                    TokensPage {}
+                }
+                Component {
+                    RoundingSpacingPage {}
+                }
+                Component {
+                    FontSizesPage {}
+                }
+                Component {
+                    BarDashboardPage {}
+                }
+                Component {
+                    WindowLockPage {}
+                }
+                Component {
+                    ShellElementsPage {}
                 }
             }
         },

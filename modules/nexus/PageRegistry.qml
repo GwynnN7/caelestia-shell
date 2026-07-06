@@ -13,6 +13,19 @@ QtObject {
             description: qsTr("Wallpaper, fonts, colours"),
             category: "appearance"
         },
+        {
+            label: qsTr("Background elements"),
+            icon: "wallpaper",
+            description: qsTr("Clock, lyrics, visualiser, shimeji"),
+            category: "appearance"
+        },
+        {
+            label: qsTr("Shell Tokens"),
+            icon: "tune",
+            description: qsTr("Modify interface spacing, rounding, and sizing"),
+            category: "appearance",
+            developerOnly: true
+        },
 
         // Connectivity
         // TODO
