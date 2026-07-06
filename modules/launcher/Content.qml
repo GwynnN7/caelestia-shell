@@ -230,7 +230,7 @@ Item {
                     search.forceActiveFocus();
             }
 
-            target: root.visibilities
+            target: root.screenState
         }
 
         clearIcon.anchors.rightMargin: list.showChat ? (Tokens.padding.medium + sendBtn.width + Tokens.spacing.medium) : Tokens.padding.medium

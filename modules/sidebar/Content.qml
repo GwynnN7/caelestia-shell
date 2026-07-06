@@ -21,7 +21,7 @@ Item {
     property string activeTab: Visibilities.initialSidebarTab
 
     function syncAiChatUsage() {
-        var shouldUseChat = root.visibilities.sidebar && root.activeTab === "ai";
+        var shouldUseChat = root.screenState.sidebar && root.activeTab === "ai";
         if (shouldUseChat && !aiChatUsageAcquired) {
             aiChatUsageAcquired = true;
             sharedAiController.acquireChatUsage();
@@ -211,7 +211,7 @@ Item {
                         opacity: root.activeTab === "notifications" ? 1 : 0
                         visible: opacity > 0
                         props: root.props
-                        visibilities: root.visibilities
+                        screenState: root.screenState
 
                         Behavior on x {
                             Anim {

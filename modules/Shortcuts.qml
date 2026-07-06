@@ -91,11 +91,11 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.sidebar) {
+            const screenState = ShellState.forActive();
+            if (!screenState.sidebar) {
                 Visibilities.initialSidebarTab = "notifications";
             }
-            visibilities.sidebar = !visibilities.sidebar;
+            screenState.sidebar = !screenState.sidebar;
         }
     }
 
@@ -107,11 +107,11 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.sidebar) {
+            const screenState = ShellState.forActive();
+            if (!screenState.sidebar) {
                 Visibilities.initialSidebarTab = "ai";
             }
-            visibilities.sidebar = !visibilities.sidebar;
+            screenState.sidebar = !screenState.sidebar;
         }
     }
 
@@ -136,12 +136,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.launcher) {
+            const screenState = ShellState.forActive();
+            if (!screenState.launcher) {
                 Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}emoji `;
             }
 
-            visibilities.launcher = !visibilities.launcher;
+            screenState.launcher = !screenState.launcher;
         }
     }
 
@@ -153,12 +153,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.launcher) {
+            const screenState = ShellState.forActive();
+            if (!screenState.launcher) {
                 Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}clipboard `;
             }
 
-            visibilities.launcher = !visibilities.launcher;
+            screenState.launcher = !screenState.launcher;
         }
     }
 
@@ -170,12 +170,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.launcher) {
+            const screenState = ShellState.forActive();
+            if (!screenState.launcher) {
                 Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}cortana `;
             }
 
-            visibilities.launcher = !visibilities.launcher;
+            screenState.launcher = !screenState.launcher;
         }
     }
 
@@ -187,12 +187,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.launcher) {
+            const screenState = ShellState.forActive();
+            if (!screenState.launcher) {
                 Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}windows `;
             }
 
-            visibilities.launcher = !visibilities.launcher;
+            screenState.launcher = !screenState.launcher;
         }
     }
 
@@ -204,12 +204,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.launcher) {
+            const screenState = ShellState.forActive();
+            if (!screenState.launcher) {
                 Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
             }
 
-            visibilities.launcher = !visibilities.launcher;
+            screenState.launcher = !screenState.launcher;
         }
     }
 
@@ -221,12 +221,12 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            if (!visibilities.launcher) {
+            const screenState = ShellState.forActive();
+            if (!screenState.launcher) {
                 Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}keybinds `;
             }
 
-            visibilities.launcher = !visibilities.launcher;
+            screenState.launcher = !screenState.launcher;
         }
     }
 
@@ -248,12 +248,12 @@ Scope {
                     return;
                 if (drawer === "sidebar" && tab !== "") {
                     Visibilities.initialSidebarTab = tab;
-                    const visibilities = Visibilities.getForActive();
-                    visibilities.sidebar = true;
+                    const screenState = ShellState.forActive();
+                    screenState.sidebar = true;
                     return;
                 }
-                const visibilities = Visibilities.getForActive();
-                visibilities[drawer] = !visibilities[drawer];
+                const screenState = ShellState.forActive();
+                screenState[drawer] = !screenState[drawer];
             } else {
                 console.warn(lc, `Drawer "${drawer}" does not exist`);
             }
