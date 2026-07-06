@@ -15,7 +15,7 @@ Item {
     id: root
 
     required property SearchBar search
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property real screenWidth
     required property real maxHeight
 
@@ -49,7 +49,7 @@ Item {
     }
 
     onIsGeneratingChanged: {
-        if (!isGenerating && root.visibilities && !root.visibilities.launcher) {
+        if (!isGenerating && root.screenState && !root.screenState.launcher) {
             Quickshell.execDetached(["sh", "-c", "echo '" + GlobalConfig.ai.activeModel + " finished generating response' | cortana notify"]);
         }
     }
