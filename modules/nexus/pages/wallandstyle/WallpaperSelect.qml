@@ -18,6 +18,7 @@ PageBase {
     id: root
 
     title: qsTr("Select wallpaper")
+    isSubPage: true
 
     property color sortColor: "transparent"
     property var colorDistances: ({})
@@ -76,6 +77,11 @@ PageBase {
         width: root.cappedWidth
         spacing: Tokens.spacing.small
 
+        SectionHeader {
+            first: true
+            text: qsTr("General")
+        }
+
         ButtonRow {
             Layout.bottomMargin: Tokens.spacing.medium
             Layout.alignment: Qt.AlignHCenter
@@ -104,6 +110,32 @@ PageBase {
             }
 
             IconTextButton {
+                icon: "image_search"
+                text: qsTr("Wallhaven")
+                font: Tokens.font.body.large
+                isRound: true
+                shapeMorph: true
+                horizontalPadding: Tokens.padding.extraLarge
+                verticalPadding: Tokens.padding.medium
+                type: IconTextButton.Tonal
+                disabled: !Config.background.wallpaperEnabled
+                onClicked: root.nState.openSubPage(4)
+            }
+
+            IconTextButton {
+                icon: "view_in_ar"
+                text: qsTr("Wallpaper Engine")
+                font: Tokens.font.body.large
+                isRound: true
+                shapeMorph: true
+                horizontalPadding: Tokens.padding.extraLarge
+                verticalPadding: Tokens.padding.medium
+                type: IconTextButton.Tonal
+                disabled: !Config.background.wallpaperEnabled
+                onClicked: root.nState.openSubPage(5)
+            }
+
+            IconTextButton {
                 icon: "shuffle"
                 text: qsTr("Random")
                 font: Tokens.font.body.large
@@ -112,6 +144,7 @@ PageBase {
                 horizontalPadding: Tokens.padding.extraLarge
                 verticalPadding: Tokens.padding.medium
                 type: IconTextButton.Tonal
+                disabled: !Config.background.wallpaperEnabled
                 onClicked: {
                     Wallpapers.setRandom();
                     root.nState.closeSubPage();
@@ -434,6 +467,8 @@ PageBase {
 
                         if (w.parentDir !== baseDir) {
                             const category = Wallpapers.getCategoryFor(w);
+                            if (category === "Wallpaper Engine")
+                                continue;
                             if (category && (!(category in categories) || categories[category].name.localeCompare(w.name) > 0))
                                 categories[category] = w;
                         } else {

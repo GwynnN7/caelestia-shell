@@ -20,6 +20,7 @@ import "modules/areapicker"
 import "modules/lock"
 import QtQuick
 import "modules/polkit"
+import Quickshell.Services.SystemTray
 
 ShellRoot {
     id: root
@@ -72,4 +73,5 @@ ShellRoot {
     property var _arpcInit: DiscordRPC
     property var _gameModeInit: GameMode
     property var _pipInit: PipManager
+    property var _systemTrayInit: SystemTray
 }
