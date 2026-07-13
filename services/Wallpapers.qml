@@ -215,7 +215,7 @@ Searcher {
         recursive: true
         path: Paths.wallsdir
         filter: FileSystemModel.Files
-        nameFilters: Images.validImageExtensions.concat(Images.validVideoExtensions).map(e => `*.${e}`).concat(["project.json"])
+        nameFilters: Array.from(Images.validImageExtensions).concat(Array.from(Images.validVideoExtensions)).map(e => `*.${e}`).concat(["project.json"])
         onEntriesChanged: root.updateCombinedList()
     }
 

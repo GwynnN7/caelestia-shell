@@ -7,6 +7,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import Quickshell.Io
 
 Item {
     id: root
@@ -16,6 +17,7 @@ Item {
     property alias radius: imgWrapper.radius
     property alias imgHeight: imgWrapper.implicitHeight
     property bool fillLabel: true
+    property string realPath: ""
 
     signal clicked
 
@@ -65,6 +67,16 @@ Item {
                 }
             }
 
+            Process {
+                id: thumbGenerator
+                command: ["bash", "-c", `mkdir -p "$(dirname "${root.source.toString().replace("file://", "")}")" && ffmpeg -i "${root.realPath}" -vframes 1 -q:v 2 "${root.source.toString().replace("file://", "")}" -y`]
+                onExited: {
+                    let oldSource = root.source;
+                    root.source = "";
+                    root.source = oldSource;
+                }
+            }
+
             Image {
                 id: img
 
@@ -77,6 +89,14 @@ Item {
                 }
                 retainWhileLoading: true
                 opacity: status === Image.Ready ? 1 : 0
+
+                onStatusChanged: {
+                    if (status === Image.Error && root.realPath !== "" && Images.isVideo(root.realPath)) {
+                        if (!thumbGenerator.running) {
+                            thumbGenerator.running = true;
+                        }
+                    }
+                }
 
                 Behavior on opacity {
                     Anim {

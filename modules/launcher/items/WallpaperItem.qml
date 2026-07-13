@@ -7,6 +7,7 @@ import qs.components.effects
 import qs.components.images
 import qs.services
 import qs.utils
+import Quickshell.Io
 
 Item {
     id: root
@@ -25,6 +26,16 @@ Item {
 
     implicitWidth: image.width + Tokens.padding.medium * 2
     implicitHeight: image.height + label.height + Tokens.spacing.extraSmall + Tokens.padding.large + Tokens.padding.medium
+
+    Process {
+        id: thumbGenerator
+        command: ["bash", "-c", `mkdir -p "$(dirname "${thumbImg.path.toString().replace("file://", "")}")" && ffmpeg -i "${root.modelData.path}" -vframes 1 -q:v 2 "${thumbImg.path.toString().replace("file://", "")}" -y`]
+        onExited: {
+            let oldSource = thumbImg.path;
+            thumbImg.path = "";
+            thumbImg.path = oldSource;
+        }
+    }
 
     StateLayer {
         radius: Tokens.rounding.large
@@ -63,25 +74,24 @@ Item {
             text: "image"
             color: Colours.tPalette.m3outline
             fontStyle: Tokens.font.icon.builders.extraLarge.scale(2).weight(Font.DemiBold).build()
-            visible: !Images.isVideo(root.modelData.name)
-        }
-
-        MaterialIcon {
-            anchors.centerIn: parent
-            text: "videocam"
-            color: Colours.tPalette.m3outline
-            fontStyle: Tokens.font.icon.builders.extraLarge.scale(2).weight(Font.DemiBold).build()
-            visible: Images.isVideo(root.modelData.name)
+            visible: thumbImg.status !== Image.Ready
         }
 
         CachingImage {
+            id: thumbImg
             anchors.fill: parent
             path: Wallpapers.getThumbnailPath(root.modelData.path)
             smooth: !root.PathView.view.moving
-            visible: !Images.isVideo(root.modelData.name)
             sourceSize: {
                 const dpr = (QsWindow.window as QsWindow)?.devicePixelRatio ?? 1;
                 return Qt.size(image.implicitWidth * dpr, image.implicitHeight * dpr);
+            }
+            onStatusChanged: {
+                if (status === Image.Error && Images.isVideo(root.modelData.name)) {
+                    if (!thumbGenerator.running) {
+                        thumbGenerator.running = true;
+                    }
+                }
             }
         }
     }

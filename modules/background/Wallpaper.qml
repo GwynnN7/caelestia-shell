@@ -152,16 +152,17 @@ Item {
 
         property string imagePath: ""
         property string videoPath: ""
-        property bool isVideoImage: root.isVideo(root.source)
+        property bool isVideoImage: false
         property var screen: null
 
         function update(): void {
             this.screen = root.screen;
-            if (isVideoImage) {
+            this.isVideoImage = root.isVideo(root.source);
+            if (this.isVideoImage) {
                 if (videoPath === root.source)
                     root.current = this;
                 else {
-                    imagePath = "";
+                    imagePath = Wallpapers.getThumbnailPath(root.source);
                     videoPath = root.source;
                 }
             } else {
@@ -173,18 +174,6 @@ Item {
                 }
             }
         }
-
-        function updateContent(): void {
-            if (isVideoImage) {
-                imagePath = "";
-                videoPath = root.source;
-            } else {
-                videoPath = "";
-                imagePath = root.source;
-            }
-        }
-
-        onIsVideoImageChanged: updateContent()
 
         anchors.fill: parent
 
@@ -277,28 +266,33 @@ Item {
 
 
             CachingAnimatedImage {
+                id: animImage
                 anchors.fill: parent
                 path: img.imagePath
-                visible: !img.isVideoImage && img.imagePath !== ""
+                visible: img.imagePath !== ""
                 asynchronous: true
                 fillMode: AnimatedImage.PreserveAspectCrop
                 source: img.imagePath || ""
                 playing: true
 
                 onStatusChanged: {
-                    if (status === Image.Ready && !img.isVideoImage)
+                    if (status === Image.Ready)
                         root.current = img;
+                    else if (status === Image.Error && img.isVideoImage) {
+                        if (videoPlayer.playing) root.current = img;
+                    }
                 }
             }
 
             CachingVideo {
+                id: videoPlayer
                 anchors.fill: parent
                 path: img.videoPath
                 screen: root.screen
                 visible: img.isVideoImage && img.videoPath !== ""
 
                 onPlayingChanged: {
-                    if (playing && img.isVideoImage)
+                    if (playing && img.isVideoImage && animImage.status === Image.Error)
                         root.current = img;
                 }
             }
