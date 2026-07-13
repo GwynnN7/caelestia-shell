@@ -83,6 +83,12 @@ QtObject {
             category: "shell"
         },
         {
+            label: qsTr("Hyprland"),
+            icon: "layers",
+            description: qsTr("Window manager configuration"),
+            category: "shell"
+        },
+        {
             label: qsTr("Services"),
             icon: "build",
             description: qsTr("Poll intervals, lyrics backend"),
