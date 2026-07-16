@@ -101,6 +101,12 @@ QtObject {
                 Component {
                     EthernetDetailPage {}
                 }
+                Component {
+                    AddNetworkPage {}
+                }
+                Component {
+                    NetworkDetailPage {}
+                }
             }
         },
         Component {

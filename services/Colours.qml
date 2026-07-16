@@ -154,7 +154,7 @@ Singleton {
     ImageAnalyser {
         id: analyser
 
-        source: Wallpapers.current
+        source: Wallpapers.getThumbnailPath(Wallpapers.current)
     }
 
     Timer {

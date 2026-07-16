@@ -505,7 +505,8 @@ PageBase {
                     opacity: modelData ? 1 : 0
                     enabled: modelData
 
-                    source: String(modelData?.path ?? "")
+                    source: modelData ? Wallpapers.getThumbnailPath(modelData.path) : ""
+                    realPath: modelData ? modelData.path : ""
                     text: {
                         if (!modelData)
                             return "";
@@ -528,7 +529,7 @@ PageBase {
                     // Analyze color when image loads and sorting is active
                     onSourceChanged: {
                         if (root.sortColor !== "transparent" && modelData && modelData.parentDir === Paths.wallsdir) {
-                            colorAnalyzer.source = modelData.path;
+                            colorAnalyzer.source = Wallpapers.getThumbnailPath(modelData.path);
                         }
                     }
 

@@ -58,6 +58,7 @@ PageBase {
                 enabled: modelData
 
                 source: modelData ? Wallpapers.getThumbnailPath(modelData.path) : ""
+                realPath: modelData ? modelData.path : ""
                 text: modelData?.name ?? ""
                 onClicked: {
                     Wallpapers.setWallpaper(modelData.path);

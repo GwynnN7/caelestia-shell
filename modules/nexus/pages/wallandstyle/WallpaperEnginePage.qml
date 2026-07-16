@@ -66,6 +66,7 @@ PageBase {
                     enabled: modelData
 
                     source: modelData ? Wallpapers.getThumbnailPath(modelData.path) : ""
+                    realPath: modelData ? modelData.path : ""
                     text: {
                         if (!modelData) return "";
                         let content = CUtils.readFile(modelData.path);
