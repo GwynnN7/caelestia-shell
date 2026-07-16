@@ -16,9 +16,67 @@ StyledListView {
     required property SearchBar search
     required property ScreenState screenState
 
-    model: ScriptModel {
-        id: model
+    property string displayText
 
+    readonly property string requestedState: stateForText(search.text)
+    readonly property string displayState: stateForText(displayText)
+
+    function syncDisplayText(): void {
+        if (screenState.launcher && requestedState === displayState)
+            displayText = search.text;
+    }
+
+    function stateForText(text: string): string {
+        const prefix = GlobalConfig.launcher.actionPrefix;
+        if (text.startsWith(prefix)) {
+            const actionPrefixes = ["calc", "scheme", "variant", "emoji", "clipboard", "windows"];
+            for (const action of actionPrefixes)
+                if (text.startsWith(`${prefix}${action} `))
+                    return action;
+
+            return "actions";
+        }
+
+        return "apps";
+    }
+
+    function resultsForText(text: string): var {
+        switch (stateForText(text)) {
+        case "actions":
+            return Actions.query(text);
+        case "calc":
+            return [0];
+        case "scheme":
+            return Schemes.query(text);
+        case "variant":
+            return M3Variants.query(text);
+        case "emoji": {
+            const prefix = GlobalConfig.launcher.actionPrefix;
+            const queryText = text.slice((prefix + "emoji ").length).toLowerCase();
+            if (!queryText)
+                return Emojis.getSortedItems();
+            return Emojis.items.filter(function (item) {
+                return item.name.toLowerCase().includes(queryText);
+            });
+        }
+        case "clipboard": {
+            const prefix = GlobalConfig.launcher.actionPrefix;
+            const queryText = text.slice((prefix + "clipboard ").length).toLowerCase();
+            if (!queryText)
+                return Clipboard.getSortedItems();
+            return Clipboard.items.filter(function (item) {
+                return item.preview.toLowerCase().includes(queryText);
+            });
+        }
+        case "windows":
+            return Windows.items;
+        default:
+            return Apps.search(text);
+        }
+    }
+
+    model: ScriptModel {
+        values: root.resultsForText(root.displayText)
         onValuesChanged: root.currentIndex = 0
     }
 
@@ -45,20 +103,7 @@ StyledListView {
         }
     }
 
-    state: {
-        const text = search.text;
-        const prefix = GlobalConfig.launcher.actionPrefix;
-        if (text.startsWith(prefix)) {
-            const actionPrefixes = ["calc", "scheme", "variant", "emoji", "clipboard", "windows"];
-            for (const action of actionPrefixes)
-                if (text.startsWith(`${prefix}${action} `))
-                    return action;
-
-            return "actions";
-        }
-
-        return "apps";
-    }
+    state: screenState.launcher ? requestedState : displayState
 
     onStateChanged: {
         if (state === "scheme" || state === "variant")
@@ -100,117 +145,63 @@ StyledListView {
         }
     }
 
+    Component.onCompleted: displayText = search.text
+
     states: [
         State {
             name: "apps"
 
             PropertyChanges {
-                target: model
-                values: Apps.search(search.text)
-            }
-            PropertyChanges {
-                target: root
-                delegate: appItem
+                root.delegate: appItem
             }
         },
         State {
             name: "actions"
 
             PropertyChanges {
-                target: model
-                values: Actions.query(search.text)
-            }
-            PropertyChanges {
-                target: root
-                delegate: actionItem
+                root.delegate: actionItem
             }
         },
         State {
             name: "calc"
 
             PropertyChanges {
-                target: model
-                values: [0]
-            }
-            PropertyChanges {
-                target: root
-                delegate: calcItem
+                root.delegate: calcItem
             }
         },
         State {
             name: "scheme"
 
             PropertyChanges {
-                target: model
-                values: Schemes.query(search.text)
-            }
-            PropertyChanges {
-                target: root
-                delegate: schemeItem
+                root.delegate: schemeItem
             }
         },
         State {
             name: "variant"
 
             PropertyChanges {
-                target: model
-                values: M3Variants.query(search.text)
-            }
-            PropertyChanges {
-                target: root
-                delegate: variantItem
+                root.delegate: variantItem
             }
         },
         State {
             name: "emoji"
 
             PropertyChanges {
-                target: model
-                values: {
-                    const prefix = GlobalConfig.launcher.actionPrefix;
-                    const text = root.search.text.slice((prefix + "emoji ").length).toLowerCase();
-                    if (!text)
-                        return Emojis.getSortedItems();
-                    return Emojis.items.filter(function (item) {
-                        return item.name.toLowerCase().includes(text);
-                    });
-                }
-            }
-            PropertyChanges {
-                target: root
-                delegate: emojiItem
+                root.delegate: emojiItem
             }
         },
         State {
             name: "clipboard"
 
             PropertyChanges {
-                target: model
-                values: {
-                    const prefix = GlobalConfig.launcher.actionPrefix;
-                    const text = root.search.text.slice((prefix + "clipboard ").length).toLowerCase();
-                    if (!text)
-                        return Clipboard.getSortedItems();
-                    return Clipboard.items.filter(function (item) {
-                        return item.preview.toLowerCase().includes(text);
-                    });
-                }
-            }
-            PropertyChanges {
-                target: root
-                delegate: clipItem
+                root.delegate: clipItem
             }
         },
         State {
             name: "windows"
 
             PropertyChanges {
-                target: model
-                values: Windows.items
-            }
-            PropertyChanges {
-                target: root
-                delegate: windowsItem
+                root.delegate: windowsItem
             }
         }
     ]
@@ -236,8 +227,16 @@ StyledListView {
                 }
             }
             PropertyAction {
-                targets: [model, root]
-                properties: "values,delegate"
+                target: root
+                property: "delegate"
+                value: null
+            }
+            ScriptAction {
+                script: root.displayText = root.search.text
+            }
+            PropertyAction {
+                target: root
+                property: "delegate"
             }
             ParallelAnimation {
                 Anim {
@@ -387,5 +386,21 @@ StyledListView {
         WindowSwitcherItem {
             list: root
         }
+    }
+
+    Connections {
+        function onTextChanged() {
+            root.syncDisplayText();
+        }
+
+        target: root.search
+    }
+
+    Connections {
+        function onLauncherChanged() {
+            root.syncDisplayText();
+        }
+
+        target: root.screenState
     }
 }
