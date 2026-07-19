@@ -26,7 +26,7 @@ Item {
     anchors.bottom: parent.bottom
     anchors.leftMargin: Config.bar.position === "left" ? 0 : (-implicitWidth - Tokens.spacing.medium) * offsetScale
     
-    implicitWidth: 160
+    implicitWidth: 120
     visible: offsetScale < 1
     opacity: 1 - offsetScale
 
@@ -57,19 +57,24 @@ Item {
 
                 model: 10
 
-                delegate: StyledRect {
+                delegate: Item {
                     id: wsDelegate
                     readonly property int workspaceId: index + 1
                     // Fallback to Hyprland.activeWorkspace if monitor activeWorkspace is not ready yet
                     readonly property int activeWsId: Hypr.monitorFor(root.screen)?.activeWorkspace?.id ?? Hyprland.activeWorkspace?.id ?? 1
                     readonly property bool isActive: activeWsId === workspaceId
+                    property list<var> windows: Hyprland.toplevels.values.filter(t => t.workspace && t.workspace.id === workspaceId)
 
                     width: ListView.view.width
-                    implicitHeight: Math.max(90, contentCol.implicitHeight + Tokens.padding.medium * 2)
-                    color: isActive ? Colours.tPalette.m3surfaceVariant : Colours.tPalette.m3surfaceContainer
-                    radius: Tokens.rounding.large
-                    border.width: isActive ? 2 : 0
-                    border.color: isActive ? Colours.palette.m3primary : "transparent"
+                    implicitHeight: 96
+
+                    StyledRect {
+                        anchors.fill: parent
+                        color: isActive ? Colours.tPalette.m3surfaceVariant : (wsDelegate.windows.length === 0 ? Colours.tPalette.m3surfaceContainer : "transparent")
+                        radius: Tokens.rounding.large
+                        border.width: isActive ? 2 : 0
+                        border.color: isActive ? Colours.palette.m3primary : "transparent"
+                    }
 
                     DropArea {
                         anchors.fill: parent
@@ -83,36 +88,45 @@ Item {
 
                     StateLayer {
                         anchors.fill: parent
-                        radius: parent.radius
+                        radius: Tokens.rounding.large
                         onClicked: {
                             Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.workspace({ workspace = "${workspaceId}" })` : `workspace ${workspaceId}`);
                             screenState.workspaceDrawer = false;
                         }
                     }
 
-                    ColumnLayout {
-                        id: contentCol
-                        anchors.centerIn: parent
-                        spacing: Tokens.spacing.small
+                    Item {
+                        anchors.fill: parent
+                        anchors.margins: Tokens.padding.medium
 
-                        Flow {
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.maximumWidth: wsDelegate.width - Tokens.padding.medium * 2
-                            spacing: Tokens.spacing.small
-                            
-                            property list<var> windows: Hyprland.toplevels.values.filter(t => t.workspace && t.workspace.id === workspaceId)
+                        RowLayout {
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: wsIdText.top
+                            anchors.bottomMargin: Tokens.spacing.small
+                            spacing: 4
+                            visible: wsDelegate.windows.length > 0
 
                             Repeater {
-                                model: parent.windows
-
-                                delegate: IconImage {
-                                    id: windowIcon
+                                model: wsDelegate.windows
+                                delegate: StyledRect {
+                                    id: windowRect
                                     required property var modelData
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    color: "transparent"
+                                    border.width: 1
+                                    border.color: Colours.palette.m3outlineVariant
+                                    radius: Tokens.rounding.medium
                                     
-                                    source: Icons.getAppIcon(modelData.lastIpcObject.class ?? "", "image-missing")
-                                    implicitSize: 24
-                                    asynchronous: true
-                                    
+                                    IconImage {
+                                        anchors.centerIn: parent
+                                        source: Icons.getAppIcon(windowRect.modelData.lastIpcObject.class ?? "", "image-missing")
+                                        implicitSize: 24
+                                        asynchronous: true
+                                    }
+
                                     Rectangle {
                                         id: dragRect
                                         anchors.fill: parent
@@ -123,7 +137,7 @@ Item {
                                         Drag.active: dragArea.drag.active
                                         Drag.hotSpot.x: width / 2
                                         Drag.hotSpot.y: height / 2
-                                        Drag.source: modelData
+                                        Drag.source: windowRect.modelData
                                     }
 
                                     MouseArea {
@@ -134,7 +148,7 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
                                         
                                         onClicked: {
-                                            Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${modelData.address}" })` : `focuswindow address:0x${modelData.address}`);
+                                            Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${windowRect.modelData.address}" })` : `focuswindow address:0x${windowRect.modelData.address}`);
                                             screenState.workspaceDrawer = false;
                                         }
                                     }
@@ -143,12 +157,15 @@ Item {
                         }
 
                         StyledText {
-                            Layout.alignment: Qt.AlignHCenter
+                            id: wsIdText
                             text: workspaceId.toString()
                             font: Tokens.font.title.large
                             color: isActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
                             font.bold: true
                             font.weight: Font.Bold
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottom: wsDelegate.windows.length > 0 ? parent.bottom : undefined
+                            anchors.verticalCenter: wsDelegate.windows.length === 0 ? parent.verticalCenter : undefined
                         }
                     }
                 }
