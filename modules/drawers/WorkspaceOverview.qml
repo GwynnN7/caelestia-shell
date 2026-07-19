@@ -26,7 +26,7 @@ Item {
     anchors.bottom: parent.bottom
     anchors.leftMargin: Config.bar.position === "left" ? 0 : (-implicitWidth - Tokens.spacing.medium) * offsetScale
     
-    implicitWidth: 120
+    implicitWidth: 200
     visible: offsetScale < 1
     opacity: 1 - offsetScale
 
@@ -63,10 +63,17 @@ Item {
                     // Fallback to Hyprland.activeWorkspace if monitor activeWorkspace is not ready yet
                     readonly property int activeWsId: Hypr.monitorFor(root.screen)?.activeWorkspace?.id ?? Hyprland.activeWorkspace?.id ?? 1
                     readonly property bool isActive: activeWsId === workspaceId
+                    
                     property list<var> windows: Hyprland.toplevels.values.filter(t => t.workspace && t.workspace.id === workspaceId)
+                    
+                    property var hlMonitor: Hypr.monitorFor(root.screen)?.lastIpcObject
+                    property real mw: hlMonitor && hlMonitor.width ? hlMonitor.width : 1920
+                    property real mh: hlMonitor && hlMonitor.height ? hlMonitor.height : 1080
+                    property real mx: hlMonitor && hlMonitor.x ? hlMonitor.x : 0
+                    property real my: hlMonitor && hlMonitor.y ? hlMonitor.y : 0
 
                     width: ListView.view.width
-                    implicitHeight: 96
+                    implicitHeight: width * (mh / mw)
 
                     StyledRect {
                         anchors.fill: parent
@@ -97,74 +104,85 @@ Item {
 
                     Item {
                         anchors.fill: parent
-                        anchors.margins: Tokens.padding.medium
+                        clip: true
 
-                        RowLayout {
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.bottom: wsIdText.top
-                            anchors.bottomMargin: Tokens.spacing.small
-                            spacing: 4
-                            visible: wsDelegate.windows.length > 0
+                        Repeater {
+                            model: wsDelegate.windows
+                            delegate: StyledRect {
+                                id: windowRect
+                                required property var modelData
+                                
+                                property var ipc: modelData.lastIpcObject
+                                
+                                x: ipc && ipc.at ? ((ipc.at[0] - wsDelegate.mx) / wsDelegate.mw * parent.width) : 0
+                                y: ipc && ipc.at ? ((ipc.at[1] - wsDelegate.my) / wsDelegate.mh * parent.height) : 0
+                                width: ipc && ipc.size ? (ipc.size[0] / wsDelegate.mw * parent.width) : 0
+                                height: ipc && ipc.size ? (ipc.size[1] / wsDelegate.mh * parent.height) : 0
 
-                            Repeater {
-                                model: wsDelegate.windows
-                                delegate: StyledRect {
-                                    id: windowRect
-                                    required property var modelData
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
+                                color: Colours.palette.m3surface
+                                border.width: 1
+                                border.color: Colours.palette.m3outlineVariant
+                                radius: Tokens.rounding.small
+                                clip: true
+                                
+                                ScreencopyView {
+                                    anchors.fill: parent
+                                    captureSource: windowRect.modelData.wayland ?? null
+                                    live: windowRect.visible
+                                }
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 32
+                                    height: 32
+                                    radius: Tokens.rounding.small
+                                    color: Colours.tPalette.m3surface
+                                }
+
+                                IconImage {
+                                    anchors.centerIn: parent
+                                    source: Icons.getAppIcon(windowRect.modelData.lastIpcObject.class ?? "", "image-missing")
+                                    implicitSize: 20
+                                    asynchronous: true
+                                }
+
+                                Rectangle {
+                                    id: dragRect
+                                    anchors.fill: parent
                                     color: "transparent"
-                                    border.width: 1
-                                    border.color: Colours.palette.m3outlineVariant
-                                    radius: Tokens.rounding.medium
+                                    border.width: dragArea.drag.active ? 2 : 0
+                                    border.color: Colours.palette.m3primary
                                     
-                                    IconImage {
-                                        anchors.centerIn: parent
-                                        source: Icons.getAppIcon(windowRect.modelData.lastIpcObject.class ?? "", "image-missing")
-                                        implicitSize: 24
-                                        asynchronous: true
-                                    }
+                                    Drag.active: dragArea.drag.active
+                                    Drag.hotSpot.x: width / 2
+                                    Drag.hotSpot.y: height / 2
+                                    Drag.source: windowRect.modelData
+                                }
 
-                                    Rectangle {
-                                        id: dragRect
-                                        anchors.fill: parent
-                                        color: "transparent"
-                                        border.width: dragArea.drag.active ? 2 : 0
-                                        border.color: Colours.palette.m3primary
-                                        
-                                        Drag.active: dragArea.drag.active
-                                        Drag.hotSpot.x: width / 2
-                                        Drag.hotSpot.y: height / 2
-                                        Drag.source: windowRect.modelData
-                                    }
-
-                                    MouseArea {
-                                        id: dragArea
-                                        anchors.fill: parent
-                                        drag.target: dragRect
-                                        drag.axis: Drag.XAndYAxis
-                                        cursorShape: Qt.PointingHandCursor
-                                        
-                                        onClicked: {
-                                            Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${windowRect.modelData.address}" })` : `focuswindow address:0x${windowRect.modelData.address}`);
-                                            screenState.workspaceDrawer = false;
-                                        }
+                                MouseArea {
+                                    id: dragArea
+                                    anchors.fill: parent
+                                    drag.target: dragRect
+                                    drag.axis: Drag.XAndYAxis
+                                    cursorShape: Qt.PointingHandCursor
+                                    
+                                    onClicked: {
+                                        Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.focus({ window = "address:0x${windowRect.modelData.address}" })` : `focuswindow address:0x${windowRect.modelData.address}`);
+                                        screenState.workspaceDrawer = false;
                                     }
                                 }
                             }
                         }
+                    }
 
-                        StyledText {
-                            id: wsIdText
-                            text: workspaceId.toString()
-                            font: Tokens.font.title.large
-                            color: isActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.bottom: wsDelegate.windows.length > 0 ? parent.bottom : undefined
-                            anchors.verticalCenter: wsDelegate.windows.length === 0 ? parent.verticalCenter : undefined
-                        }
+                    StyledText {
+                        id: wsIdText
+                        text: workspaceId.toString()
+                        font: Tokens.font.title.large
+                        color: isActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: Tokens.padding.medium
                     }
                 }
             }
