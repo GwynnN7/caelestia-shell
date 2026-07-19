@@ -43,7 +43,6 @@ Item {
             StyledText {
                 text: qsTr("Workspaces")
                 font: Tokens.font.title.large
-                font.bold: true
                 Layout.alignment: Qt.AlignHCenter
                 Layout.bottomMargin: Tokens.spacing.small
             }
@@ -161,8 +160,6 @@ Item {
                             text: workspaceId.toString()
                             font: Tokens.font.title.large
                             color: isActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-                            font.bold: true
-                            font.weight: Font.Bold
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottom: wsDelegate.windows.length > 0 ? parent.bottom : undefined
                             anchors.verticalCenter: wsDelegate.windows.length === 0 ? parent.verticalCenter : undefined
