@@ -14,37 +14,26 @@ import qs.components.controls
 import qs.services
 import qs.utils
 
-StyledWindow {
+Item {
     id: root
 
     required property ShellScreen screen
 
     readonly property ScreenState screenState: ShellState.forScreen(screen)
-    property real visibleOffset: screenState.workspaceDrawer ? 1 : 0
+    property real offsetScale: screenState.workspaceDrawer ? 0 : 1
 
-    name: "workspaceOverview"
-    WlrLayershell.exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.layer: WlrLayer.Top
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-
-    anchors.top: true
-    anchors.bottom: true
-    anchors.left: true
-
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.leftMargin: (-implicitWidth - Tokens.spacing.medium) * offsetScale
+    
     implicitWidth: 350
-    visible: visibleOffset > 0
+    visible: offsetScale < 1
+    opacity: 1 - offsetScale
 
-    Behavior on visibleOffset { Anim {} }
+    Behavior on offsetScale { Anim {} }
 
-    Rectangle {
-        x: (visibleOffset - 1) * width
-        width: parent.width
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        color: Colours.palette.m3surface
-        radius: Tokens.rounding.large
-        border.width: Config.border.thickness
-        border.color: Colours.palette.m3outlineVariant
+    Item {
+        anchors.fill: parent
 
         ColumnLayout {
             anchors.fill: parent

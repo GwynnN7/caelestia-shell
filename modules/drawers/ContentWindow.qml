@@ -247,6 +247,20 @@ StyledWindow {
         }
 
         PanelBg {
+            id: workspaceOverviewBg
+            
+            panel: panels.workspaceOverview
+            deformAmount: 0.03
+            
+            exclude: []
+            
+            topRightRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "left" ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            bottomRightRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "left" ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            topLeftRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+        }
+
+        PanelBg {
             id: notifsBg
 
             panel: panels.notifications
@@ -450,6 +464,9 @@ StyledWindow {
             }
             notifications.transform: Matrix4x4 {
                 matrix: notifsBg.deformMatrix
+            }
+            workspaceOverview.transform: Matrix4x4 {
+                matrix: workspaceOverviewBg.deformMatrix
             }
             utilities.transform: Matrix4x4 {
                 matrix: utilsBg.deformMatrix

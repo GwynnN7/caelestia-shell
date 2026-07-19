@@ -22,9 +22,5 @@ Variants {
 
             screen: scope.modelData
         }
-
-        WorkspaceOverview {
-            screen: scope.modelData
-        }
     }
 }
