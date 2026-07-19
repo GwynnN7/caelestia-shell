@@ -31,13 +31,15 @@ StyledWindow {
     anchors.left: true
 
     width: 350
-    anchors.leftMargin: (visibleOffset - 1) * width
     visible: visibleOffset > 0
 
     Behavior on visibleOffset { Anim {} }
 
     Rectangle {
-        anchors.fill: parent
+        x: (visibleOffset - 1) * width
+        width: parent.width
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         color: Colours.palette.m3surface
         radius: Tokens.rounding.large
         border.width: Config.border.thickness
