@@ -16,7 +16,7 @@ Item {
     readonly property bool shouldBeActive: screenState.sidebar && Config.sidebar.enabled
     property real offsetScale: shouldBeActive ? 0 : 1
 
-    visible: offsetScale < 1
+    visible: offsetScale < 0.999
     anchors.leftMargin: Config.bar.position === "right" ? (-implicitWidth - 5) * offsetScale : 0
     anchors.rightMargin: Config.bar.position !== "right" ? (-implicitWidth - 5) * offsetScale : 0
     implicitWidth: Tokens.sizes.sidebar.width

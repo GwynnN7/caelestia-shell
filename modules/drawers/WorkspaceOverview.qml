@@ -28,7 +28,7 @@ Item {
     anchors.leftMargin: Config.bar.position === "left" ? 0 : (-implicitWidth - Tokens.spacing.medium) * offsetScale
     
     implicitWidth: 200
-    visible: offsetScale < 1
+    visible: offsetScale < 0.999
     opacity: 1 - offsetScale
 
     Behavior on offsetScale { Anim {} }
@@ -229,34 +229,10 @@ Item {
 
                     DropArea {
                         anchors.fill: parent
-                        keys: ["window"]
                         onDropped: drop => {
                             const client = drop.source;
                             if (client) {
-                                const rawW = client.lastIpcObject.size ? client.lastIpcObject.size[0] : 0;
-                                const rawH = client.lastIpcObject.size ? client.lastIpcObject.size[1] : 0;
-                                const visualW = rawW / wsDelegate.effectiveMw * width;
-                                const visualH = rawH / wsDelegate.effectiveMh * height;
-                                
-                                const visualTopLeftX = drop.x - visualW / 2;
-                                const visualTopLeftY = drop.y - visualH / 2;
-                                
-                                const logicalX = wsDelegate.effectiveMinX + (visualTopLeftX / width) * wsDelegate.effectiveMw + wsDelegate.mx + wsDelegate.inactiveOffsetX;
-                                const logicalY = wsDelegate.effectiveMinY + (visualTopLeftY / height) * wsDelegate.effectiveMh + wsDelegate.my + wsDelegate.inactiveOffsetY;
-                                
-                                const currentLogicalX = client.lastIpcObject.at ? client.lastIpcObject.at[0] : 0;
-                                const currentLogicalY = client.lastIpcObject.at ? client.lastIpcObject.at[1] : 0;
-                                
-                                const dx = Math.round(logicalX - currentLogicalX);
-                                const dy = Math.round(logicalY - currentLogicalY);
-                                
-                                if (client.workspace.id !== workspaceId) {
-                                    Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", workspace = "${workspaceId}", follow = false })` : `movetoworkspacesilent ${workspaceId},address:0x${client.address}`);
-                                }
-                                
-                                if (dx !== 0 || dy !== 0) {
-                                    Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", x = ${dx}, y = ${dy}, relative = true })` : `movewindowpixel ${dx} ${dy},address:0x${client.address}`);
-                                }
+                                Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", workspace = "${workspaceId}", follow = false })` : `movetoworkspace ${workspaceId},address:0x${client.address}`);
                             }
                         }
                     }
