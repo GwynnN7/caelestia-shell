@@ -247,7 +247,7 @@ Item {
                                 if (client.workspace.id !== workspaceId) {
                                     Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", workspace = "${workspaceId}", follow = false })` : `movetoworkspacesilent ${workspaceId},address:0x${client.address}`);
                                 }
-                                Hyprland.dispatch(Hyprland.usingLua ? `"movewindowpixel", "exact ${Math.round(logicalX)} ${Math.round(logicalY)},address:0x${client.address}"` : `movewindowpixel exact ${Math.round(logicalX)} ${Math.round(logicalY)},address:0x${client.address}`);
+                                Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", x = ${Math.round(logicalX)}, y = ${Math.round(logicalY)}, relative = false })` : `movewindowpixel exact ${Math.round(logicalX)} ${Math.round(logicalY)},address:0x${client.address}`);
                             }
                         }
                     }
