@@ -244,10 +244,19 @@ Item {
                                 const logicalX = wsDelegate.effectiveMinX + (visualTopLeftX / width) * wsDelegate.effectiveMw + wsDelegate.mx + wsDelegate.inactiveOffsetX;
                                 const logicalY = wsDelegate.effectiveMinY + (visualTopLeftY / height) * wsDelegate.effectiveMh + wsDelegate.my + wsDelegate.inactiveOffsetY;
                                 
+                                const currentLogicalX = client.lastIpcObject.at ? client.lastIpcObject.at[0] : 0;
+                                const currentLogicalY = client.lastIpcObject.at ? client.lastIpcObject.at[1] : 0;
+                                
+                                const dx = Math.round(logicalX - currentLogicalX);
+                                const dy = Math.round(logicalY - currentLogicalY);
+                                
                                 if (client.workspace.id !== workspaceId) {
                                     Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", workspace = "${workspaceId}", follow = false })` : `movetoworkspacesilent ${workspaceId},address:0x${client.address}`);
                                 }
-                                Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", x = ${Math.round(logicalX)}, y = ${Math.round(logicalY)}, relative = false })` : `movewindowpixel exact ${Math.round(logicalX)} ${Math.round(logicalY)},address:0x${client.address}`);
+                                
+                                if (dx !== 0 || dy !== 0) {
+                                    Hyprland.dispatch(Hyprland.usingLua ? `hl.dsp.window.move({ window = "address:0x${client.address}", x = ${dx}, y = ${dy}, relative = true })` : `movewindowpixel ${dx} ${dy},address:0x${client.address}`);
+                                }
                             }
                         }
                     }
