@@ -25,7 +25,9 @@ Item {
 
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    anchors.leftMargin: (-implicitWidth - Config.border.thickness - Tokens.spacing.medium) * offsetScale
+    property real slideAmount: (-implicitWidth - Config.border.thickness - Tokens.spacing.medium) * offsetScale
+    anchors.leftMargin: slideAmount
+    anchors.rightMargin: slideAmount
     
     implicitWidth: 200
     visible: offsetScale < 0.999

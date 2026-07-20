@@ -256,10 +256,11 @@ StyledWindow {
             
             exclude: []
             
-            topRightRadius: radius
-            bottomRightRadius: radius
-            topLeftRadius: GlobalConfig.appearance.islands ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius
-            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius
+            property bool isAnchoredRight: Config.bar.position === "right"
+            topRightRadius: GlobalConfig.appearance.islands ? radius : (!isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            bottomRightRadius: GlobalConfig.appearance.islands ? radius : (!isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            topLeftRadius: GlobalConfig.appearance.islands ? radius : (isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : (isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
         }
 
         PanelBg {
