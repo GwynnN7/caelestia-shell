@@ -17,7 +17,7 @@ Item {
     property real offsetScale: shouldBeActive ? 0 : 1
 
     visible: offsetScale < 0.999
-    anchors.rightMargin: (-implicitWidth - 5) * offsetScale
+    anchors.rightMargin: (-implicitWidth - Config.border.thickness - Tokens.spacing.medium) * offsetScale
     implicitWidth: Tokens.sizes.sidebar.width
     opacity: 1 - offsetScale
 

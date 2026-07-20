@@ -25,7 +25,7 @@ Item {
 
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    anchors.leftMargin: (-implicitWidth - Tokens.spacing.medium) * offsetScale
+    anchors.leftMargin: (-implicitWidth - Config.border.thickness - Tokens.spacing.medium) * offsetScale
     
     implicitWidth: 200
     visible: offsetScale < 0.999
