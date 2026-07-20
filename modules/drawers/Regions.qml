@@ -49,6 +49,13 @@ Region {
     }
 
     R {
+        id: workspaceOverviewRegion
+
+        panel: root.panels.workspaceOverview
+        width: panel.width * (1 - root.panels.workspaceOverview.offsetScale) + root.borderThickness
+    }
+
+    R {
         id: sidebarRegion
 
         panel: root.panels.sidebar

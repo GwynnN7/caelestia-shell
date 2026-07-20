@@ -27,7 +27,7 @@ StyledListView {
     orientation: ListView.Vertical
 
     layer.enabled: true
-    layer.effect: MultiEffect { maskEnabled: true;
+    layer.effect: Mask {
         maskSource: mask
 
         Rectangle {

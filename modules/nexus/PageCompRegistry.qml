@@ -205,6 +205,23 @@ QtObject {
             }
         },
         Component {
+            // Hyprland
+            StackPage {
+                Component {
+                    HyprlandPage {}
+                }
+                Component {
+                    HyprVariablesPage {}
+                }
+                Component {
+                    HyprKeybindsPage {}
+                }
+                Component {
+                    UserConfigPage {}
+                }
+            }
+        },
+        Component {
             // Services
             StackPage {
                 Component {
@@ -235,23 +252,6 @@ QtObject {
             StackPage {
                 Component {
                     LanguageAndRegion {}
-                }
-            }
-        },
-        Component {
-            // Hyprland
-            StackPage {
-                Component {
-                    HyprlandPage {}
-                }
-                Component {
-                    HyprVariablesPage {}
-                }
-                Component {
-                    HyprKeybindsPage {}
-                }
-                Component {
-                    UserConfigPage {}
                 }
             }
         },

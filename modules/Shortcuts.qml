@@ -230,6 +230,19 @@ Scope {
         }
     }
 
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "workspaceOverview"
+        description: "Toggle workspace overview"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const screenState = ShellState.forActive();
+            screenState.workspaceDrawer = !screenState.workspaceDrawer;
+        }
+    }
+
     IpcHandler {
         function toggle(drawer: string): void {
             if (list().split("\n").includes(drawer)) {
@@ -280,6 +293,26 @@ Scope {
         }
 
         target: "nexus"
+    }
+
+    IpcHandler {
+        function openEmoji(): void {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}emoji `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+
+        function openClipboard(): void {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}clipboard `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+
+        target: "launcher"
     }
 
     IpcHandler {

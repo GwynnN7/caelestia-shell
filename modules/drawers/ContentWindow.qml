@@ -117,6 +117,7 @@ StyledWindow {
         active: {
             const s = root.screenState;
             const conf = root.contentItem.Config;
+            if (s.workspaceDrawer) return true;
             if ((s.launcher && conf.launcher.enabled) || (s.session && conf.session.enabled) || (s.sidebar && conf.sidebar.enabled))
                 return true;
             if (!conf.dashboard.showOnHover && s.dashboard && conf.dashboard.enabled)
@@ -127,6 +128,7 @@ StyledWindow {
         }
         windows: [root]
         onCleared: {
+            root.screenState.workspaceDrawer = false;
             root.screenState.launcher = false;
             root.screenState.session = false;
             root.screenState.sidebar = false;
@@ -244,6 +246,21 @@ StyledWindow {
             deformAmount: 0.25
             x: panels.osdWrapper.x + panels.leftMargin
             implicitWidth: panels.osdWrapper.width
+        }
+
+        PanelBg {
+            id: workspaceOverviewBg
+            
+            panel: panels.workspaceOverview
+            deformAmount: 0.03
+            
+            exclude: []
+            
+            property bool isAnchoredRight: Config.bar.position === "right"
+            topRightRadius: GlobalConfig.appearance.islands ? radius : (!isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            bottomRightRadius: GlobalConfig.appearance.islands ? radius : (!isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            topLeftRadius: GlobalConfig.appearance.islands ? radius : (isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
+            bottomLeftRadius: GlobalConfig.appearance.islands ? radius : (isAnchoredRight ? radius : Math.max(0, Math.min(1, panels.workspaceOverview.offsetScale / 0.3)) * radius)
         }
 
         PanelBg {
@@ -451,6 +468,9 @@ StyledWindow {
             notifications.transform: Matrix4x4 {
                 matrix: notifsBg.deformMatrix
             }
+            workspaceOverview.transform: Matrix4x4 {
+                matrix: workspaceOverviewBg.deformMatrix
+            }
             utilities.transform: Matrix4x4 {
                 matrix: utilsBg.deformMatrix
             }
@@ -499,6 +519,7 @@ StyledWindow {
         property real deformAmount: 0.15
         Config.screen: root.screen.name
 
+        visible: panel.visible
         group: panel.visible ? blobGroup : null
         x: panel.x + panels.leftMargin
         y: panel.y + panels.topMargin

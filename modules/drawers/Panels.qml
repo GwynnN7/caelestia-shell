@@ -34,6 +34,7 @@ Item {
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
     readonly property alias sidebar: sidebar
+    readonly property alias workspaceOverview: workspaceOverview
 
     readonly property real leftMargin: anchors.leftMargin
     readonly property real rightMargin: anchors.rightMargin
@@ -91,6 +92,11 @@ Item {
                 target: sidebar
                 anchors.left: parent.left
                 anchors.right: undefined
+            }
+            AnchorChanges {
+                target: workspaceOverview
+                anchors.left: undefined
+                anchors.right: parent.right
             }
         },
 
@@ -255,5 +261,12 @@ Item {
 
         anchors.topMargin: (Config.bar.position === "top" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : -notifications.anchors.topMargin
         anchors.bottomMargin: (Config.bar.position === "bottom" && shouldPush) ? (popoutsWrapper.implicitHeight + Tokens.spacing.medium) : 0
+    }
+
+    WorkspaceOverview {
+        id: workspaceOverview
+        screen: root.screen
+
+        anchors.left: parent.left
     }
 }
