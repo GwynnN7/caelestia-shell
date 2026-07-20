@@ -15,66 +15,55 @@ Item {
     property alias playing: mediaPlayer.playing
     property alias playbackState: mediaPlayer.playbackState
 
-    function checkPauseState() {
-        if (!root.screen)
-            return;
+    readonly property bool shouldPause: {
+        if (GlobalConfig.background.videoWallpaperPaused)
+            return true;
 
-        if (GlobalConfig.background.videoWallpaperPaused) {
-            if (mediaPlayer.playing)
-                mediaPlayer.pause();
-            return;
-        }
-
-        const pauseOnAllDisplays = GlobalConfig.background.videoWallpaperPauseOnAllDisplays;
         const pauseOnFullscreen = GlobalConfig.background.videoWallpaperPauseOnFullscreen;
         const pauseOnTiled = GlobalConfig.background.videoWallpaperPauseOnTiled;
 
-        let shouldPause = false;
+        if (!pauseOnFullscreen && !pauseOnTiled)
+            return false;
 
-        if (pauseOnAllDisplays) {
-            let anyFullscreen = false;
-            let anyTiled = false;
-            for (const monitor of Hypr.monitors.values) {
-                const toplevels = monitor?.activeWorkspace?.toplevels?.values || [];
-                if (pauseOnFullscreen && toplevels.some(t => t?.lastIpcObject?.fullscreen > 1))
-                    anyFullscreen = true;
-                if (pauseOnTiled && toplevels.some(t => !t?.lastIpcObject?.floating && !t?.lastIpcObject?.fullscreen))
-                    anyTiled = true;
-            }
-            shouldPause = anyFullscreen || anyTiled;
-        } else {
-            const monitor = Hypr.monitorFor(root.screen);
-            if (!monitor)
-                return;
-
-            const toplevels = monitor.activeWorkspace?.toplevels?.values || [];
-
+        const checkToplevels = toplevels => {
             if (pauseOnFullscreen && toplevels.some(t => t?.lastIpcObject?.fullscreen > 1))
-                shouldPause = true;
+                return true;
             if (pauseOnTiled && toplevels.some(t => !t?.lastIpcObject?.floating && !t?.lastIpcObject?.fullscreen))
-                shouldPause = true;
+                return true;
+            return false;
+        };
+
+        if (GlobalConfig.background.videoWallpaperPauseOnAllDisplays) {
+            return Hypr.monitors.values.some(monitor => checkToplevels(monitor?.activeWorkspace?.toplevels?.values || []));
         }
 
-        if (shouldPause && mediaPlayer.playing) {
-            mediaPlayer.pause();
-        } else if (!shouldPause && !mediaPlayer.playing && root.path) {
+        if (!root.screen)
+            return false;
+
+        const monitor = Hypr.monitorFor(root.screen);
+        if (!monitor)
+            return false;
+
+        return checkToplevels(monitor.activeWorkspace?.toplevels?.values || []);
+    }
+
+    onShouldPauseChanged: applyPauseState()
+
+    function applyPauseState(): void {
+        if (root.shouldPause) {
+            if (mediaPlayer.playing)
+                mediaPlayer.pause();
+        } else if (root.path && !mediaPlayer.playing) {
             mediaPlayer.play();
         }
     }
 
-    function checkMuteState() {
-        const muteOnMedia = GlobalConfig.background.videoWallpaperMuteOnMedia;
-        const soundEnabled = GlobalConfig.background.videoWallpaperSoundEnabled;
-        const isPlaying = Players.active?.isPlaying ?? false;
-
-        audioOutput.muted = !root.isFirstInstance || !soundEnabled || (muteOnMedia && isPlaying);
-    }
+    readonly property bool shouldMute: !root.isFirstInstance || !GlobalConfig.background.videoWallpaperSoundEnabled || (GlobalConfig.background.videoWallpaperMuteOnMedia && (Players.active?.isPlaying ?? false))
 
     Component.onCompleted: {
         isFirstInstance = (VideoWallpaperPlayer.firstInstance === null);
         VideoWallpaperPlayer.firstInstance = root;
-        Qt.callLater(checkPauseState);
-        Qt.callLater(checkMuteState);
+        Qt.callLater(applyPauseState);
     }
 
     Component.onDestruction: {
@@ -85,12 +74,13 @@ Item {
 
     onPathChanged: {
         mediaPlayer.source = path || "";
-        if (path)
+        if (path && !root.shouldPause)
             mediaPlayer.play();
     }
 
     AudioOutput {
         id: audioOutput
+        muted: root.shouldMute
     }
 
     MediaPlayer {
@@ -112,56 +102,5 @@ Item {
         Component.onDestruction: {
             mediaPlayer.stop();
         }
-    }
-
-    Timer {
-        id: mediaCheckTimer
-
-        interval: 500
-        running: GlobalConfig.background.videoWallpaperMuteOnMedia
-        repeat: true
-
-        onTriggered: checkMuteState()
-    }
-
-    Timer {
-        id: checkTimer
-
-        interval: 100
-        running: true
-        repeat: true
-
-        onTriggered: {
-            checkPauseState();
-            checkMuteState();
-        }
-    }
-
-    Connections {
-        function onVideoWallpaperPausedChanged() {
-            checkPauseState();
-        }
-
-        function onVideoWallpaperPauseOnAllDisplaysChanged() {
-            checkPauseState();
-        }
-
-        function onVideoWallpaperPauseOnFullscreenChanged() {
-            checkPauseState();
-        }
-
-        function onVideoWallpaperPauseOnTiledChanged() {
-            checkPauseState();
-        }
-
-        function onVideoWallpaperMuteOnMediaChanged() {
-            checkMuteState();
-        }
-
-        function onVideoWallpaperSoundEnabledChanged() {
-            checkMuteState();
-        }
-
-        target: GlobalConfig.background
     }
 }
