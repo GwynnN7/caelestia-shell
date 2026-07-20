@@ -67,11 +67,23 @@ Build dependencies:
 -   [`cmake`](https://cmake.org)
 -   [`ninja`](https://github.com/ninja-build/ninja)
 
-To install the shell, first install the `pkgit` package manager (available on the AUR as `pkgit-git`).
+To install the shell, you can either use `[pkgit](https://git.symlinx.net/pkgit)` or `[AUR (In Testing)](https://aur.archlinux.org/packages/caelestia-shell-git)`
+Using `pkgit`:
+Install `[pkgit](https://git.symlinx.net/pkgit)` (also available on the AUR as `pkgit-git`).
 Then you can simply install the shell directly from GitHub without cloning it:
 
 ```sh
 pkgit -i https://github.com/dim-ghub/caelestia-shell
+```
+
+Using `AUR`
+if `paru`:
+```sh
+paru -S dim-caelestia-shell-git
+```
+if `yay`:
+```
+yay -S dim-caelestia-shell-git
 ```
 
 > [!TIP]
@@ -307,6 +319,8 @@ To cleanly uninstall the shell and its components, simply run `pkgit`'s uninstal
 ```sh
 pkgit -r caelestia-shell
 ```
+
+or your AUR helper's uninstall command.
 
 ## Configuring
 
