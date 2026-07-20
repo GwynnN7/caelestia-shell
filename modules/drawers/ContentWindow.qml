@@ -518,6 +518,7 @@ StyledWindow {
         property real deformAmount: 0.15
         Config.screen: root.screen.name
 
+        visible: panel.visible
         group: panel.visible ? blobGroup : null
         x: panel.x + panels.leftMargin
         y: panel.y + panels.topMargin
