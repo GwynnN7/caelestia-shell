@@ -30,6 +30,7 @@ class DashboardConfig : public ConfigObject {
     CONFIG_PROPERTY(bool, showMedia, true)
     CONFIG_PROPERTY(bool, showPerformance, true)
     CONFIG_PROPERTY(bool, showWeather, true)
+    CONFIG_PROPERTY(bool, showWeatherLocation, true)
     CONFIG_PROPERTY(bool, showTerminal, true)
     CONFIG_PROPERTY(bool, showHyprlandSplash, false)
     CONFIG_PROPERTY(bool, colorizeMediaGif, true)

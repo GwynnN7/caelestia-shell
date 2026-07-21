@@ -215,12 +215,34 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
+            last: true
             text: qsTr("Terminal")
             checked: Config.dashboard.showTerminal
             onToggled: GlobalConfig.dashboard.showTerminal = checked
         }
 
+        // General
+        SectionHeader {
+            text: qsTr("General")
+        }
+
         ToggleRow {
+            first: true
+            last: true
+            Layout.fillWidth: true
+            text: qsTr("Hyprland splash")
+            subtext: qsTr("Show the current Hyprland splash text")
+            checked: Config.dashboard.showHyprlandSplash
+            onToggled: GlobalConfig.dashboard.showHyprlandSplash = checked
+        }
+
+        // Media
+        SectionHeader {
+            text: qsTr("Media")
+        }
+
+        ToggleRow {
+            first: true
             Layout.fillWidth: true
             text: qsTr("Recolor media GIF")
             subtext: qsTr("Apply system theme colors to the media GIF")
@@ -245,6 +267,7 @@ PageBase {
         }
 
         ToggleRow {
+            last: true
             Layout.fillWidth: true
             text: qsTr("Sync with music")
             subtext: qsTr("Randomly pick shapes to the beat instead of bass level")
@@ -252,13 +275,19 @@ PageBase {
             onToggled: GlobalConfig.dashboard.syncMediaShapesToBeat = checked
         }
 
+        // Weather
+        SectionHeader {
+            text: qsTr("Weather")
+        }
+
         ToggleRow {
-            Layout.fillWidth: true
+            first: true
             last: true
-            text: qsTr("Hyprland splash")
-            subtext: qsTr("Show the current Hyprland splash text")
-            checked: Config.dashboard.showHyprlandSplash
-            onToggled: GlobalConfig.dashboard.showHyprlandSplash = checked
+            Layout.fillWidth: true
+            text: qsTr("Weather location")
+            subtext: qsTr("Show the location in the weather tab")
+            checked: Config.dashboard.showWeatherLocation !== false
+            onToggled: GlobalConfig.dashboard.showWeatherLocation = checked
         }
 
         // Performance widgets

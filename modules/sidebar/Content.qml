@@ -22,7 +22,12 @@ Item {
 
     Connections {
         target: GlobalConfig.ai
-        function onEnableOllamaChanged() { checkAiTab(); }
+        function onEnableOllamaChanged() { checkTabs(); }
+    }
+
+    Connections {
+        target: GlobalConfig.sidebar
+        function onShowNewsChanged() { checkTabs(); }
     }
 
     Connections {
@@ -30,20 +35,25 @@ Item {
         function onSidebarChanged() {
             if (root.screenState.sidebar) {
                 root.activeTab = Visibilities.initialSidebarTab;
-                checkAiTab();
+                checkTabs();
             }
         }
     }
 
-    function checkAiTab() {
+    function checkTabs() {
         if (!GlobalConfig.ai.enableOllama) {
             if (root.activeTab === "ai") {
                 root.activeTab = "notifications";
             }
         }
+        if (GlobalConfig.sidebar.showNews === false) {
+            if (root.activeTab === "news") {
+                root.activeTab = "notifications";
+            }
+        }
     }
 
-    Component.onCompleted: checkAiTab()
+    Component.onCompleted: checkTabs()
 
     GridLayout {
         id: layout
@@ -70,6 +80,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 64
                     clip: true
+                    visible: tabRepeater.count > 1
 
                     RowLayout {
                         anchors.fill: parent
@@ -86,7 +97,9 @@ Item {
                                 if (GlobalConfig.ai.enableOllama) {
                                     tabs.push({ id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" });
                                 }
-                                tabs.push({ id: "news", label: qsTr("News"), icon: "newspaper" });
+                                if (GlobalConfig.sidebar.showNews !== false) {
+                                    tabs.push({ id: "news", label: qsTr("News"), icon: "newspaper" });
+                                }
                                 return tabs;
                             }
 
@@ -169,6 +182,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 1
                     color: Colours.palette.m3outlineVariant
+                    visible: headerContainer.visible
                 }
 
                 // Content Panel Stack
