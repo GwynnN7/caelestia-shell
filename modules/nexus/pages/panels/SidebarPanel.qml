@@ -44,5 +44,20 @@ PageBase {
             stepSize: 5
             onMoved: v => GlobalConfig.sidebar.dragThreshold = v
         }
+
+        // News
+        SectionHeader {
+            text: qsTr("News")
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            first: true
+            last: true
+            text: qsTr("Show News Tab")
+            subtext: qsTr("Show the Arch Linux news tab in the sidebar")
+            checked: Config.sidebar.showNews !== false
+            onToggled: GlobalConfig.sidebar.showNews = checked
+        }
     }
 }

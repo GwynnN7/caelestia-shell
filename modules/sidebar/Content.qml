@@ -50,6 +50,11 @@ Item {
             aiChatUsageAcquired = false;
             sharedAiController.releaseChatUsage();
         }
+        if (GlobalConfig.sidebar.showNews === false) {
+            if (root.activeTab === "news") {
+                root.activeTab = "notifications";
+            }
+        }
     }
 
     GridLayout {
@@ -77,6 +82,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 64
                     clip: true
+                    visible: tabRepeater.count > 1
 
                     RowLayout {
                         anchors.fill: parent
@@ -192,6 +198,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 1
                     color: Colours.palette.m3outlineVariant
+                    visible: headerContainer.visible
                 }
 
                 // Content Panel Stack
