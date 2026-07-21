@@ -9,8 +9,11 @@ import qs.services
 Column {
     id: root
 
+    required property var popouts
+    property bool _isSidebarOpen: popouts && popouts.sidebarOpen && popouts.isHorizontal
+
     spacing: Tokens.spacing.medium
-    width: Tokens.sizes.bar.batteryWidth
+    width: Math.max(Tokens.sizes.bar.batteryWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)
 
     StyledText {
         text: UPower.displayDevice.isLaptopBattery ? qsTr("Remaining: %1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : qsTr("No battery detected")
