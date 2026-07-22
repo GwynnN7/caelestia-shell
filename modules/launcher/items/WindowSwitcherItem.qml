@@ -64,7 +64,7 @@ Item {
 
         ScreencopyView {
             anchors.fill: parent
-            captureSource: root.modelData?.wayland ?? null
+            captureSource: (root.modelData?.wayland && !root.modelData.wayland.closed && (root.modelData.lastIpcObject?.mapped ?? true)) ? root.modelData.wayland : null
             live: true
             smooth: !(root.PathView.view?.moving ?? false)
         }

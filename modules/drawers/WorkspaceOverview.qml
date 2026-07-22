@@ -335,7 +335,7 @@ Item {
 
                                         ScreencopyView {
                                             anchors.fill: parent
-                                            captureSource: windowContainer.modelData.wayland ?? null
+                                            captureSource: (windowContainer.modelData?.wayland && !windowContainer.modelData.wayland.closed && (windowContainer.modelData.lastIpcObject?.mapped ?? true)) ? windowContainer.modelData.wayland : null
                                             live: windowBg.visible
                                         }
 

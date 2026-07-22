@@ -183,7 +183,7 @@ RowLayout {
                             radius: Tokens.rounding.small
 
                             ScreencopyView {
-                                captureSource: modelData.wayland || null // qmllint disable unresolved-type
+                                captureSource: (modelData?.wayland && !modelData.wayland.closed && (modelData.lastIpcObject?.mapped ?? true)) ? modelData.wayland : null // qmllint disable unresolved-type
                                 live: visible
                                 constraintSize.width: targetWidth
                                 constraintSize.height: targetHeight
