@@ -333,9 +333,9 @@ Item {
                                             }
                                         }
 
-                                        ScreencopyView {
+                                        SafeScreencopy {
                                             anchors.fill: parent
-                                            captureSource: windowContainer.modelData.wayland ?? null
+                                            captureSource: (windowContainer.modelData?.wayland && (windowContainer.modelData.lastIpcObject?.mapped ?? true)) ? windowContainer.modelData.wayland : null
                                             live: windowBg.visible
                                         }
 

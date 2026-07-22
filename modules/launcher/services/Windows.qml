@@ -33,9 +33,15 @@ QtObject {
     function query(search: string): var {
         let results = items;
         if (GlobalConfig.launcher.windowSwitcherActiveWorkspaceOnly) {
-            const activeWs = Hyprland.focusedMonitor?.activeWorkspace?.name;
-            if (activeWs) {
-                results = results.filter(w => w.workspace === activeWs);
+            const monitor = Hyprland.focusedMonitor;
+            const specialWs = monitor?.lastIpcObject?.specialWorkspace?.name;
+            if (specialWs) {
+                results = results.filter(w => w.workspace === specialWs);
+            } else {
+                const activeWs = monitor?.activeWorkspace?.name;
+                if (activeWs) {
+                    results = results.filter(w => w.workspace === activeWs);
+                }
             }
         }
         
