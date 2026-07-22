@@ -182,8 +182,8 @@ RowLayout {
                             color: "transparent"
                             radius: Tokens.rounding.small
 
-                            ScreencopyView {
-                                captureSource: (modelData?.wayland && !modelData.wayland.closed && (modelData.lastIpcObject?.mapped ?? true)) ? modelData.wayland : null // qmllint disable unresolved-type
+                            SafeScreencopy {
+                                captureSource: (modelData?.wayland && (modelData.lastIpcObject?.mapped ?? true)) ? modelData.wayland : null // qmllint disable unresolved-type
                                 live: visible
                                 constraintSize.width: targetWidth
                                 constraintSize.height: targetHeight

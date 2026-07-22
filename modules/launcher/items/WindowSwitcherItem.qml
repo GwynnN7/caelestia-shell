@@ -62,10 +62,10 @@ Item {
         implicitWidth: Tokens.sizes.launcher.windowSwitcherWidth
         implicitHeight: implicitWidth / 16 * 9
 
-        ScreencopyView {
+        SafeScreencopy {
             anchors.fill: parent
-            captureSource: (root.modelData?.wayland && !root.modelData.wayland.closed && (root.modelData.lastIpcObject?.mapped ?? true)) ? root.modelData.wayland : null
-            live: true
+            captureSource: (root.modelData?.wayland && (root.modelData.lastIpcObject?.mapped ?? true)) ? root.modelData.wayland : null
+            live: root.list.screenState.launcher && root.opacity > 0
             smooth: !(root.PathView.view?.moving ?? false)
         }
     }
