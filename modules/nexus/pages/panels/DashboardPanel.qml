@@ -267,12 +267,20 @@ PageBase {
         }
 
         ToggleRow {
-            last: true
             Layout.fillWidth: true
             text: qsTr("Sync with music")
             subtext: qsTr("Randomly pick shapes to the beat instead of bass level")
             checked: Config.dashboard.syncMediaShapesToBeat
             onToggled: GlobalConfig.dashboard.syncMediaShapesToBeat = checked
+        }
+
+        ToggleRow {
+            last: true
+            Layout.fillWidth: true
+            text: qsTr("Replace lyrics with visuals")
+            subtext: qsTr("Show the GIF/shapes in the media tab instead of lyrics")
+            checked: Config.dashboard.replaceMediaLyricsWithVisuals
+            onToggled: GlobalConfig.dashboard.replaceMediaLyricsWithVisuals = checked
         }
 
         // Weather
