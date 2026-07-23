@@ -27,6 +27,8 @@ Item {
         Anim {}
     }
 
+    property bool isStreaming: false
+
     Loader {
         id: content
 
@@ -45,6 +47,7 @@ Item {
             screenState: root.screenState
             popouts: root.popouts
             utilities: root.utilities
+            onSidebarStreamingChanged: root.isStreaming = sidebarStreaming
         }
     }
 }
