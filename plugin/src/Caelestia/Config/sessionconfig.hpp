@@ -17,8 +17,8 @@ class SessionIcons : public ConfigObject {
     CONFIG_PROPERTY(QString, logout, u"logout"_s)
     CONFIG_PROPERTY(QString, suspend, u"bedtime"_s)
     CONFIG_PROPERTY(QString, reboot, u"cached"_s)
+    CONFIG_PROPERTY(QString, steam, u"stadia_controller"_s)
     CONFIG_PROPERTY(QString, windows, u"window"_s)
-    CONFIG_PROPERTY(QString, bios, u"memory"_s)
 
 public:
     explicit SessionIcons(QObject* parent = nullptr)
@@ -33,8 +33,8 @@ class SessionCommands : public ConfigObject {
     CONFIG_PROPERTY(QStringList, logout, { u"logout"_s })
     CONFIG_PROPERTY(QStringList, suspend, { u"suspend"_s })
     CONFIG_PROPERTY(QStringList, reboot, { u"reboot"_s })
-    CONFIG_PROPERTY(QStringList, windows, { u"reboot"_s })
-    CONFIG_PROPERTY(QStringList, bios, { u"bios"_s})
+    CONFIG_PROPERTY(QStringList, steam, { u"bios"_s })
+    CONFIG_PROPERTY(QStringList, windows, { u"bios"_s })
     CONFIG_PROPERTY(QStringList, lamp, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
     CONFIG_PROPERTY(QStringList, generic, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
     CONFIG_PROPERTY(QStringList, automode, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })

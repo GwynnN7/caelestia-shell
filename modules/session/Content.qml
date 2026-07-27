@@ -94,8 +94,18 @@ Column {
         command: Config.session.commands.logout
 
         KeyNavigation.up: suspend
-        KeyNavigation.down: windows
+        KeyNavigation.down: steam
     }    
+
+    SessionButton {
+        id: steam
+
+        icon: Config.session.icons.steam
+        command: Config.session.commands.steam
+
+        KeyNavigation.up: logout
+        KeyNavigation.down: windows
+    }
 
     SessionButton {
         id: windows
@@ -103,17 +113,7 @@ Column {
         icon: Config.session.icons.windows
         command: Config.session.commands.windows
 
-        KeyNavigation.up: logout
-        KeyNavigation.down: bios
-    }
-
-    SessionButton {
-        id: bios
-
-        icon: Config.session.icons.bios
-        command: Config.session.commands.bios
-
-        KeyNavigation.up: windows
+        KeyNavigation.up: steam
         KeyNavigation.down: shutdown
     }
 
