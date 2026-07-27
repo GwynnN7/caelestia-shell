@@ -9,41 +9,51 @@ Item {
     id: root
 
     required property Props props
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     property var popouts
     property var utilities
     property bool sidebarStreaming: false
 
     readonly property bool isBarHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-    readonly property bool showPopoutSeparator: isBarHorizontal && root.visibilities.sidebar && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow" && popouts.currentName !== "github"
+    readonly property bool showPopoutSeparator: isBarHorizontal && root.screenState.sidebar && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow" && popouts.currentName !== "github"
 
     property string activeTab: "notifications"
 
     Connections {
         target: GlobalConfig.ai
-        function onEnableOllamaChanged() { checkAiTab(); }
+        function onEnableOllamaChanged() { checkTabs(); }
     }
 
     Connections {
-        target: root.visibilities
+        target: GlobalConfig.sidebar
+        function onShowNewsChanged() { checkTabs(); }
+    }
+
+    Connections {
+        target: root.screenState
         function onSidebarChanged() {
-            if (root.visibilities.sidebar) {
+            if (root.screenState.sidebar) {
                 root.activeTab = Visibilities.initialSidebarTab;
-                checkAiTab();
+                checkTabs();
             }
         }
     }
 
-    function checkAiTab() {
+    function checkTabs() {
         if (!GlobalConfig.ai.enableOllama) {
             if (root.activeTab === "ai") {
                 root.activeTab = "notifications";
             }
         }
+        if (GlobalConfig.sidebar.showNews === false) {
+            if (root.activeTab === "news") {
+                root.activeTab = "notifications";
+            }
+        }
     }
 
-    Component.onCompleted: checkAiTab()
+    Component.onCompleted: checkTabs()
 
     GridLayout {
         id: layout
@@ -70,6 +80,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 64
                     clip: true
+                    visible: tabRepeater.count > 1
 
                     RowLayout {
                         anchors.fill: parent
@@ -86,7 +97,9 @@ Item {
                                 if (GlobalConfig.ai.enableOllama) {
                                     tabs.push({ id: "ai", label: qsTr("AI Assistant"), icon: "smart_toy" });
                                 }
-                                tabs.push({ id: "news", label: qsTr("News"), icon: "newspaper" });
+                                if (GlobalConfig.sidebar.showNews !== false) {
+                                    tabs.push({ id: "news", label: qsTr("News"), icon: "newspaper" });
+                                }
                                 return tabs;
                             }
 
@@ -169,6 +182,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 1
                     color: Colours.palette.m3outlineVariant
+                    visible: headerContainer.visible
                 }
 
                 // Content Panel Stack
@@ -180,6 +194,7 @@ Item {
                     property int activeIndex: indicator.activeIndex
 
                     NotifDock {
+                        objectName: "sidebarNotifications"
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         width: parent.width
@@ -187,7 +202,7 @@ Item {
                         opacity: root.activeTab === "notifications" ? 1 : 0
                         visible: opacity > 0
                         props: root.props
-                        visibilities: root.visibilities
+                        screenState: root.screenState
                         
                         Behavior on x { Anim { type: Anim.DefaultSpatial } }
                         Behavior on opacity { Anim { type: Anim.DefaultSpatial } }

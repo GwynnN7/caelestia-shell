@@ -17,7 +17,7 @@ import "../../background"
 StyledRect {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property BarPopouts.Wrapper popouts
 
     readonly property var quickToggles: {
@@ -45,7 +45,7 @@ StyledRect {
             seenIds.add(item.id);
 
             if (item.id === "vpn") {
-                return GlobalConfig.utilities.vpn.provider.some(p => typeof p === "object" ? (p.enabled === true) : false);
+                return GlobalConfig.utilities.vpn.selectedProvider.length > 0;
             }
 
             return true;
@@ -55,7 +55,6 @@ StyledRect {
     readonly property int splitIndex: Math.ceil(quickToggles.length / 2)
     readonly property bool needExtraRow: quickToggles.length > 6
 
-    Layout.fillWidth: true
     implicitHeight: layout.implicitHeight + Tokens.padding.extraLargeIncreased
 
     radius: Tokens.rounding.large
@@ -134,7 +133,7 @@ StyledRect {
                         inactiveOnColour: Colours.palette.m3onSurfaceVariant
                         isToggle: false
                         onClicked: {
-                            root.visibilities.utilities = false;
+                            root.screenState.utilities = false;
                             WindowFactory.create();
                         }
                     }
@@ -160,10 +159,22 @@ StyledRect {
                     delegate: Toggle {
                         icon: "vpn_key"
                         checked: VPN.connected && VPN.status.state !== "needs-auth" && VPN.status.state !== "error"
-                        enabled: !VPN.connecting
+                        enabled: !VPN.connecting && !VPN.disconnecting
                         isToggle: VPN.status.state !== "needs-auth" && VPN.status.state !== "error"
                         inactiveOnColour: Colours.palette.m3onSurfaceVariant
                         onClicked: VPN.toggle()
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "quickshare"
+                    delegate: Toggle {
+                        icon: "near_me"
+                        checked: QuickShare.isEnabled
+                        onClicked: {
+                            const newState = !QuickShare.isEnabled;
+                            QuickShare.setEnabled(newState);
+                            QuickShare.setVisible(newState);
+                        }
                     }
                 }
                 DelegateChoice {

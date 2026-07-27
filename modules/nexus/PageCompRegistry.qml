@@ -15,6 +15,9 @@ import qs.modules.nexus.pages.panels
 import qs.modules.nexus.pages.services
 import qs.modules.nexus.pages.wallandstyle
 import qs.modules.nexus.pages.panels.taskbar
+import qs.modules.nexus.pages.background
+import qs.modules.nexus.pages.tokens
+import qs.modules.nexus.pages.hyprland
 
 QtObject {
     id: root
@@ -39,6 +42,52 @@ QtObject {
                 Component {
                     WallhavenPage {}
                 }
+                Component {
+                    WallpaperEnginePage {}
+                }
+            }
+        },
+        Component {
+            // Background elements
+            StackPage {
+                Component {
+                    BackgroundPage {}
+                }
+                Component {
+                    DesktopClockPage {}
+                }
+                Component {
+                    DesktopLyricsPage {}
+                }
+                Component {
+                    VisualiserPage {}
+                }
+                Component {
+                    ShimejiPage {}
+                }
+            }
+        },
+        Component {
+            // Shell Tokens
+            StackPage {
+                Component {
+                    TokensPage {}
+                }
+                Component {
+                    RoundingSpacingPage {}
+                }
+                Component {
+                    FontSizesPage {}
+                }
+                Component {
+                    BarDashboardPage {}
+                }
+                Component {
+                    WindowLockPage {}
+                }
+                Component {
+                    ShellElementsPage {}
+                }
             }
         },
 
@@ -51,6 +100,21 @@ QtObject {
                 }
                 Component {
                     EthernetDetailPage {}
+                }
+                Component {
+                    AddNetworkPage {}
+                }
+                Component {
+                    NetworkDetailPage {}
+                }
+                Component {
+                    AddVpnPage {}
+                }
+                Component {
+                    AllNetworksPage {}
+                }
+                Component {
+                    SavedNetworksPage {}
                 }
             }
         },
@@ -107,6 +171,9 @@ QtObject {
                 Component {
                     SidebarPanel {}
                 }
+                Component {
+                    UtilitiesPanel {}
+                }
 
                 // Taskbar component sub-pages
                 Component {
@@ -150,6 +217,23 @@ QtObject {
             }
         },
         Component {
+            // Hyprland
+            StackPage {
+                Component {
+                    HyprlandPage {}
+                }
+                Component {
+                    HyprVariablesPage {}
+                }
+                Component {
+                    HyprKeybindsPage {}
+                }
+                Component {
+                    UserConfigPage {}
+                }
+            }
+        },
+        Component {
             // Services
             StackPage {
                 Component {
@@ -170,6 +254,9 @@ QtObject {
                 Component {
                     PipPage {}
                 }
+                Component {
+                    QuickSharePage {}
+                }
             }
         },
         Component {
@@ -180,6 +267,7 @@ QtObject {
                 }
             }
         },
+
 
         // About
         Component {

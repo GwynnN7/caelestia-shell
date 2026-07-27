@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import Caelestia.Config
 import qs.components
 import qs.components.containers
@@ -15,18 +16,25 @@ Variants {
         id: win
 
         required property ShellScreen modelData
+        readonly property alias wallpaperLoader: wallpaper
 
         screen: modelData
         name: "background"
         WlrLayershell.exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.layer: contentItem.Config.background.wallpaperEnabled ? WlrLayer.Background : WlrLayer.Bottom
-        color: contentItem.Config.background.wallpaperEnabled ? "black" : "transparent"
+        WlrLayershell.layer: (contentItem.Config.background.wallpaperEnabled && !(wallpaper.item && wallpaper.item.weActive)) ? WlrLayer.Background : WlrLayer.Bottom
+        color: contentItem.Config.background.wallpaperEnabled && !(wallpaper.item && wallpaper.item.weActive) ? "black" : "transparent"
         surfaceFormat.opaque: false
 
         anchors.top: true
         anchors.bottom: true
         anchors.left: true
         anchors.right: true
+
+        ShellState.ComponentRef {
+            screen: win.screen
+            slot: "background"
+            component: win
+        }
 
         Item {
             id: behindClock
@@ -40,10 +48,29 @@ Variants {
 
                 anchors.fill: parent
                 active: Config.background.wallpaperEnabled
+                opacity: (item && item.weActive) ? 0 : 1
 
                 sourceComponent: Wallpaper {
                     screen: win.modelData
                 }
+            }
+
+            Process {
+                id: weProc
+                property string weDir: wallpaper.item ? wallpaper.item.weDir : ""
+                property bool weActive: wallpaper.item ? wallpaper.item.weActive : false
+                
+                command: {
+                    let cmd = ["linux-wallpaperengine", "--screen-root", win.modelData.name, "--layer", "background"];
+                    if (Wallpapers.weSilent) {
+                        cmd.push("--silent");
+                    } else {
+                        cmd.push("--volume", Math.round(Wallpapers.weVolume * 100).toString());
+                    }
+                    cmd.push(weDir);
+                    return cmd;
+                }
+                running: weActive && weDir !== "" && contentItem.Config.background.wallpaperEnabled
             }
 
 

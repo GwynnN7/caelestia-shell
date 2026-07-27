@@ -1,5 +1,7 @@
 <h1 align=center>caelestia-shell</h1>
 
+<!-- test pkgit -->
+
 <div align=center>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/dim-ghub/caelestia-shell?style=for-the-badge&labelColor=101418&color=9ccbfb)
@@ -31,15 +33,14 @@ This fork adds the following features on top of the official shell:
 ## Installation
 
 > [!NOTE]
-> This repo is for the desktop shell of the caelestia dots. If you want installation instructions
-> for the entire dots, head to [the main repo](https://github.com/caelestia-dots/caelestia) instead.
+> This repository is a **FORK**, and can be out of date or have missing features from the [main repo](https://github.com/caelestia-dots/caelestia).
 > This fork is available at [dim-ghub/caelestia-shell](https://github.com/dim-ghub/caelestia-shell).
 
 ### Arch Linux / Manual (this fork)
 
 Dependencies:
 
--   [`caelestia-cli` (this fork is recommended and required for some features to work)](https://github.com/dim-ghub/caelestia-cli)
+-   [`dim-caelestia-cli` (this fork is recommended and required for some features to work)](https://github.com/dim-ghub/caelestia-cli)
 -   [`quickshell-git`](https://quickshell.outfoxxed.me) - this has to be the git version, not the latest tagged version
 -   [`ddcutil`](https://github.com/rockowitz/ddcutil)
 -   [`brightnessctl`](https://github.com/Hummer12007/brightnessctl)
@@ -65,30 +66,40 @@ Build dependencies:
 -   [`cmake`](https://cmake.org)
 -   [`ninja`](https://github.com/ninja-build/ninja)
 
-To install the shell manually, install all dependencies and clone **this fork** to `$XDG_CONFIG_HOME/quickshell/caelestia`.
-Then simply run the install script:
+To install the shell, you can either use [pkgit](https://git.symlinx.net/pkgit) or the [AUR (In Testing)](https://aur.archlinux.org/packages/caelestia-shell-git)
+
+Using `pkgit`:
+
+Install `[pkgit](https://git.symlinx.net/pkgit)` (also available on the AUR as `pkgit-git`).
+
+Then you can simply install the shell directly from GitHub without cloning it:
 
 ```sh
-sudo pacman -Rdd caelestia-shell
+pkgit -i https://github.com/dim-ghub/caelestia-shell
+```
 
+Using `AUR`
+if `paru`:
+```sh
+paru -S dim-caelestia-shell-git
+```
+if `yay`:
+```
+yay -S dim-caelestia-shell-git
+```
+
+If you prefer to clone and install it manually:
+
+```sh
 cd $XDG_CONFIG_HOME/quickshell
 git clone https://github.com/dim-ghub/caelestia-shell.git caelestia
-
 cd caelestia
-./scripts/install.sh
+pkgit -i .
 ```
-
-Alternatively, this fork can be installed and managed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr)'s
-`gh` plugin:
-
-```sh
-pkg install gh/dim-ghub/caelestia-shell-git
-```
-
-> [!TIP]
-> By default, the script will use the latest version tag from [upstream](https://github.com/caelestia-dots/shell) to set the version number for the build. It does not download anything from upstream - it builds your local fork. You can also specify a version manually: `./scripts/install.sh 2.0.2`
 
 ### Nix
+> [!WARNING]
+> This repository has limited/no support for NixOS! Proceed at your own risk.
 
 You can run the shell directly via `nix run`:
 
@@ -290,19 +301,27 @@ the command.
 
 If installed via the AUR package, simply update your system (e.g. using `yay`).
 
-If installed via [`pkgmgr`](https://github.com/dim-ghub/pkgmgr), run:
+If you installed via `pkgit`, you can update using `pkgit -u`.
+> [!NOTE]
+> If `pkgit -u` fails to update the shell for any reason, run `pkgit -fi caelestia-shell`. If that command throws an error, simply run it again.
 
-```sh
-pkg update
-```
-
-If installed manually, pull the latest changes and re-run the install script:
+If installed manually, pull the latest changes and re-run the installation:
 
 ```sh
 cd $XDG_CONFIG_HOME/quickshell/caelestia
 git pull
-./scripts/install.sh
+pkgit -i .
 ```
+
+## Uninstalling
+
+To cleanly uninstall the shell and its components, simply run `pkgit`'s uninstall command:
+
+```sh
+pkgit -r caelestia-shell
+```
+
+or your AUR helper's uninstall command.
 
 ## Configuring
 
@@ -1116,7 +1135,10 @@ For example, to disable the bar on DP-1:
         "hideNotifs": false,
         "maxFprintTries": 3,
         "profilePicShape": 12,
-        "recolourLogo": true
+        "recolourLogo": true,
+        "enableHowdy": true,
+        "maxHowdyTries": 3,
+        "triggerHowdyOnWake": true
     },
     "nexus": {
         "networkRescanInterval": 15000,

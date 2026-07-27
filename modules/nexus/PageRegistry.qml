@@ -13,6 +13,19 @@ QtObject {
             description: qsTr("Wallpaper, fonts, colours"),
             category: "appearance"
         },
+        {
+            label: qsTr("Background elements"),
+            icon: "wallpaper",
+            description: qsTr("Clock, lyrics, visualiser, shimeji"),
+            category: "appearance"
+        },
+        {
+            label: qsTr("Shell Tokens"),
+            icon: "tune",
+            description: qsTr("Modify interface spacing, rounding, and sizing"),
+            category: "appearance",
+            developerOnly: true
+        },
 
         // Connectivity
         // TODO
@@ -25,7 +38,7 @@ QtObject {
         {
             label: qsTr("Network"),
             icon: "wifi",
-            description: qsTr("Wi-Fi, ethernet"),
+            description: qsTr("Wi-Fi, ethernet, VPN"),
             category: "connectivity"
         },
         {
@@ -67,6 +80,12 @@ QtObject {
             label: qsTr("Apps"),
             icon: "apps",
             description: qsTr("Default apps, favourites, hidden apps"),
+            category: "shell"
+        },
+        {
+            label: qsTr("Hyprland"),
+            icon: "layers",
+            description: qsTr("Window manager configuration"),
             category: "shell"
         },
         {

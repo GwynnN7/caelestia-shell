@@ -14,27 +14,16 @@ import qs.utils
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property FileDialog facePicker
 
     property color pfpFallbackColour: Colours.layer(Colours.palette.m3surfaceContainerHighest, 2)
-    property string hyprlandSplashText: ""
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.large
 
-    Behavior on pfpFallbackColour {
+    Behavior on opacity {
         CAnim {}
-    }
-
-    Process {
-        running: Config.dashboard.showHyprlandSplash
-        command: ["hyprctl", "splash"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                hyprlandSplashText = text.trim();
-            }
-        }
     }
 
     Item {
@@ -69,7 +58,7 @@ Item {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    root.visibilities.dashboard = false;
+                    root.screenState.dashboard = false;
                     root.facePicker.open();
                 }
             }
@@ -277,7 +266,7 @@ Item {
                 id: wmText
 
                 anchors.verticalCenter: parent.verticalCenter
-                text: Config.dashboard.showHyprlandSplash && hyprlandSplashText !== "" ? hyprlandSplashText : SysInfo.wm + "..."
+                text: Config.dashboard.showHyprlandSplash && SysInfo.hyprlandSplashText !== "" ? SysInfo.hyprlandSplashText : SysInfo.wm + "..."
                 color: Colours.palette.m3onSecondaryContainer
                 font: Tokens.font.body.builders.small.vaxis("slnt", -4).build()
                 width: Math.min(implicitWidth, Tokens.sizes.dashboard.userWidth - wmContainer.x - Tokens.padding.medium * 2 - (wmIcon.visible ? wmIcon.implicitWidth + wmLabel.spacing : 0) - Tokens.padding.extraLarge)

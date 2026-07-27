@@ -17,7 +17,7 @@ Item {
     function clicked() {
         if (!root.modelData)
             return;
-        root.list.visibilities.launcher = false;
+        root.list.screenState.launcher = false;
         const preview = root.modelData.preview.length > 30 ? root.modelData.preview.slice(0, 30) + "..." : root.modelData.preview;
         Quickshell.execDetached(["sh", "-c", "cliphist decode " + root.modelData.id + " | wl-copy"]);
         Toaster.toast(qsTr("Copied to clipboard"), preview, "content_paste");

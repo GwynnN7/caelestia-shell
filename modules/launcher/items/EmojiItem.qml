@@ -15,7 +15,7 @@ Item {
     function clicked() {
         if (!root.modelData)
             return;
-        root.list.visibilities.launcher = false;
+        root.list.screenState.launcher = false;
         Quickshell.execDetached(["wl-copy", root.modelData.char]);
         Emojis.recordUsage(root.modelData.char);
         Toaster.toast(qsTr("Copied to clipboard"), root.modelData.char + " " + root.modelData.name, "emoji_emotions");

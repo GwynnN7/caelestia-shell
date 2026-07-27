@@ -5,6 +5,7 @@ import QtQuick.Effects
 import QtMultimedia
 import Quickshell
 import M3Shapes
+import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.components.filedialog
@@ -19,6 +20,23 @@ Item {
     property Item current: one
     property bool completed
     property var screen: null
+    property bool weActive: false
+    property string weDir: ""
+
+    function checkWE(path: string): void {
+        if (!path) {
+            weActive = false;
+            return;
+        }
+        let dir = path.substring(0, path.lastIndexOf('/'));
+        let projJson = dir + "/project.json";
+        if (CUtils.fileExists(projJson)) {
+            weDir = dir;
+            weActive = true;
+        } else {
+            weActive = false;
+        }
+    }
 
     function isVideo(path: string): bool {
         if (!path)
@@ -28,6 +46,7 @@ Item {
     }
 
     onSourceChanged: {
+        checkWE(source);
         if (!source)
             current = null;
         else if (current === one) {
@@ -40,12 +59,14 @@ Item {
     }
 
     Component.onCompleted: {
-        if (source)
+        if (source) {
+            checkWE(source);
             Qt.callLater(() => {
                 one.screen = screen;
                 Qt.callLater(() => one.update());
                 completed = true;
             });
+        }
     }
 
     Loader {
@@ -131,16 +152,17 @@ Item {
 
         property string imagePath: ""
         property string videoPath: ""
-        property bool isVideoImage: root.isVideo(root.source)
+        property bool isVideoImage: false
         property var screen: null
 
         function update(): void {
             this.screen = root.screen;
-            if (isVideoImage) {
+            this.isVideoImage = root.isVideo(root.source);
+            if (this.isVideoImage) {
                 if (videoPath === root.source)
                     root.current = this;
                 else {
-                    imagePath = "";
+                    imagePath = Wallpapers.getThumbnailPath(root.source);
                     videoPath = root.source;
                 }
             } else {
@@ -152,18 +174,6 @@ Item {
                 }
             }
         }
-
-        function updateContent(): void {
-            if (isVideoImage) {
-                imagePath = "";
-                videoPath = root.source;
-            } else {
-                videoPath = "";
-                imagePath = root.source;
-            }
-        }
-
-        onIsVideoImageChanged: updateContent()
 
         anchors.fill: parent
 
@@ -225,6 +235,7 @@ Item {
         Item {
             id: contentItem
             anchors.fill: parent
+            opacity: root.weActive ? 0 : 1
 
             layer.enabled: needsMask || Config.background.wallpaperRecolor
             layer.effect: MultiEffect {
@@ -255,28 +266,33 @@ Item {
 
 
             CachingAnimatedImage {
+                id: animImage
                 anchors.fill: parent
                 path: img.imagePath
-                visible: !img.isVideoImage && img.imagePath !== ""
+                visible: img.imagePath !== ""
                 asynchronous: true
                 fillMode: AnimatedImage.PreserveAspectCrop
                 source: img.imagePath || ""
                 playing: true
 
                 onStatusChanged: {
-                    if (status === Image.Ready && !img.isVideoImage)
+                    if (status === Image.Ready)
                         root.current = img;
+                    else if (status === Image.Error && img.isVideoImage) {
+                        if (videoPlayer.playing) root.current = img;
+                    }
                 }
             }
 
             CachingVideo {
+                id: videoPlayer
                 anchors.fill: parent
                 path: img.videoPath
                 screen: root.screen
                 visible: img.isVideoImage && img.videoPath !== ""
 
                 onPlayingChanged: {
-                    if (playing && img.isVideoImage)
+                    if (playing && img.isVideoImage && animImage.status === Image.Error)
                         root.current = img;
                 }
             }

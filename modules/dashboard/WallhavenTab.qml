@@ -98,76 +98,47 @@ Item {
 
                 spacing: Tokens.spacing.medium
 
+                // Search bar
                 RowLayout {
+                    Layout.fillWidth: true
                     spacing: Tokens.spacing.small
 
-                    StyledText {
-                        text: qsTr("Wallhaven")
-                        font: Tokens.font.body.builders.large.weight(Font.Medium).build()
-                    }
+                    StyledTextField {
+                        id: searchField
 
-                    Item {
                         Layout.fillWidth: true
+                        placeholderText: qsTr("Search wallpapers...")
+                        onTextChanged: root.searchQuery = text
+
+                        Keys.onReturnPressed: {
+                            if (root.searchQuery.trim()) {
+                                root.isLoading = true;
+                                WallhavenSearcher.search(root.searchQuery);
+                            }
+                        }
                     }
 
                     CircularIndicator {
                         implicitSize: 20
                         visible: root.isLoading
                     }
-                }
 
-                // Search bar
-                StyledRect {
-                    Layout.fillWidth: true
-
-                    color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    radius: Tokens.rounding.full
-
-                    implicitHeight: searchField.implicitHeight + Tokens.padding.medium * 2
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: Tokens.padding.medium
-                        anchors.rightMargin: Tokens.padding.medium
-                        spacing: Tokens.spacing.small
-
-                        MaterialIcon {
-                            text: "search"
-                            color: Colours.palette.m3onSurfaceVariant
-                        }
-
-                        StyledTextField {
-                            id: searchField
-
-                            Layout.fillWidth: true
-                            placeholderText: qsTr("Search wallpapers...")
-                            onTextChanged: root.searchQuery = text
-
-                            Keys.onReturnPressed: {
-                                if (root.searchQuery.trim()) {
-                                    root.isLoading = true;
-                                    WallhavenSearcher.search(root.searchQuery);
-                                }
+                    IconButton {
+                        icon: "north"
+                        onClicked: {
+                            if (root.searchQuery.trim()) {
+                                root.isLoading = true;
+                                WallhavenSearcher.searchRandom(root.searchQuery);
                             }
                         }
+                    }
 
-                        IconButton {
-                            icon: "north"
-                            onClicked: {
-                                if (root.searchQuery.trim()) {
-                                    root.isLoading = true;
-                                    WallhavenSearcher.searchRandom(root.searchQuery);
-                                }
-                            }
-                        }
-
-                        IconButton {
-                            icon: "refresh"
-                            onClicked: {
-                                if (root.searchQuery.trim()) {
-                                    root.isLoading = true;
-                                    WallhavenSearcher.search(root.searchQuery);
-                                }
+                    IconButton {
+                        icon: "refresh"
+                        onClicked: {
+                            if (root.searchQuery.trim()) {
+                                root.isLoading = true;
+                                WallhavenSearcher.search(root.searchQuery);
                             }
                         }
                     }

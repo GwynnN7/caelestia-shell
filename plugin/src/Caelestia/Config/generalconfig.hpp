@@ -96,6 +96,7 @@ class GeneralConfig : public ConfigObject {
     CONFIG_SUBOBJECT(GeneralApps, apps)
     CONFIG_SUBOBJECT(GeneralIdle, idle)
     CONFIG_SUBOBJECT(GeneralBattery, battery)
+    CONFIG_GLOBAL_PROPERTY(bool, developerMode, false)
 
 public:
     explicit GeneralConfig(QObject* parent = nullptr)

@@ -30,7 +30,7 @@ Singleton {
     }
 
     function shouldShowPopup(): bool {
-        if (props.dnd || [...Visibilities.screens.values()].some(v => v.sidebar))
+        if (props.dnd || ShellState.anySidebarOpen())
             return false;
         if (GlobalConfig.notifs.fullscreen === "off" && hasFullscreen())
             return false;
@@ -43,6 +43,21 @@ Singleton {
             toClose.push(root.list[i]);
         for (let i = 0; i < toClose.length; i++)
             toClose[i].close();
+    }
+
+    function addCustomNotification(summary: string, body: string, appIcon: string, actions: list<var>, expanded: bool): NotifData {
+        const notif = notifComp.createObject(root, {
+            popup: root.shouldShowPopup(),
+            resident: true,
+            summary: summary,
+            body: body,
+            appIcon: appIcon,
+            appName: "Quick Share",
+            actions: actions,
+            forceExpand: expanded ? true : false
+        });
+        root.list = [notif, ...root.list];
+        return notif;
     }
 
     onDndChanged: {

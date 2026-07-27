@@ -2,12 +2,14 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Caelestia
 import Caelestia.Components
 import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.components.images
 import qs.services
+import qs.utils
 import qs.modules.nexus.common
 
 PageBase {
@@ -123,7 +125,7 @@ PageBase {
                     id: wallImg
 
                     anchors.fill: parent
-                    source: Wallpapers.current
+                    source: Wallpapers.getThumbnailPath(Wallpapers.current)
                     preventInit: wallIndicatorLoader.opacity > 0
                     fadeOutAnim: Anim.DefaultEffects
                     fadeInAnim: Anim.SlowEffects
@@ -135,6 +137,40 @@ PageBase {
                             wallLoadDebounceTimer.stop();
                             wallIndicatorLoader.opacity = 0;
                         }
+                    }
+                }
+            }
+
+            IconTextButton {
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.margins: Tokens.padding.medium
+
+                icon: "save"
+                text: qsTr("Save Recolored")
+                font: Tokens.font.body.large
+                isRound: true
+                shapeMorph: true
+                type: IconTextButton.Filled
+                horizontalPadding: Tokens.padding.large
+                verticalPadding: Tokens.padding.medium
+                
+                visible: Config.background.wallpaperEnabled && Config.background.wallpaperRecolor
+                opacity: visible ? 1 : 0
+
+                Behavior on opacity {
+                    Anim {
+                        type: Anim.DefaultEffects
+                    }
+                }
+
+                onClicked: {
+                    const bgWin = ShellState.componentsFor(root.nState.screen).background;
+                    if (bgWin && bgWin.wallpaperLoader && bgWin.wallpaperLoader.item && bgWin.wallpaperLoader.item.current) {
+                        const path = Paths.home + "/Downloads/recolored_wallpaper.png";
+                        CUtils.saveItem(bgWin.wallpaperLoader.item.current, "file://" + path, function() {
+                            Notifs.sendToast("Wallpaper Saved", "Saved to ~/Downloads/recolored_wallpaper.png", "image", null, null);
+                        });
                     }
                 }
             }
@@ -155,19 +191,6 @@ PageBase {
                 verticalPadding: Tokens.padding.medium
                 disabled: !Config.background.wallpaperEnabled
                 onClicked: root.nState.openSubPage(1) // Wallpaper page
-            }
-
-            IconTextButton {
-                icon: "image_search"
-                text: qsTr("Wallhaven")
-                font: Tokens.font.body.large
-                isRound: true
-                shapeMorph: true
-                type: IconTextButton.Tonal
-                horizontalPadding: Tokens.padding.extraLarge
-                verticalPadding: Tokens.padding.medium
-                disabled: !Config.background.wallpaperEnabled
-                onClicked: root.nState.openSubPage(4) // Wallhaven page
             }
 
             IconTextButton {
@@ -254,59 +277,7 @@ PageBase {
         }
 
         ToggleRow {
-            Layout.fillWidth: true
             first: true
-            text: qsTr("Desktop clock")
-            checked: Config.background.desktopClock.enabled
-            onToggled: GlobalConfig.background.desktopClock.enabled = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Desktop lyrics")
-            checked: Config.background.desktopLyrics.enabled
-            onToggled: GlobalConfig.background.desktopLyrics.enabled = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Auto-hide lyrics")
-            subtext: qsTr("Hide lyrics when a window is open")
-            checked: Config.background.desktopLyrics.autoHide
-            onToggled: GlobalConfig.background.desktopLyrics.autoHide = checked
-            enabled: Config.background.desktopLyrics.enabled
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Background visualiser")
-            checked: Config.background.visualiser.enabled
-            onToggled: GlobalConfig.background.visualiser.enabled = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Auto-hide visualiser")
-            subtext: qsTr("Hide visualiser when a window is open")
-            checked: Config.background.visualiser.autoHide
-            onToggled: GlobalConfig.background.visualiser.autoHide = checked
-            enabled: Config.background.visualiser.enabled
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
-            Layout.fillWidth: true
-            text: qsTr("Shimeji characters")
-            checked: Config.shimeji.enabled
-            onToggled: GlobalConfig.shimeji.enabled = checked
-        }
-
-        ToggleRow {
-            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             text: qsTr("Bezel mode (Pitch black)")
             subtext: qsTr("Make the shell pitch black to blend with display bezels")
@@ -327,12 +298,31 @@ PageBase {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             text: qsTr("Transparency")
-            subtext: qsTr("Base %1, layers %2").arg(Colours.transparency.base).arg(Colours.transparency.layers)
             checked: Colours.transparency.enabled
             onToggled: {
                 GlobalConfig.appearance.transparency.enabled = checked;
                 GlobalConfig.utilities.toasts.transparency = checked;
             }
+        }
+
+        SliderRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
+            label: qsTr("Base transparency level")
+            value: Colours.transparency.base
+            valueLabel: Math.round(value * 100) + "%"
+            onMoved: v => GlobalConfig.appearance.transparency.base = v
+            enabled: Colours.transparency.enabled
+        }
+
+        SliderRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
+            label: qsTr("Layer transparency level")
+            value: Colours.transparency.layers
+            valueLabel: Math.round(value * 100) + "%"
+            onMoved: v => GlobalConfig.appearance.transparency.layers = v
+            enabled: Colours.transparency.enabled
         }
 
 

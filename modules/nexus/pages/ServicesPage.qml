@@ -220,21 +220,11 @@ PageBase {
             onClicked: root.nState.openSubPage(5)
         }
 
-        StepperRow {
-            label: qsTr("Visualiser bars")
-            subtext: qsTr("Number of bars in the audio visualisers")
-            value: GlobalConfig.services.visualiserBars
-            from: 10
-            to: 120
-            stepSize: 2
-            onMoved: v => GlobalConfig.services.visualiserBars = v
-        }
-
-        ToggleRow {
-            text: qsTr("Smart colour scheme")
-            subtext: qsTr("Derive theme mode and variant from the wallpaper")
-            checked: GlobalConfig.services.smartScheme
-            onToggled: GlobalConfig.services.smartScheme = checked
+        NavRow {
+            icon: "near_me"
+            label: qsTr("Quick Share")
+            status: qsTr("Auto-start and discoverability settings")
+            onClicked: root.nState.openSubPage(6)
         }
 
 

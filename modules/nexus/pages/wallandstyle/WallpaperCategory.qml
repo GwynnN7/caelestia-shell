@@ -57,7 +57,8 @@ PageBase {
                 opacity: modelData ? 1 : 0
                 enabled: modelData
 
-                source: String(modelData?.path ?? "")
+                source: modelData ? Wallpapers.getThumbnailPath(modelData.path) : ""
+                realPath: modelData ? modelData.path : ""
                 text: modelData?.name ?? ""
                 onClicked: {
                     Wallpapers.setWallpaper(modelData.path);

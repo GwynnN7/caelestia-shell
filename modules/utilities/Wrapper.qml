@@ -11,7 +11,7 @@ import qs.modules.bar.popouts as BarPopouts
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property Sidebar.Wrapper sidebar
     required property BarPopouts.Wrapper popouts
     property real horizontalStretch
@@ -21,10 +21,17 @@ Item {
         property bool recordingListExpanded: false
         property string recordingConfirmDelete
         property string recordingMode
+        
+        property bool quickShareListExpanded: false
+        property bool quickShareDeviceSelectorOpen: false
+        property bool quickShareFileDialogOpen: false
+        
+        property string quickShareConfirmDeletePath
+        property int quickShareConfirmDeleteIndex: -1
 
         reloadableId: "utilities"
     }
-    readonly property bool shouldBeActive: visibilities.utilities && Config.utilities.enabled && !(visibilities.session && Config.session.enabled)
+    readonly property bool shouldBeActive: (screenState.utilities || props.quickShareDeviceSelectorOpen || props.quickShareFileDialogOpen) && Config.utilities.enabled && !(screenState.session && Config.session.enabled)
     readonly property real totalPadding: content.anchors.margins + CUtils.clamp(content.anchors.margins - Config.border.thickness, 0, content.anchors.margins)
     readonly property real nonAnimHeight: ((content.item as Content)?.nonAnimHeight ?? 0) + totalPadding
     property real offsetScale: shouldBeActive ? 0 : 1
@@ -39,7 +46,7 @@ Item {
 
     states: State {
         name: "attachedToSidebar"
-        when: root.visibilities.sidebar
+        when: root.screenState.sidebar
 
         PropertyChanges {
             root.sidebarLerp: 1
@@ -84,7 +91,7 @@ Item {
         sourceComponent: Content {
             implicitWidth: root.implicitWidth - root.totalPadding
             props: root.props
-            visibilities: root.visibilities
+            screenState: root.screenState
             popouts: root.popouts
             deformMatrix: root.deformMatrix
         }

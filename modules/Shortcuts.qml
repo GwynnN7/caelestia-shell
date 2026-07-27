@@ -29,7 +29,7 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const v = Visibilities.getForActive();
+            const v = ShellState.forActive();
             v.launcher = v.dashboard = v.osd = v.utilities = !(v.launcher || v.dashboard || v.osd || v.utilities);
         }
     }
@@ -42,8 +42,8 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            visibilities.dashboard = !visibilities.dashboard;
+            const screenState = ShellState.forActive();
+            screenState.dashboard = !screenState.dashboard;
         }
     }
 
@@ -55,8 +55,8 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            visibilities.session = !visibilities.session;
+            const screenState = ShellState.forActive();
+            screenState.session = !screenState.session;
         }
     }
 
@@ -68,8 +68,8 @@ Scope {
         onPressed: root.launcherInterrupted = false
         onReleased: {
             if (!root.launcherInterrupted && !root.hasFullscreen) {
-                const visibilities = Visibilities.getForActive();
-                visibilities.launcher = !visibilities.launcher;
+                const screenState = ShellState.forActive();
+                screenState.launcher = !screenState.launcher;
             }
             root.launcherInterrupted = false;
         }
@@ -91,9 +91,9 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
+            const screenState = ShellState.forActive();
             Visibilities.initialSidebarTab = "notifications";
-            visibilities.sidebar = !visibilities.sidebar;
+            screenState.sidebar = !screenState.sidebar;
         }
     }
 
@@ -119,8 +119,8 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
-            const visibilities = Visibilities.getForActive();
-            visibilities.utilities = !visibilities.utilities;
+            const screenState = ShellState.forActive();
+            screenState.utilities = !screenState.utilities;
         }
     }
 
@@ -194,13 +194,26 @@ Scope {
         }
     }
 
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "workspaceOverview"
+        description: "Toggle workspace overview"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const screenState = ShellState.forActive();
+            screenState.workspaceDrawer = !screenState.workspaceDrawer;
+        }
+    }
+
     IpcHandler {
         function toggle(drawer: string): void {
             if (list().split("\n").includes(drawer)) {
                 if (root.hasFullscreen && ["launcher", "session", "dashboard"].includes(drawer))
                     return;
-                const visibilities = Visibilities.getForActive();
-                visibilities[drawer] = !visibilities[drawer];
+                const screenState = ShellState.forActive();
+                screenState[drawer] = !screenState[drawer];
             } else {
                 console.warn(lc, `Drawer "${drawer}" does not exist`);
             }
@@ -224,15 +237,15 @@ Scope {
         }
 
         function list(): string {
-            const visibilities = Visibilities.getForActive();
-            return Object.keys(visibilities).filter(k => typeof visibilities[k] === "boolean").join("\n");
+            const screenState = ShellState.forActive();
+            return Object.keys(screenState).filter(k => typeof screenState[k] === "boolean").join("\n");
         }
 
         function isOpen(drawer: string): string {
-            const visibilities = Visibilities.getForActive();
-            if (typeof visibilities[drawer] !== "boolean")
+            const screenState = ShellState.forActive();
+            if (typeof screenState[drawer] !== "boolean")
                 return "unknown";
-            return visibilities[drawer] ? "1" : "0";
+            return screenState[drawer] ? "1" : "0";
         }
 
         target: "drawers"
@@ -244,6 +257,26 @@ Scope {
         }
 
         target: "nexus"
+    }
+
+    IpcHandler {
+        function openEmoji(): void {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}emoji `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+
+        function openClipboard(): void {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}clipboard `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+
+        target: "launcher"
     }
 
     IpcHandler {

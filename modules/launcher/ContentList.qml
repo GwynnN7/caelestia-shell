@@ -13,10 +13,10 @@ Item {
     id: root
 
     required property var content
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property var panels
     required property real maxHeight
-    required property StyledTextField search
+    required property SearchBar search
     required property int padding
     required property int rounding
 
@@ -180,8 +180,10 @@ Item {
         anchors.fill: parent
 
         sourceComponent: AppList {
+            objectName: "launcherAppList"
+
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
         }
     }
 
@@ -196,8 +198,10 @@ Item {
         height: root.Tokens.sizes.launcher.wallpaperHeight
 
         sourceComponent: WallpaperList {
+            objectName: "launcherWallpaperList"
+
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
             panels: root.panels
             content: root.content
             contentList: root
@@ -337,7 +341,7 @@ Item {
 
         sourceComponent: WindowSwitcherList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
             panels: root.panels
             content: root.content
         }
@@ -352,7 +356,7 @@ Item {
 
         sourceComponent: KeybindsList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
         }
     }
 
@@ -365,7 +369,7 @@ Item {
 
         sourceComponent: AnimationsList {
             search: root.search
-            visibilities: root.visibilities
+            screenState: root.screenState
         }
     }
 
@@ -441,13 +445,13 @@ Item {
     }
 
     Behavior on implicitWidth {
-        enabled: root.visibilities.launcher
+        enabled: root.screenState.launcher
 
         Anim {}
     }
 
     Behavior on implicitHeight {
-        enabled: root.visibilities.launcher
+        enabled: root.screenState.launcher
 
         Anim {}
     }

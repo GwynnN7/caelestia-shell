@@ -61,6 +61,8 @@ PageBase {
                 width: parent.width - Tokens.padding.largeIncreased * 2
                 spacing: Tokens.spacing.small
 
+                property int clicks: 0
+
                 AnimatedLogo {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.preferredWidth: implicitWidth
@@ -79,6 +81,26 @@ PageBase {
                     text: CUtils.version ? `v${CUtils.version}` : "…"
                     color: Colours.palette.m3onSurfaceVariant
                     font: Tokens.font.body.medium
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            if (GlobalConfig.general.developerMode) {
+                                Toaster.toast(qsTr("Developer Options"), qsTr("No need, you are already a developer."), "construction");
+                                return;
+                            }
+
+                            hero.clicks++;
+                            const remaining = 7 - hero.clicks;
+                            if (remaining > 0 && remaining <= 4) {
+                                Toaster.toast(qsTr("Developer Options"), qsTr("You are now %1 steps away from being a developer.").arg(remaining), "construction");
+                            } else if (remaining === 0) {
+                                root.nState.justUnlockedDevMode = true;
+                                GlobalConfig.general.developerMode = true;
+                                Toaster.toast(qsTr("Developer Options"), qsTr("You are now a developer!"), "construction");
+                            }
+                        }
+                    }
                 }
             }
         }
