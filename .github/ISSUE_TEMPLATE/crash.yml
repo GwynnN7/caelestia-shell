@@ -53,7 +53,7 @@ body:
     attributes:
       label: Reminder
       options:
-        - label: I've successfully updated to the latest versions following the [updating guide](https://github.com/caelestia-dots/caelestia?tab=readme-ov-file#updating).
+        - label: I've successfully updated to the latest versions following the [updating guide](https://github.com/dim-ghub/caelestia?tab=readme-ov-file#updating).
         - label: I've successfully updated the system packages to the latest.
         - label: I agree that it's usually impossible for others to help me without my logs.
         - label: I've ticked the checkboxes without reading their contents
