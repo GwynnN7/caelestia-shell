@@ -8,7 +8,7 @@ body:
       value: |
         **Welcome to submit a new issue!**
         - It takes only 3 steps, so please be patient :)
-        - Tip: If your issue is not a feature request and is not an issue with the dots (e.g. "how do I use X feature"), please use [Discussions](https://github.com/caelestia-dots/shell/discussions) instead.
+        - Tip: If your issue is not a feature request and is not an issue with the dots (e.g. "how do I use X feature"), please use [Discussions](https://github.com/dim-ghub/shell/discussions) instead.
 
   - type: checkboxes
     attributes:
