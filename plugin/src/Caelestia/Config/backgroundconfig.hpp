@@ -96,7 +96,9 @@ class DesktopLyrics : public ConfigObject {
     QML_ANONYMOUS
 
     CONFIG_PROPERTY(bool, enabled, false)
-    CONFIG_PROPERTY(bool, autoHide, true)
+    CONFIG_PROPERTY(bool, overlay, false)
+    CONFIG_PROPERTY(bool, autoHideFullscreen, true)
+    CONFIG_PROPERTY(bool, autoHideTiled, true)
     CONFIG_PROPERTY(qreal, scale, 1.0)
     CONFIG_PROPERTY(QString, position, QStringLiteral("bottom-center"))
     CONFIG_PROPERTY(int, alignment, 1)

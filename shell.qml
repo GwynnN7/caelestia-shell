@@ -37,6 +37,7 @@ ShellRoot {
     ServiceLoader {}
 
     Background {}
+    DesktopLyricsOverlay {}
     BadAppleOverlay {}
 
     Drawers {}
