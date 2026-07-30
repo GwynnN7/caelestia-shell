@@ -111,16 +111,14 @@ Item {
 
             property real lastValidContentX: 0
             contentX: currentItem ? currentItem.x : lastValidContentX
-            onContentXChanged: {
-                if (currentItem && !moving) {
-                    lastValidContentX = contentX;
-                }
-            }
-
             contentWidth: row.implicitWidth
             contentHeight: row.implicitHeight
 
             onContentXChanged: {
+                if (currentItem && !moving) {
+                    lastValidContentX = contentX;
+                }
+
                 if (!moving || !currentItem)
                     return;
 
