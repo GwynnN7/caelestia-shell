@@ -17,7 +17,7 @@ Item {
     required property BarPopouts.Wrapper popouts
     required property matrix4x4 deformMatrix
 
-    readonly property bool mediaActive: Config.utilities.cards.recorder || true // quickShare always active
+    readonly property bool mediaActive: Config.utilities.cards.recorder || QuickShare.isEnabled
     readonly property int enabledCards: (idleInhibit.active ? 1 : 0) + (mediaActive ? 1 : 0) + (toggles.active ? 1 : 0)
     
     // Calculate nonAnimHeight
@@ -81,10 +81,18 @@ Item {
                     onTriggered: mediaLayout.animEnabled = false
                 }
 
+                property real lastValidItemHeight: 0
                 property real nonAnimHeight: {
                     const swipeItem = mediaFlickable.currentItem ? mediaFlickable.currentItem.item : null;
-                    const itemHeight = swipeItem ? (swipeItem.nonAnimHeight ?? swipeItem.implicitHeight) : 0;
-                    return itemHeight + (indicatorRow.visible ? indicatorRow.implicitHeight + spacing : 0);
+                    const itemHeight = swipeItem ? (swipeItem.nonAnimHeight ?? swipeItem.implicitHeight) : lastValidItemHeight;
+                    return itemHeight + (mediaRepeater.count > 1 ? bgRow.implicitHeight + spacing : 0);
+                }
+                
+                onNonAnimHeightChanged: {
+                    const swipeItem = mediaFlickable.currentItem ? mediaFlickable.currentItem.item : null;
+                    if (swipeItem) {
+                        lastValidItemHeight = (swipeItem.nonAnimHeight ?? swipeItem.implicitHeight);
+                    }
                 }
                 
                 Behavior on nonAnimHeight {
@@ -106,13 +114,20 @@ Item {
 
                     flickableDirection: Flickable.HorizontalFlick
 
-                    implicitHeight: currentItem ? currentItem.implicitHeight : 0
+                    property real lastValidImplicitHeight: 0
+                    implicitHeight: currentItem ? currentItem.implicitHeight : lastValidImplicitHeight
+                    onImplicitHeightChanged: {
+                        if (currentItem) lastValidImplicitHeight = currentItem.implicitHeight;
+                    }
 
-                    contentX: currentItem ? currentItem.x : 0
+                    property real lastValidContentX: 0
+                    contentX: currentItem ? currentItem.x : lastValidContentX
                     contentWidth: mediaRow.implicitWidth
                     contentHeight: mediaRow.implicitHeight
 
                     onContentXChanged: {
+                        if (currentItem && !moving) lastValidContentX = contentX;
+
                         if (!moving || !currentItem)
                             return;
 
@@ -133,7 +148,7 @@ Item {
                         else if (x < -currentItem.width / 10)
                             mediaLayout.currentIndex = Math.max(mediaLayout.currentIndex - 1, 0);
                         else
-                            contentX = Qt.binding(() => currentItem ? currentItem.x : 0);
+                            contentX = Qt.binding(() => currentItem ? currentItem.x : lastValidContentX);
                     }
 
                     Row {
@@ -143,12 +158,17 @@ Item {
                         Repeater {
                             id: mediaRepeater
                             
+                            onCountChanged: {
+                                mediaLayout.animEnabled = true;
+                                animDisableTimer.restart();
+                            }
+                            
                             property int dummy: 0
                             onItemAdded: dummy++
                             model: {
                                 const pages = [];
                                 if (Config.utilities.cards.recorder) pages.push("record");
-                                pages.push("quickShare");
+                                if (QuickShare.isEnabled) pages.push("quickShare");
                                 return pages;
                             }
 
@@ -177,8 +197,18 @@ Item {
                     id: indicatorRow
                     Layout.alignment: Qt.AlignHCenter
                     implicitWidth: bgRow.implicitWidth
-                    implicitHeight: bgRow.implicitHeight
-                    visible: mediaRepeater.count > 1
+                    implicitHeight: mediaRepeater.count > 1 ? bgRow.implicitHeight : 0
+                    opacity: mediaRepeater.count > 1 ? 1 : 0
+                    visible: implicitHeight > 0
+                    
+                    Behavior on implicitHeight {
+                        enabled: mediaLayout.animEnabled
+                        Anim {}
+                    }
+                    Behavior on opacity {
+                        enabled: mediaLayout.animEnabled
+                        Anim {}
+                    }
 
                     Row {
                         id: bgRow
