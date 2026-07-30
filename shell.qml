@@ -58,7 +58,10 @@ ShellRoot {
     Shortcuts {}
 
     Component.onCompleted: {
-        Qt.callLater(() => { Weather.reload(); });
+        Qt.callLater(() => {
+            Weather.reload();
+            PastafarianCalendar.reload();
+        });
     }
     BatteryMonitor {}
     IdleMonitors {
