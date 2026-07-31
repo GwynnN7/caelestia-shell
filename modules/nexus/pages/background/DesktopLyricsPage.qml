@@ -41,12 +41,32 @@ PageBase {
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
+            text: qsTr("Overlay lyrics")
+            subtext: qsTr("Render lyrics on top of all windows")
+            checked: Config.background.desktopLyrics.overlay
+            onToggled: GlobalConfig.background.desktopLyrics.overlay = checked
+            enabled: Config.background.desktopLyrics.enabled
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+            Layout.fillWidth: true
+            text: qsTr("Auto-hide for fullscreen windows")
+            subtext: qsTr("Hide lyrics when a window is fullscreen")
+            checked: Config.background.desktopLyrics.autoHideFullscreen
+            onToggled: GlobalConfig.background.desktopLyrics.autoHideFullscreen = checked
+            enabled: Config.background.desktopLyrics.enabled
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             last: true
             Layout.fillWidth: true
-            text: qsTr("Auto-hide lyrics")
-            subtext: qsTr("Hide lyrics when a window is open")
-            checked: Config.background.desktopLyrics.autoHide
-            onToggled: GlobalConfig.background.desktopLyrics.autoHide = checked
+            text: qsTr("Auto-hide for tiled windows")
+            subtext: qsTr("Hide lyrics when tiled windows are open")
+            checked: Config.background.desktopLyrics.autoHideTiled
+            onToggled: GlobalConfig.background.desktopLyrics.autoHideTiled = checked
             enabled: Config.background.desktopLyrics.enabled
         }
 

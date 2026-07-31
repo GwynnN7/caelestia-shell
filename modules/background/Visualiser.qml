@@ -18,7 +18,7 @@ Item {
     readonly property bool shouldBeActive: Config.background.visualiser.enabled && !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableVisualizer) && (!Config.background.visualiser.autoHide || (Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true))
     property real offset: shouldBeActive ? 0 : screen.height * 0.2
 
-    readonly property int barExclusiveZone: ShellState.componentsFor(root.screen)?.bar?.exclusiveZone ?? 0
+    readonly property int barExclusiveZone: Visibilities.bars.get(root.screen.name)?.exclusiveZone ?? (Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness))
     readonly property real visualiserSpacing: Tokens.spacing.small * Config.background.visualiser.spacing
     readonly property real fallbackMargin: Tokens.padding.large + Tokens.spacing.small
 

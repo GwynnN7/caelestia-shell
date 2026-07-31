@@ -62,6 +62,7 @@ GridLayout {
         Layout.columnSpan: 3
         Layout.fillWidth: true
         Layout.preferredHeight: calendar.implicitHeight
+        z: 10
 
         radius: Tokens.rounding.extraLarge
 

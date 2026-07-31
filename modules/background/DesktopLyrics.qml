@@ -30,9 +30,13 @@ Item {
     readonly property color safeTertiary: useLightSet ? Colours.palette.m3tertiaryContainer : Colours.palette.m3tertiary
     readonly property string sansFont: GlobalConfig.appearance.font.body.family || "Sans Serif"
     readonly property int alignment: Config.background.desktopLyrics.alignment
-    readonly property bool autoHide: Config.background.desktopLyrics.autoHide
-    readonly property bool allWindowsFloating: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true
-    readonly property bool shouldHide: autoHide && !allWindowsFloating
+    readonly property bool autoHideFullscreen: Config.background.desktopLyrics.autoHideFullscreen
+    readonly property bool autoHideTiled: Config.background.desktopLyrics.autoHideTiled
+    
+    readonly property bool hasFullscreen: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.some(t => t.lastIpcObject?.fullscreen !== 0) ?? false
+    readonly property bool hasTiled: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.some(t => !t.lastIpcObject?.floating && t.lastIpcObject?.fullscreen === 0) ?? false
+
+    readonly property bool shouldHide: (autoHideFullscreen && hasFullscreen) || (autoHideTiled && hasTiled)
 
     property bool hasLyrics: Lyrics.hasLyrics
     property int currentLyricIndex: -1
@@ -226,7 +230,7 @@ Item {
 
             asynchronous: true
             anchors.fill: parent
-            active: root.blurEnabled
+            active: root.blurEnabled && root.wallpaper !== null
 
             sourceComponent: MultiEffect {
                 source: ShaderEffectSource {

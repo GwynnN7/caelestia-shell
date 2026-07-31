@@ -101,6 +101,8 @@ Singleton {
             messages.push(rule.arg("caelestia-drawers").arg("ignore_alpha").arg(ignoreAlpha));
             messages.push(rule.arg("caelestia-polkit").arg("blur").arg(trEnabled));
             messages.push(rule.arg("caelestia-polkit").arg("ignore_alpha").arg(ignoreAlpha));
+            messages.push(rule.arg("caelestia-desktopLyricsOverlay").arg("blur").arg(trEnabled));
+            messages.push(rule.arg("caelestia-desktopLyricsOverlay").arg("ignore_alpha").arg(ignoreAlpha));
             messages.push(`eval hl.layer_rule({ match = { namespace = "caelestia-shimeji" }, no_anim = true })`);
         } else {
             rule = "keyword layerrule %2 %3, match:namespace %1";
@@ -109,6 +111,8 @@ Singleton {
             messages.push(rule.arg("caelestia-drawers").arg("ignore_alpha").arg(ignoreAlpha));
             messages.push(rule.arg("caelestia-polkit").arg("blur").arg(trEnabled));
             messages.push(rule.arg("caelestia-polkit").arg("ignore_alpha").arg(ignoreAlpha));
+            messages.push(rule.arg("caelestia-desktopLyricsOverlay").arg("blur").arg(trEnabled));
+            messages.push(rule.arg("caelestia-desktopLyricsOverlay").arg("ignore_alpha").arg(ignoreAlpha));
             messages.push("keyword layerrule noanim, match:namespace caelestia-shimeji");
         }
         Hypr.extras.batchMessage(messages);

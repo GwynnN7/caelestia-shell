@@ -97,14 +97,28 @@ Item {
 
             flickableDirection: Flickable.HorizontalFlick
 
-            implicitWidth: currentItem?.implicitWidth ?? 0
-            implicitHeight: currentItem?.implicitHeight ?? 0
+            property real lastValidImplicitWidth: 0
+            implicitWidth: currentItem ? currentItem.implicitWidth : lastValidImplicitWidth
+            onImplicitWidthChanged: {
+                if (currentItem) lastValidImplicitWidth = currentItem.implicitWidth;
+            }
 
-            contentX: currentItem?.x ?? 0
+            property real lastValidImplicitHeight: 0
+            implicitHeight: currentItem ? currentItem.implicitHeight : lastValidImplicitHeight
+            onImplicitHeightChanged: {
+                if (currentItem) lastValidImplicitHeight = currentItem.implicitHeight;
+            }
+
+            property real lastValidContentX: 0
+            contentX: currentItem ? currentItem.x : lastValidContentX
             contentWidth: row.implicitWidth
             contentHeight: row.implicitHeight
 
             onContentXChanged: {
+                if (currentItem && !moving) {
+                    lastValidContentX = contentX;
+                }
+
                 if (!moving || !currentItem)
                     return;
 
