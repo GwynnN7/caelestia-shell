@@ -5,6 +5,7 @@ import Quickshell.Io
 import Caelestia.Config
 import Caelestia.Internal
 import qs.components.containers
+import qs.components
 import qs.services
 import qs.utils
 
@@ -34,7 +35,7 @@ StyledWindow {
         return bar;
     })()
 
-    readonly property real floorOffset: Config.bar.position === "bottom" ? (barWrapper ? barWrapper.exclusiveZone : 0) : 0
+    readonly property real floorOffset: Config.bar.position === "bottom" ? (barWrapper?.exclusiveZone ?? (Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness))) : 0
 
     function getImgPath(): string {
         if (!modelData)
