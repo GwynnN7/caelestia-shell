@@ -12,7 +12,7 @@ import "services"
 PathView {
     id: root
 
-    required property StyledTextField search
+    required property SearchBar search
     required property ScreenState screenState
     required property var panels
     required property var content

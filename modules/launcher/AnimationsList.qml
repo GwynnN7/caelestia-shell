@@ -14,13 +14,17 @@ import "services"
 StyledListView {
     id: root
 
-    required property StyledTextField search
+    required property SearchBar search
     required property ScreenState screenState
 
-    readonly property string searchQuery: (search.text.slice((GlobalConfig.launcher.actionPrefix + "animations ").length)).toLowerCase()
+    readonly property string searchQuery: search?.text?.startsWith(GlobalConfig.launcher.actionPrefix + "animations ")
+        ? search.text.slice((GlobalConfig.launcher.actionPrefix + "animations ").length).toLowerCase().trim()
+        : ""
 
     function refreshModel() {
-        const results = Animations.query(search.text);
+        if (!search)
+            return;
+        const results = Animations.query(searchQuery);
         model.values = results;
     }
 
@@ -29,6 +33,7 @@ StyledListView {
     }
 
     Component.onCompleted: {
+        Animations.loadAnimations();
         refreshModel();
     }
 
@@ -41,12 +46,6 @@ StyledListView {
 
     onVisibleChanged: {
         if (visible) {
-            refreshModel();
-        }
-    }
-
-    onStateChanged: {
-        if (state === "animations") {
             refreshModel();
         }
     }
@@ -100,9 +99,9 @@ StyledListView {
         width: root.width
 
         function clicked() {
-            if (!modelData || !modelData.onClicked)
+            if (!modelData || !modelData.path)
                 return;
-            modelData.onClicked(root);
+            Animations.applyAnimation(modelData.path, root);
         }
 
         StateLayer {
