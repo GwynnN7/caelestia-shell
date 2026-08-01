@@ -89,8 +89,8 @@ PageBase {
             first: true
             last: true
             icon: "notifications"
-            label: qsTr("Notifications")
-            status: qsTr("Notifications, toasts, timeouts")
+            text: qsTr("Notifications")
+            subtext: qsTr("Notifications, toasts, timeouts")
             onClicked: root.nState.openSubPage(1)
         }
 
@@ -201,29 +201,29 @@ PageBase {
         NavRow {
             first: true
             icon: "sports_esports"
-            label: qsTr("Game mode")
-            status: qsTr("Manage how Caelestia behaves while gaming")
+            text: qsTr("Game mode")
+            subtext: qsTr("Manage how Caelestia behaves while gaming")
             onClicked: root.nState.openSubPage(2)
         }
 
         NavRow {
             icon: "chat" // Using chat since discord icon might not be available in Material icons
-            label: qsTr("Discord Rich Presence")
-            status: qsTr("Broadcast your status to Vesktop")
+            text: qsTr("Discord Rich Presence")
+            subtext: qsTr("Broadcast your status to Vesktop")
             onClicked: root.nState.openSubPage(4)
         }
 
         NavRow {
             icon: "picture_in_picture"
-            label: qsTr("Picture in Picture")
-            status: qsTr("Configure PiP positioning and focus behavior")
+            text: qsTr("Picture in Picture")
+            subtext: qsTr("Configure PiP positioning and focus behavior")
             onClicked: root.nState.openSubPage(5)
         }
 
         NavRow {
             icon: "near_me"
-            label: qsTr("Quick Share")
-            status: qsTr("Auto-start and discoverability settings")
+            text: qsTr("Quick Share")
+            subtext: qsTr("Auto-start and discoverability settings")
             onClicked: root.nState.openSubPage(6)
         }
 

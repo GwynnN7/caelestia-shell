@@ -19,23 +19,23 @@ PageBase {
         NavRow {
             first: true
             icon: "data_object"
-            label: qsTr("Variables")
-            status: qsTr("Manage your hyprland variables")
+            text: qsTr("Variables")
+            subtext: qsTr("Manage your hyprland variables")
             onClicked: root.nState.openSubPage(1)
         }
 
         NavRow {
             icon: "keyboard"
-            label: qsTr("Keybinds")
-            status: qsTr("Manage your hyprland keybinds")
+            text: qsTr("Keybinds")
+            subtext: qsTr("Manage your hyprland keybinds")
             onClicked: root.nState.openSubPage(2)
         }
 
         NavRow {
             last: true
             icon: "settings_suggest"
-            label: qsTr("User configuration")
-            status: qsTr("Advanced configuration options")
+            text: qsTr("User configuration")
+            subtext: qsTr("Advanced configuration options")
             onClicked: root.nState.openSubPage(3)
         }
     }

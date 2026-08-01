@@ -42,8 +42,8 @@ PageBase {
         NavRow {
             last: true
             icon: "ads_click"
-            label: qsTr("Target windows")
-            status: qsTr("Add or remove auto-enable targets")
+            text: qsTr("Target windows")
+            subtext: qsTr("Add or remove auto-enable targets")
             onClicked: root.nState.openSubPage(3)
         }
 
