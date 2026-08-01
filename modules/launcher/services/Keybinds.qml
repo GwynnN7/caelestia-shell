@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.services
 
 QtObject {
     id: root
@@ -10,7 +11,33 @@ QtObject {
     property var keybinds: []
     property bool initialized: false
 
-    property Process reader: Process {
+    signal loaded
+
+    property Process luaReader: Process {
+        running: false
+        command: ["lua", Quickshell.shellDir + "/assets/scripts/parse_keybinds.lua"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const parsed = JSON.parse(text);
+                    if (Array.isArray(parsed)) {
+                        keybinds = parsed;
+                        initialized = true;
+                        root.loaded();
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Failed to parse lua keybinds: " + e);
+                }
+                // If Lua parsing failed or returned invalid data, try fallback
+                if (!initialized && !fallbackReader.running) {
+                    fallbackReader.running = true;
+                }
+            }
+        }
+    }
+
+    property Process fallbackReader: Process {
         running: false
         command: ["hyprctl", "binds", "-j"]
         stdout: StdioCollector {
@@ -60,24 +87,84 @@ QtObject {
         }
     }
 
-    signal loaded
-
     function loadKeybinds() {
         if (initialized && keybinds.length > 0) {
             return;
         }
         keybinds = [];
         initialized = false;
-        reader.running = true;
+        if (Hypr.usingLua) {
+            luaReader.running = true;
+        } else {
+            fallbackReader.running = true;
+        }
+    }
+
+    function reload() {
+        keybinds = [];
+        initialized = false;
+        if (Hypr.usingLua) {
+            luaReader.running = true;
+        } else {
+            fallbackReader.running = true;
+        }
     }
 
     function query(searchText) {
         if (!searchText)
             return keybinds;
 
-        const queryText = searchText.toLowerCase();
-        return keybinds.filter(k => k.bind.toLowerCase().includes(queryText) || k.description.toLowerCase().includes(queryText));
+        const queryText = searchText.toLowerCase().trim();
+        return keybinds.filter(k => 
+            (k.bind && k.bind.toLowerCase().includes(queryText)) ||
+            (k.description && k.description.toLowerCase().includes(queryText)) ||
+            (k.action && k.action.toLowerCase().includes(queryText))
+        );
     }
 
-    Component.onCompleted: loadKeybinds()
+    function execute(item) {
+        if (!item)
+            return;
+
+        // 1. Direct shell command execution (apps, scripts, cli commands)
+        if (item.cmd) {
+            Quickshell.execDetached(["sh", "-c", item.cmd]);
+            return;
+        }
+
+        // 2. Direct Lua evaluation in Hyprland
+        if (Hypr.usingLua && item.lua) {
+            Quickshell.execDetached(["hyprctl", "eval", item.lua]);
+            return;
+        }
+
+        // 3. Fallback handlers for raw action string
+        const action = (item.action || "").trim();
+        if (!action)
+            return;
+
+        if (action.startsWith("exec ")) {
+            Quickshell.execDetached(["sh", "-c", action.slice(5)]);
+        } else if (action.startsWith("global ")) {
+            const name = action.slice(7).trim();
+            if (Hypr.usingLua) {
+                Quickshell.execDetached(["hyprctl", "dispatch", `hl.dsp.global("${name}")`]);
+            } else {
+                Quickshell.execDetached(["hyprctl", "dispatch", action]);
+            }
+        } else if (action.startsWith("eval ")) {
+            Quickshell.execDetached(["hyprctl", "eval", action.slice(5)]);
+        } else {
+            if (Hypr.usingLua) {
+                Quickshell.execDetached(["hyprctl", "dispatch", `hl.dsp.${action}()`]);
+            } else {
+                Quickshell.execDetached(["hyprctl", "dispatch", action]);
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        loadKeybinds();
+        Hypr.configReloaded.connect(root.reload);
+    }
 }

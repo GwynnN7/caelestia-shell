@@ -4,6 +4,7 @@ import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.modules.launcher.services
 
 Item {
     id: root
@@ -12,16 +13,16 @@ Item {
     required property var modelData
 
     function clicked() {
-        if (!root.modelData || !root.modelData.action)
+        if (!root.modelData || (!root.modelData.action && !root.modelData.cmd && !root.modelData.lua))
             return;
         root.list.screenState.launcher = false;
-        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch " + root.modelData.action]);
+        Keybinds.execute(root.modelData);
     }
 
     implicitHeight: Tokens.sizes.launcher.itemHeight
 
-    anchors.left: parent?.left
-    anchors.right: parent?.right
+    anchors.left: parent ? parent.left : undefined
+    anchors.right: parent ? parent.right : undefined
 
     StateLayer {
         radius: Tokens.rounding.large
