@@ -1,5 +1,6 @@
 #pragma once
 
+#include "configlist.hpp"
 #include "configobject.hpp"
 
 #include <qstring.h>
@@ -93,18 +94,19 @@ class UtilitiesConfig : public ConfigObject {
     CONFIG_SUBOBJECT(UtilitiesToasts, toasts)
     CONFIG_SUBOBJECT(UtilitiesVpn, vpn)
     CONFIG_SUBOBJECT(UtilitiesGameMode, gameMode)
-    CONFIG_PROPERTY(QVariantList, quickToggles,
+    CONFIG_LIST(EntryList, quickToggles,
         {
-            vmap({ { u"id"_s, u"wifi"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"bluetooth"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"quickshare"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"mic"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"settings"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"gameMode"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"dnd"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"vpn"_s }, { u"enabled"_s, false } }),
-            vmap({ { u"id"_s, u"wallpaper"_s }, { u"enabled"_s, true } }),
-            vmap({ { u"id"_s, u"badapple"_s }, { u"enabled"_s, true } }),
+            LIST_ENTRY(wifi, true),
+            LIST_ENTRY(bluetooth, true),
+            LIST_ENTRY(mic, true),
+            LIST_ENTRY(settings, true),
+            LIST_ENTRY(gameMode, true),
+            LIST_ENTRY(dnd, true),
+            LIST_ENTRY(vpn, false),
+            LIST_ENTRY(wallpaper, true),
+            LIST_ENTRY(badapple, true),
+            LIST_ENTRY(pauseWallpaper, true),
+            LIST_ENTRY(pipPause, true),
         })
 
 public:

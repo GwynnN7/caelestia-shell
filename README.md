@@ -743,79 +743,44 @@ For example, to disable the bar on DP-1:
             "recolourIcons": false
         },
         "dragThreshold": 20,
-        "entries": [
+        "statusIcons": [
             {
-                "enabled": true,
-                "id": "logo"
+                "id": "lockStatus",
+                "enabled": true
             },
             {
-                "enabled": true,
-                "id": "workspaces"
+                "id": "audio",
+                "enabled": false
             },
             {
-                "enabled": true,
-                "id": "github"
+                "id": "microphone",
+                "enabled": false
             },
             {
-                "enabled": true,
-                "id": "spacer"
+                "id": "kbLayout",
+                "enabled": false
             },
             {
-                "enabled": true,
-                "id": "activeWindow"
+                "id": "network",
+                "enabled": true
             },
             {
-                "enabled": true,
-                "id": "spacer"
+                "id": "bluetooth",
+                "enabled": true
             },
             {
-                "enabled": true,
-                "id": "tray"
+                "id": "battery",
+                "enabled": true
             },
             {
-                "enabled": true,
-                "id": "clock"
+                "id": "peripheralBattery",
+                "enabled": false
             },
             {
-                "enabled": true,
-                "id": "statusIcons"
-            },
-            {
-                "enabled": true,
-                "id": "power"
+                "id": "notifications",
+                "enabled": true
             }
         ],
-        "excludedScreens": [],
-        "github": {
-            "background": false,
-            "token": ""
-        },
-        "persistent": true,
-        "popouts": {
-            "activeWindow": true,
-            "statusIcons": true,
-            "tray": true
-        },
-        "position": "left",
-        "scrollActions": {
-            "brightness": true,
-            "volume": true,
-            "workspaces": true
-        },
-        "showOnHover": true,
-        "status": {
-            "showAudio": false,
-            "showBattery": true,
-            "showBluetooth": true,
-            "showKbLayout": false,
-            "showLockStatus": true,
-            "showMicrophone": false,
-            "showNetwork": true,
-            "showNotifications": true,
-            "showPeripheralBattery": true,
-            "peripheralBatteryExcluded": [],
-            "showWifi": true
-        },
         "tray": {
             "background": false,
             "compact": false,
@@ -1334,9 +1299,12 @@ programs.caelestia = {
     environment = [];
   };
   settings = {
-    bar.status = {
-      showBattery = false;
-    };
+    bar.statusIcons = [
+      { id = "lockStatus"; enabled = true; }
+      { id = "network"; enabled = true; }
+      { id = "bluetooth"; enabled = true; }
+      { id = "battery"; enabled = false; }
+    ];
     paths.wallpaperDir = "~/Images";
   };
   cli = {

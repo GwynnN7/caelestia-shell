@@ -1,0 +1,101 @@
+import QtQuick
+import QtQuick.Layouts
+import Caelestia.Config
+import qs.components
+import qs.services
+
+GridLayout {
+    id: root
+
+    required property color colour
+    required property int parentSpacing
+
+    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+
+    property real gap: Hypr.capsLock && Hypr.numLock ? parentSpacing : 0
+    property real capsSize: Hypr.capsLock ? (isHorizontal ? capslockIcon.implicitWidth : capslockIcon.implicitHeight) : 0
+    property real numSize: Hypr.numLock ? (isHorizontal ? numlockIcon.implicitWidth : numlockIcon.implicitHeight) : 0
+
+    columns: isHorizontal ? -1 : 1
+    rows: isHorizontal ? 1 : -1
+    flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+
+    columnSpacing: isHorizontal ? Math.round(gap) : 0
+    rowSpacing: isHorizontal ? 0 : Math.round(gap)
+
+    Behavior on gap {
+        Anim {
+            type: Anim.SlowEffects
+        }
+    }
+
+    Behavior on capsSize {
+        Anim {
+            type: Anim.SlowEffects
+        }
+    }
+
+    Behavior on numSize {
+        Anim {
+            type: Anim.SlowEffects
+        }
+    }
+
+    Item {
+        implicitWidth: isHorizontal ? Math.round(root.capsSize) : capslockIcon.implicitWidth
+        implicitHeight: isHorizontal ? capslockIcon.implicitHeight : Math.round(root.capsSize)
+
+        MaterialIcon {
+            id: capslockIcon
+
+            anchors.centerIn: parent
+
+            scale: Hypr.capsLock ? 1 : 0.5
+            opacity: Hypr.capsLock ? 1 : 0
+
+            text: "keyboard_capslock_badge"
+            color: root.colour
+            fill: 1
+            grade: 25
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
+
+            Behavior on scale {
+                Anim {}
+            }
+        }
+    }
+
+    Item {
+        implicitWidth: isHorizontal ? Math.round(root.numSize) : numlockIcon.implicitWidth
+        implicitHeight: isHorizontal ? numlockIcon.implicitHeight : Math.round(root.numSize)
+
+        MaterialIcon {
+            id: numlockIcon
+
+            anchors.centerIn: parent
+
+            scale: Hypr.numLock ? 1 : 0.5
+            opacity: Hypr.numLock ? 1 : 0
+
+            text: "looks_one"
+            color: root.colour
+            fill: 1
+            grade: 25
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
+
+            Behavior on scale {
+                Anim {}
+            }
+        }
+    }
+}
