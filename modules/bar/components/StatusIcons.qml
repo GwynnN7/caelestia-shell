@@ -53,10 +53,9 @@ StyledRect {
 
         anchors.left: parent.left
         anchors.right: isHorizontal ? undefined : parent.right
-        anchors.top: isHorizontal ? parent.top : undefined
-        anchors.bottom: parent.bottom
-        anchors.topMargin: isHorizontal ? Tokens.padding.medium : 0
-        anchors.bottomMargin: Tokens.padding.medium
+        anchors.bottom: isHorizontal ? undefined : parent.bottom
+        anchors.verticalCenter: isHorizontal ? parent.verticalCenter : undefined
+        anchors.bottomMargin: isHorizontal ? 0 : Tokens.padding.medium
         anchors.leftMargin: isHorizontal ? Tokens.padding.medium : 0
 
         columns: isHorizontal ? -1 : 1
