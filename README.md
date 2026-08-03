@@ -1213,6 +1213,10 @@ For example, to disable the bar on DP-1:
             },
             {
                 "enabled": true,
+                "id": "quickshare"
+            },
+            {
+                "enabled": true,
                 "id": "mic"
             },
             {
