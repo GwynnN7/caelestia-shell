@@ -10,7 +10,7 @@ import qs.services
 Column {
     id: root
 
-    readonly property var excluded: Config.bar.status.peripheralBatteryExcluded
+    readonly property var excluded: Config.bar.peripheralBatteryExcluded
 
     spacing: Tokens.spacing.small
 

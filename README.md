@@ -743,6 +743,7 @@ For example, to disable the bar on DP-1:
             "recolourIcons": false
         },
         "dragThreshold": 20,
+        "peripheralBatteryExcluded": [],
         "statusIcons": [
             {
                 "id": "lockStatus",

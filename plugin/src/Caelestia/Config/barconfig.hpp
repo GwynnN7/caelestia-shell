@@ -173,6 +173,7 @@ class BarConfig : public ConfigObject {
             LIST_ENTRY(power, true),
         })
     CONFIG_PROPERTY(QStringList, excludedScreens)
+    CONFIG_PROPERTY(QStringList, peripheralBatteryExcluded)
 
 public:
     explicit BarConfig(QObject* parent = nullptr)

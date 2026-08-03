@@ -34,6 +34,8 @@ Item {
     GridLayout {
         id: layout
 
+        readonly property var excluded: Config.bar.peripheralBatteryExcluded
+
         columns: root.isHorizontal ? -1 : 1
         rows: root.isHorizontal ? 1 : -1
         flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
@@ -42,7 +44,7 @@ Item {
 
         Repeater {
             model: ScriptModel {
-                values: UPower.devices.values.filter(d => !d.isLaptopBattery && d.type !== UPowerDeviceType.LinePower && d.isPresent) // qmllint disable unresolved-type
+                values: UPower.devices.values.filter(d => !d.isLaptopBattery && d.type !== UPowerDeviceType.LinePower && d.isPresent && !layout.excluded.some(e => e === d.model || e === d.nativePath)) // qmllint disable unresolved-type
             }
 
             MaterialIcon {
