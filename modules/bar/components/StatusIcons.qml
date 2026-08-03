@@ -63,7 +63,8 @@ StyledRect {
         rows: isHorizontal ? 1 : -1
         flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
 
-        spacing: 0
+        columnSpacing: 0
+        rowSpacing: 0
 
         Repeater {
             model: ScriptModel {
