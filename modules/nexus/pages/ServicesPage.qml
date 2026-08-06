@@ -201,8 +201,8 @@ PageBase {
         NavRow {
             first: true
             icon: "network_intel_node"
-            label: qsTr("Cortana AI")
-            status: qsTr("Configure Cortana AI behavior")
+            text: qsTr("Cortana AI")
+            subtext: qsTr("Configure Cortana AI behavior")
             onClicked: root.nState.openSubPage(2)
         }
 
