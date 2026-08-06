@@ -9,15 +9,17 @@ PageBase {
     title: qsTr("Desktop clock")
     isSubPage: true
 
-    readonly property list<string> positionValues: ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right", "center"]
+    readonly property list<string> positionValues: ["top-left", "top-center", "top-right", "middle-left", "middle-center", "middle-right", "bottom-left", "bottom-center", "bottom-right"]
     readonly property list<MenuItem> positionItems: [
         MenuItem { text: qsTr("Top Left") },
         MenuItem { text: qsTr("Top Center") },
         MenuItem { text: qsTr("Top Right") },
+        MenuItem { text: qsTr("Middle Left") },
+        MenuItem { text: qsTr("Middle Center") },
+        MenuItem { text: qsTr("Middle Right") },
         MenuItem { text: qsTr("Bottom Left") },
         MenuItem { text: qsTr("Bottom Center") },
-        MenuItem { text: qsTr("Bottom Right") },
-        MenuItem { text: qsTr("Center") }
+        MenuItem { text: qsTr("Bottom Right") }
     ]
 
     ColumnLayout {
@@ -49,7 +51,7 @@ PageBase {
             Layout.fillWidth: true
             label: qsTr("Position")
             menuItems: root.positionItems
-            active: root.positionItems[root.positionValues.indexOf(Config.background.desktopClock.position)] ?? root.positionItems[5]
+            active: root.positionItems[root.positionValues.indexOf(Config.background.desktopClock.position)] ?? root.positionItems[4]
             onSelected: item => {
                 let idx = root.positionItems.indexOf(item);
                 if (idx !== -1)

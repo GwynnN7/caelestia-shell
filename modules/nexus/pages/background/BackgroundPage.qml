@@ -16,30 +16,30 @@ PageBase {
         NavRow {
             first: true
             icon: "schedule"
-            label: qsTr("Desktop clock")
-            status: Config.background.desktopClock.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            text: qsTr("Desktop clock")
+            subtext: Config.background.desktopClock.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(1)
         }
 
         NavRow {
             icon: "lyrics"
-            label: qsTr("Desktop lyrics")
-            status: Config.background.desktopLyrics.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            text: qsTr("Desktop lyrics")
+            subtext: Config.background.desktopLyrics.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(2)
         }
 
         NavRow {
             icon: "equalizer"
-            label: qsTr("Background visualiser")
-            status: Config.background.visualiser.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            text: qsTr("Background visualiser")
+            subtext: Config.background.visualiser.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(3)
         }
 
         NavRow {
             last: true
             icon: "pets"
-            label: qsTr("Shimeji characters")
-            status: Config.shimeji.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            text: qsTr("Shimeji characters")
+            subtext: Config.shimeji.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(4)
         }
     }

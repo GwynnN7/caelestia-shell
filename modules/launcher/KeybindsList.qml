@@ -13,12 +13,16 @@ import "services"
 StyledListView {
     id: root
 
-    required property StyledTextField search
+    required property SearchBar search
     required property ScreenState screenState
 
-    readonly property string searchQuery: (search.text.slice((GlobalConfig.launcher.actionPrefix + "keybinds ").length)).toLowerCase()
+    readonly property string searchQuery: search?.text?.startsWith(GlobalConfig.launcher.actionPrefix + "keybinds ")
+        ? search.text.slice((GlobalConfig.launcher.actionPrefix + "keybinds ").length).toLowerCase()
+        : ""
 
     function refreshModel() {
+        if (!search)
+            return;
         const results = Keybinds.query(searchQuery);
         model.values = results;
     }

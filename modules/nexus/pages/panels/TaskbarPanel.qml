@@ -95,58 +95,58 @@ PageBase {
         NavRow {
             first: true
             icon: "view_agenda"
-            label: qsTr("Toggle & rearrange")
-            status: qsTr("Add, remove or reorder components")
+            text: qsTr("Toggle & rearrange")
+            subtext: qsTr("Add, remove or reorder components")
             onClicked: root.nState.openSubPage(6)
         }
 
         NavRow {
             icon: "workspaces"
-            label: qsTr("Workspaces")
-            status: qsTr("Indicators, window icons")
+            text: qsTr("Workspaces")
+            subtext: qsTr("Indicators, window icons")
             onClicked: root.nState.openSubPage(7)
         }
 
         NavRow {
             icon: "web_asset"
-            label: qsTr("Active window")
-            status: qsTr("Title display, popout")
+            text: qsTr("Active window")
+            subtext: qsTr("Title display, popout")
             onClicked: root.nState.openSubPage(8)
         }
 
         NavRow {
             icon: "dock"
-            label: qsTr("Dock")
-            status: qsTr("Positioning, recoloring")
+            text: qsTr("Dock")
+            subtext: qsTr("Positioning, recoloring")
             onClicked: root.nState.openSubPage(12)
         }
 
         NavRow {
             icon: "widgets"
-            label: qsTr("Tray")
-            status: qsTr("System tray icons")
+            text: qsTr("Tray")
+            subtext: qsTr("System tray icons")
             onClicked: root.nState.openSubPage(9)
         }
 
         NavRow {
             icon: "signal_cellular_alt"
-            label: qsTr("Status icons")
-            status: qsTr("Visible indicators")
+            text: qsTr("Status icons")
+            subtext: qsTr("Visible indicators")
             onClicked: root.nState.openSubPage(10)
         }
 
         NavRow {
             icon: "schedule"
-            label: qsTr("Clock")
-            status: qsTr("Date, icon, background")
+            text: qsTr("Clock")
+            subtext: qsTr("Date, icon, background")
             onClicked: root.nState.openSubPage(11)
         }
 
         NavRow {
             last: true
             icon: "code"
-            label: qsTr("GitHub")
-            status: qsTr("Contributions, token setup")
+            text: qsTr("GitHub")
+            subtext: qsTr("Contributions, token setup")
             onClicked: root.nState.openSubPage(13)
         }
 

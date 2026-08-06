@@ -21,25 +21,10 @@ StyledRect {
     required property BarPopouts.Wrapper popouts
 
     readonly property var quickToggles: {
-        const configToggles = Config.utilities.quickToggles || [];
-        const disabledIds = new Set(configToggles.filter(t => t.enabled === false).map(t => t.id));
-
-        const builtIn = [
-            {
-                id: "badapple"
-            },
-            {
-                id: "pauseWallpaper"
-            },
-            {
-                id: "pipPause"
-            }
-        ].filter(t => !disabledIds.has(t.id));
-
-        const allToggles = [...configToggles.filter(t => !disabledIds.has(t.id)), ...builtIn];
         const seenIds = new Set();
-
-        return allToggles.filter(item => {
+        return Config.utilities.quickToggles.values.filter(item => {
+            if (!item.enabled)
+                return false;
             if (seenIds.has(item.id))
                 return false;
             seenIds.add(item.id);
