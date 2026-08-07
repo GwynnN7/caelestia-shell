@@ -131,6 +131,21 @@ public:
         : ConfigObject(parent) {}
 };
 
+class BarSpotify : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_PROPERTY(bool, background, false)
+    CONFIG_PROPERTY(bool, showVisualiser, true)
+    CONFIG_PROPERTY(int, maxTitleLength, 25)
+    CONFIG_PROPERTY(bool, inverted, false)
+    CONFIG_PROPERTY(bool, horizontalVolume, false)
+
+public:
+    explicit BarSpotify(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
 class BarConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
@@ -147,6 +162,7 @@ class BarConfig : public ConfigObject {
     CONFIG_SUBOBJECT(BarClock, clock)
     CONFIG_SUBOBJECT(BarDock, dock)
     CONFIG_SUBOBJECT(BarGithub, github)
+    CONFIG_SUBOBJECT(BarSpotify, spotify)
     CONFIG_LIST(EntryList, statusIcons,
         {
             LIST_ENTRY(lockStatus, true),
@@ -164,6 +180,7 @@ class BarConfig : public ConfigObject {
             LIST_ENTRY(logo, true),
             LIST_ENTRY(workspaces, true),
             LIST_ENTRY(github, true),
+            LIST_ENTRY(spotify, false),
             LIST_ENTRY(spacer, true),
             LIST_ENTRY(activeWindow, true),
             LIST_ENTRY(spacer, true),
@@ -185,7 +202,8 @@ public:
         , m_tray(new BarTray(this))
         , m_clock(new BarClock(this))
         , m_dock(new BarDock(this))
-        , m_github(new BarGithub(this)) {}
+        , m_github(new BarGithub(this))
+        , m_spotify(new BarSpotify(this)) {}
 };
 
 } // namespace caelestia::config

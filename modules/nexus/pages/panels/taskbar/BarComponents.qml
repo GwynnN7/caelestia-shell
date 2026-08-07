@@ -11,6 +11,7 @@ PageBase {
             logo: qsTr("Logo"),
             workspaces: qsTr("Workspaces"),
             github: qsTr("GitHub"),
+            spotify: qsTr("Spotify"),
             spacer: qsTr("Spacer"),
             activeWindow: qsTr("Active window"),
             tray: qsTr("System tray"),

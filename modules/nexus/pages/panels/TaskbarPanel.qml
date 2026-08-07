@@ -143,11 +143,18 @@ PageBase {
         }
 
         NavRow {
-            last: true
             icon: "code"
             text: qsTr("GitHub")
             subtext: qsTr("Contributions, token setup")
             onClicked: root.nState.openSubPage(13)
+        }
+
+        NavRow {
+            last: true
+            icon: "music_note"
+            text: qsTr("Spotify")
+            subtext: qsTr("Visualizer, title length, background")
+            onClicked: root.nState.openSubPage(14)
         }
 
         // Scroll actions
