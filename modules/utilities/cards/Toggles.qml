@@ -205,10 +205,11 @@ StyledRect {
                         icon: "pause"
                         isToggle: true
 
-                        Component.onCompleted: checked = Qt.binding(() => GlobalConfig.background.videoWallpaperPaused)
+                        checked: WallpaperPauser.manualPause || (Config.background && Config.background.videoWallpaperPaused)
                         onClicked: {
-                            const newVal = !GlobalConfig.background.videoWallpaperPaused;
+                            const newVal = !checked;
                             GlobalConfig.background.videoWallpaperPaused = newVal;
+                            WallpaperPauser.manualPause = newVal;
                         }
                     }
                 }
