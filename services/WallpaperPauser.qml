@@ -13,6 +13,7 @@ import qs.utils
 Singleton {
     id: root
 
+    property bool manualPause: false
     property bool pauseOnBattery: false
     property bool pauseOnWindowOverlap: true
     property string hwDecoder: "none"
@@ -21,6 +22,7 @@ Singleton {
         id: pauserSettings
         location: `${Paths.state}/wallpaper/pauser.ini`
         category: "WallpaperPauser"
+        property alias manualPause: root.manualPause
         property alias pauseOnBattery: root.pauseOnBattery
         property alias pauseOnWindowOverlap: root.pauseOnWindowOverlap
         property alias hwDecoder: root.hwDecoder
@@ -37,8 +39,11 @@ Singleton {
         let newPaused = false;
         let reason = "None";
 
-        // Rule #1 — Battery
-        if (pauseOnBattery && UPower.onBattery) {
+        // Rule #0 — Manual / Config Pause
+        if ((Config.background && Config.background.videoWallpaperPaused) || manualPause) {
+            newPaused = true;
+            reason = "Manual / Config Pause";
+        } else if (pauseOnBattery && UPower.onBattery) {
             newPaused = true;
             reason = "Battery";
         } else if (pauseOnWindowOverlap) {
@@ -123,6 +128,10 @@ Singleton {
                 running = false;
             }
         }
+    }
+
+    onManualPauseChanged: {
+        recalculate();
     }
 
     onPauseOnBatteryChanged: {
