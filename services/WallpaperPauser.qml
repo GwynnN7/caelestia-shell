@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.UPower
 import Quickshell.Io
+import Caelestia.Config
 
 import qs.services
 import qs.utils
@@ -40,7 +41,7 @@ Singleton {
         let reason = "None";
 
         // Rule #0 — Manual / Config Pause
-        if ((Config.background && Config.background.videoWallpaperPaused) || manualPause) {
+        if ((typeof Config !== "undefined" && Config.background && Config.background.videoWallpaperPaused) || manualPause) {
             newPaused = true;
             reason = "Manual / Config Pause";
         } else if (pauseOnBattery && UPower.onBattery) {
