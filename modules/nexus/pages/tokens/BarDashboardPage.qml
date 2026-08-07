@@ -28,7 +28,9 @@ PageBase {
             from: 10
             to: 100
             stepSize: 2
+            showReset: true
             onMoved: v => TokenConfig.sizes.bar.innerWidth = v
+            onReset: { TokenConfig.sizes.bar.innerWidth = TokenConfig.defaults().sizes.bar.innerWidth; TokenConfig.sizes.bar.resetOption("innerWidth"); }
         }
 
         StepperRow {
@@ -39,7 +41,9 @@ PageBase {
             from: 100
             to: 600
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.bar.windowPreviewSize = v
+            onReset: { TokenConfig.sizes.bar.windowPreviewSize = TokenConfig.defaults().sizes.bar.windowPreviewSize; TokenConfig.sizes.bar.resetOption("windowPreviewSize"); }
         }
 
         StepperRow {
@@ -50,7 +54,9 @@ PageBase {
             from: 150
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.bar.trayMenuWidth = v
+            onReset: { TokenConfig.sizes.bar.trayMenuWidth = TokenConfig.defaults().sizes.bar.trayMenuWidth; TokenConfig.sizes.bar.resetOption("trayMenuWidth"); }
         }
 
         StepperRow {
@@ -61,7 +67,9 @@ PageBase {
             from: 100
             to: 400
             stepSize: 5
+            showReset: true
             onMoved: v => TokenConfig.sizes.bar.batteryWidth = v
+            onReset: { TokenConfig.sizes.bar.batteryWidth = TokenConfig.defaults().sizes.bar.batteryWidth; TokenConfig.sizes.bar.resetOption("batteryWidth"); }
         }
 
         StepperRow {
@@ -72,7 +80,9 @@ PageBase {
             from: 150
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.bar.networkWidth = v
+            onReset: { TokenConfig.sizes.bar.networkWidth = TokenConfig.defaults().sizes.bar.networkWidth; TokenConfig.sizes.bar.resetOption("networkWidth"); }
         }
 
         StepperRow {
@@ -84,7 +94,9 @@ PageBase {
             from: 150
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.bar.kbLayoutWidth = v
+            onReset: { TokenConfig.sizes.bar.kbLayoutWidth = TokenConfig.defaults().sizes.bar.kbLayoutWidth; TokenConfig.sizes.bar.resetOption("kbLayoutWidth"); }
         }
 
         SectionHeader {
@@ -99,7 +111,9 @@ PageBase {
             from: 200
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.userWidth = v
+            onReset: { TokenConfig.sizes.dashboard.userWidth = TokenConfig.defaults().sizes.dashboard.userWidth; TokenConfig.sizes.dashboard.resetOption("userWidth"); }
         }
 
         StepperRow {
@@ -110,7 +124,9 @@ PageBase {
             from: 16
             to: 64
             stepSize: 2
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.logoSize = v
+            onReset: { TokenConfig.sizes.dashboard.logoSize = TokenConfig.defaults().sizes.dashboard.logoSize; TokenConfig.sizes.dashboard.resetOption("logoSize"); }
         }
 
         StepperRow {
@@ -121,7 +137,9 @@ PageBase {
             from: 16
             to: 64
             stepSize: 2
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.uptimeSize = v
+            onReset: { TokenConfig.sizes.dashboard.uptimeSize = TokenConfig.defaults().sizes.dashboard.uptimeSize; TokenConfig.sizes.dashboard.resetOption("uptimeSize"); }
         }
 
         StepperRow {
@@ -132,7 +150,9 @@ PageBase {
             from: 80
             to: 300
             stepSize: 5
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.dateTimeWidth = v
+            onReset: { TokenConfig.sizes.dashboard.dateTimeWidth = TokenConfig.defaults().sizes.dashboard.dateTimeWidth; TokenConfig.sizes.dashboard.resetOption("dateTimeWidth"); }
         }
 
         StepperRow {
@@ -143,7 +163,9 @@ PageBase {
             from: 150
             to: 400
             stepSize: 5
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.weatherWidth = v
+            onReset: { TokenConfig.sizes.dashboard.weatherWidth = TokenConfig.defaults().sizes.dashboard.weatherWidth; TokenConfig.sizes.dashboard.resetOption("weatherWidth"); }
         }
 
         StepperRow {
@@ -154,7 +176,9 @@ PageBase {
             from: 100
             to: 400
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.mediaWidth = v
+            onReset: { TokenConfig.sizes.dashboard.mediaWidth = TokenConfig.defaults().sizes.dashboard.mediaWidth; TokenConfig.sizes.dashboard.resetOption("mediaWidth"); }
         }
 
         StepperRow {
@@ -165,7 +189,9 @@ PageBase {
             from: 150
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.mediaSectionWidth = v
+            onReset: { TokenConfig.sizes.dashboard.mediaSectionWidth = TokenConfig.defaults().sizes.dashboard.mediaSectionWidth; TokenConfig.sizes.dashboard.resetOption("mediaSectionWidth"); }
         }
 
         StepperRow {
@@ -176,7 +202,9 @@ PageBase {
             from: 100
             to: 300
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.mediaCoverArtSize = v
+            onReset: { TokenConfig.sizes.dashboard.mediaCoverArtSize = TokenConfig.defaults().sizes.dashboard.mediaCoverArtSize; TokenConfig.sizes.dashboard.resetOption("mediaCoverArtSize"); }
         }
 
         StepperRow {
@@ -187,7 +215,9 @@ PageBase {
             from: 400
             to: 1500
             stepSize: 20
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.mediaTabWidth = v
+            onReset: { TokenConfig.sizes.dashboard.mediaTabWidth = TokenConfig.defaults().sizes.dashboard.mediaTabWidth; TokenConfig.sizes.dashboard.resetOption("mediaTabWidth"); }
         }
 
         StepperRow {
@@ -199,7 +229,9 @@ PageBase {
             from: 200
             to: 600
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.dashboard.mediaTabHeight = v
+            onReset: { TokenConfig.sizes.dashboard.mediaTabHeight = TokenConfig.defaults().sizes.dashboard.mediaTabHeight; TokenConfig.sizes.dashboard.resetOption("mediaTabHeight"); }
         }
     }
 }

@@ -14,6 +14,9 @@ ConnectedRect {
     property bool showDelete: false
     signal deleted()
 
+    property bool showReset: false
+    signal reset()
+
     property alias label: label.text
     property string subtext
     property real value
@@ -56,6 +59,14 @@ ConnectedRect {
                     font: Tokens.font.icon.small
                     visible: root.showDelete
                     onClicked: root.deleted()
+                }
+
+                IconButton {
+                    icon: "restart_alt"
+                    type: IconButton.Text
+                    font: Tokens.font.icon.small
+                    visible: root.showReset
+                    onClicked: root.reset()
                 }
 
                 Item {

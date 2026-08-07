@@ -26,7 +26,9 @@ PageBase {
             label: qsTr("Height Multiplier")
             value: TokenConfig.sizes.lock.heightMult
             valueLabel: value.toFixed(2)
+            showReset: true
             onMoved: v => TokenConfig.sizes.lock.heightMult = v
+            onReset: { TokenConfig.sizes.lock.heightMult = TokenConfig.defaults().sizes.lock.heightMult; TokenConfig.sizes.lock.resetOption("heightMult"); }
         }
 
         SliderRow {
@@ -35,7 +37,9 @@ PageBase {
             label: qsTr("Aspect Ratio")
             value: (TokenConfig.sizes.lock.ratio - 1.0) / 1.5
             valueLabel: (1.0 + value * 1.5).toFixed(2)
+            showReset: true
             onMoved: v => TokenConfig.sizes.lock.ratio = 1.0 + v * 1.5
+            onReset: { TokenConfig.sizes.lock.ratio = TokenConfig.defaults().sizes.lock.ratio; TokenConfig.sizes.lock.resetOption("ratio"); }
         }
 
         StepperRow {
@@ -46,7 +50,9 @@ PageBase {
             from: 200
             to: 1000
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.lock.centerWidth = v
+            onReset: { TokenConfig.sizes.lock.centerWidth = TokenConfig.defaults().sizes.lock.centerWidth; TokenConfig.sizes.lock.resetOption("centerWidth"); }
         }
 
         StepperRow {
@@ -57,7 +63,9 @@ PageBase {
             from: 20
             to: 100
             stepSize: 2
+            showReset: true
             onMoved: v => TokenConfig.sizes.lock.forecastItemWidth = v
+            onReset: { TokenConfig.sizes.lock.forecastItemWidth = TokenConfig.defaults().sizes.lock.forecastItemWidth; TokenConfig.sizes.lock.resetOption("forecastItemWidth"); }
         }
 
         StepperRow {
@@ -68,7 +76,9 @@ PageBase {
             from: 100
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.lock.largeLogoWidth = v
+            onReset: { TokenConfig.sizes.lock.largeLogoWidth = TokenConfig.defaults().sizes.lock.largeLogoWidth; TokenConfig.sizes.lock.resetOption("largeLogoWidth"); }
         }
 
         StepperRow {
@@ -80,7 +90,9 @@ PageBase {
             from: 100
             to: 600
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.lock.largeFontWidth = v
+            onReset: { TokenConfig.sizes.lock.largeFontWidth = TokenConfig.defaults().sizes.lock.largeFontWidth; TokenConfig.sizes.lock.resetOption("largeFontWidth"); }
         }
 
         SectionHeader {
@@ -93,7 +105,9 @@ PageBase {
             label: qsTr("Height Multiplier")
             value: TokenConfig.sizes.nexus.heightMult
             valueLabel: value.toFixed(2)
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.heightMult = v
+            onReset: { TokenConfig.sizes.nexus.heightMult = TokenConfig.defaults().sizes.nexus.heightMult; TokenConfig.sizes.nexus.resetOption("heightMult"); }
         }
 
         SliderRow {
@@ -102,7 +116,9 @@ PageBase {
             label: qsTr("Aspect Ratio")
             value: (TokenConfig.sizes.nexus.ratio - 1.0) / 1.5
             valueLabel: (1.0 + value * 1.5).toFixed(2)
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.ratio = 1.0 + v * 1.5
+            onReset: { TokenConfig.sizes.nexus.ratio = TokenConfig.defaults().sizes.nexus.ratio; TokenConfig.sizes.nexus.resetOption("ratio"); }
         }
 
         StepperRow {
@@ -113,7 +129,9 @@ PageBase {
             from: 400
             to: 1200
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.minWidth = v
+            onReset: { TokenConfig.sizes.nexus.minWidth = TokenConfig.defaults().sizes.nexus.minWidth; TokenConfig.sizes.nexus.resetOption("minWidth"); }
         }
 
         StepperRow {
@@ -124,7 +142,9 @@ PageBase {
             from: 300
             to: 900
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.minHeight = v
+            onReset: { TokenConfig.sizes.nexus.minHeight = TokenConfig.defaults().sizes.nexus.minHeight; TokenConfig.sizes.nexus.resetOption("minHeight"); }
         }
 
         StepperRow {
@@ -135,7 +155,9 @@ PageBase {
             from: 200
             to: 800
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.maxNavWidth = v
+            onReset: { TokenConfig.sizes.nexus.maxNavWidth = TokenConfig.defaults().sizes.nexus.maxNavWidth; TokenConfig.sizes.nexus.resetOption("maxNavWidth"); }
         }
 
         StepperRow {
@@ -146,7 +168,9 @@ PageBase {
             from: 400
             to: 1200
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.maxContentWidth = v
+            onReset: { TokenConfig.sizes.nexus.maxContentWidth = TokenConfig.defaults().sizes.nexus.maxContentWidth; TokenConfig.sizes.nexus.resetOption("maxContentWidth"); }
         }
 
         StepperRow {
@@ -158,7 +182,9 @@ PageBase {
             from: 150
             to: 500
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.nexus.popupWidth = v
+            onReset: { TokenConfig.sizes.nexus.popupWidth = TokenConfig.defaults().sizes.nexus.popupWidth; TokenConfig.sizes.nexus.resetOption("popupWidth"); }
         }
 
         SectionHeader {
@@ -171,7 +197,9 @@ PageBase {
             label: qsTr("Height Multiplier")
             value: TokenConfig.sizes.winfo.heightMult
             valueLabel: value.toFixed(2)
+            showReset: true
             onMoved: v => TokenConfig.sizes.winfo.heightMult = v
+            onReset: { TokenConfig.sizes.winfo.heightMult = TokenConfig.defaults().sizes.winfo.heightMult; TokenConfig.sizes.winfo.resetOption("heightMult"); }
         }
 
         StepperRow {
@@ -183,7 +211,9 @@ PageBase {
             from: 200
             to: 800
             stepSize: 10
+            showReset: true
             onMoved: v => TokenConfig.sizes.winfo.detailsWidth = v
+            onReset: { TokenConfig.sizes.winfo.detailsWidth = TokenConfig.defaults().sizes.winfo.detailsWidth; TokenConfig.sizes.winfo.resetOption("detailsWidth"); }
         }
     }
 }
