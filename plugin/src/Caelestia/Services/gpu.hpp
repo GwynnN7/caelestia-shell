@@ -86,7 +86,7 @@ private:
 
     // /sys/class/drm card busy files, enumerated once at construction (the card
     // set is static at runtime) and reused by resolution and the tick path.
-    QStringList m_busyFiles;
+    QList<GpuHwmonFiles> m_busyFiles;
 
     // Bumped per resolution so callbacks from a superseded probe are dropped
     int m_generation = 0;
