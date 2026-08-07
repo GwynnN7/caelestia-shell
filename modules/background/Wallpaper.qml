@@ -151,20 +151,11 @@ Item {
         readonly property int fadeMs: 400
 
         property bool renderActive: false
-        property bool pendingVideoAnim: false
 
         readonly property bool isPlayerPlaying: !!(videoChannelLoader.item && videoChannelLoader.item["playing"])
 
         anchors.fill: parent
         opacity: 0
-
-        onIsPlayerPlayingChanged: {
-            if (isPlayerPlaying && pendingVideoAnim && isVideo && animsEnabled && state === "active") {
-                pendingVideoAnim = false;
-                maskRadius = 0;
-                maskAnim.restart();
-            }
-        }
 
         Timer {
             id: cleanupTimer
@@ -204,7 +195,7 @@ Item {
             Transition {
                 from: "inactive"
                 to: "active"
-                enabled: root.completed
+                enabled: root.completed && !img.animsEnabled
                 NumberAnimation {
                     property: "opacity"
                     duration: img.fadeMs
@@ -217,27 +208,18 @@ Item {
             if (state === "active") {
                 cleanupTimer.stop();
                 if (animsEnabled && root.completed) {
-                    if (isVideo) {
-                        pendingVideoAnim = true;
-                        maskRadius = 0;
-                    } else {
-                        pendingVideoAnim = false;
-                        maskRadius = 0;
-                        maskAnim.restart();
-                    }
+                    maskRadius = 0;
+                    maskAnim.restart();
                 } else {
-                    pendingVideoAnim = false;
                     maskRadius = maxRadius;
                 }
             } else if (state === "background") {
-                pendingVideoAnim = false;
                 cleanupTimer.restart();
                 if (animsEnabled) {
                     maskRadius = maxRadius;
                     currentShape = root.shapes[Math.floor(Math.random() * root.shapes.length)];
                 }
             } else {
-                pendingVideoAnim = false;
                 cleanupTimer.stop();
             }
         }
@@ -288,7 +270,7 @@ Item {
             }
         }
         
-        readonly property bool hasReadyContent: isVideo ? isPlayerPlaying : (thumbImg.status === Image.Ready)
+        readonly property bool hasReadyContent: thumbImg.status === Image.Ready || isPlayerPlaying || gifImg.status === Image.Ready
         readonly property bool needsMask: animsEnabled && img.z === 1 && hasReadyContent && img.maskRadius < (img.maxRadius - 1.5) && !!maskLoader.item
 
         Component.onCompleted: maskRadius = maxRadius
