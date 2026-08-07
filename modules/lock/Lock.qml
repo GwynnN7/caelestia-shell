@@ -16,7 +16,10 @@ Scope {
 
         signal unlock
 
-        onUnlock: Audio.playUnlock()
+        onUnlock: {
+            Audio.playUnlock();
+            Wallpapers.setRandom();
+        }
 
         onLockedChanged: {
             // Nothing needed here anymore since we play sounds explicitly
