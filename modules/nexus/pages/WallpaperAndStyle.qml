@@ -15,6 +15,26 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
+    readonly property list<MenuItem> hwDecoderItems: [
+        MenuItem { text: qsTr("Auto") },
+        MenuItem { text: qsTr("Software") },
+        MenuItem { text: "VAAPI" },
+        MenuItem { text: "VDPAU" },
+        MenuItem { text: "CUDA" },
+        MenuItem { text: "Vulkan" },
+        MenuItem { text: "DRM" }
+    ]
+    readonly property list<string> hwDecoderValues: ["auto", "none", "vaapi", "vdpau", "cuda", "vulkan", "drm"]
+    readonly property var hwDecoderIndexMap: ({
+        "auto": 0, "none": 1, "vaapi": 2, "vdpau": 3,
+        "cuda": 4, "vulkan": 5, "drm": 6
+    })
+
+    function hwDecoderToIndex(val: string): int {
+        const v = (val ?? "none").toLowerCase();
+        return v in hwDecoderIndexMap ? hwDecoderIndexMap[v] : 1; // Default to software (none)
+    }
+
     title: qsTr("Wallpaper & style")
 
     ColumnLayout {
@@ -239,37 +259,43 @@ PageBase {
             onMoved: v => GlobalConfig.background.wallpaperRecolorStrength = v
         }
 
-        ToggleRow {
+        SelectRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
-            text: qsTr("Pause video wallpapers")
-            checked: Config.background.videoWallpaperPaused
-            onToggled: GlobalConfig.background.videoWallpaperPaused = checked
+
+            label: qsTr("Video Hardware Decoder")
+            menuOnTop: true
+            menuItems: root.hwDecoderItems
+            active: root.hwDecoderItems[root.hwDecoderToIndex(WallpaperPauser.hwDecoder)]
+            onSelected: item => WallpaperPauser.hwDecoder = root.hwDecoderValues[root.hwDecoderItems.indexOf(item)]
         }
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
-            text: qsTr("Enable video audio")
-            checked: Config.background.videoWallpaperSoundEnabled
-            onToggled: GlobalConfig.background.videoWallpaperSoundEnabled = checked
+
+            text: qsTr("Pause animated wallpapers on battery")
+            checked: WallpaperPauser.pauseOnBattery
+            onToggled: WallpaperPauser.pauseOnBattery = checked
         }
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
-            text: qsTr("Pause video on fullscreen")
-            checked: Config.background.videoWallpaperPauseOnFullscreen
-            onToggled: GlobalConfig.background.videoWallpaperPauseOnFullscreen = checked
+
+            text: qsTr("Pause animated wallpapers behind windows")
+            checked: WallpaperPauser.pauseOnWindowOverlap
+            onToggled: WallpaperPauser.pauseOnWindowOverlap = checked
         }
 
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
+
             last: true
-            text: qsTr("Mute video when media plays")
-            checked: Config.background.videoWallpaperMuteOnMedia
-            onToggled: GlobalConfig.background.videoWallpaperMuteOnMedia = checked
+            text: qsTr("Animate wallpaper transitions")
+            checked: Wallpapers.enableAnimation
+            onToggled: Wallpapers.enableAnimation = checked
         }
 
         SectionHeader {

@@ -28,6 +28,10 @@ string(REGEX REPLACE "^v" "" VERSION "${VERSION}")
 
 project(caelestia-shell VERSION ${VERSION} LANGUAGES CXX)
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Installation prefix" FORCE)
+endif()
+
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 20)

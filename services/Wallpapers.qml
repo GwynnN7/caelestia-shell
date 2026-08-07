@@ -1,8 +1,8 @@
 pragma Singleton
 
 import QtQuick
-import Quickshell
 import QtCore
+import Quickshell
 import Quickshell.Io
 import Caelestia
 import Caelestia.Config
@@ -18,11 +18,67 @@ Searcher {
     readonly property string fallback: Quickshell.shellPath("assets/wallpaper.webp")
 
     property bool showPreview: false
+    property bool enableAnimation: true
     readonly property string current: showPreview ? previewPath : actualCurrent
     property string previewPath
     property string actualCurrent
     property bool previewColourLock
     property bool pendingPreviewClear
+
+    readonly property list<string> validVideoExtensions: ["mp4", "webm", "mkv"]
+    property string wallpaperMode: "static"
+    property string cacheBuster: ""
+    property string rollbackPath: ""
+    property string rollbackMode: ""
+    property bool isTrackingRollback: false
+    
+    // Track and restore the last used wallpaper per mode using low-overhead execution
+    property string lastStatic: ""
+    property string lastAnimated: ""
+
+    property var _hashCache: ({})
+
+    Timer {
+        id: colorReleaseTimer
+        interval: 180 
+        repeat: false
+        onTriggered: {
+            // Safety check: only clear the preview if no new lock has been engaged
+            if (!previewColourLock && pendingPreviewClear) {
+                Colours.showPreview = false;
+                pendingPreviewClear = false;
+            }
+        }
+    }
+
+    function djb2_hash(s) {
+        if (!s) return "0";
+        if (_hashCache[s] !== undefined) return _hashCache[s];
+
+        let h = 5381;
+        for (let i = 0; i < s.length; i++) {
+            h = ((h << 5) + h) + s.charCodeAt(i);
+            h |= 0;
+        }
+        const res = (h >>> 0).toString(10);
+        _hashCache[s] = res;
+        return res;
+    }
+
+    function getWallpaperThumb(path, buster) {
+        let clean = String(path || "").split(/[?#]/)[0];
+        if (clean.indexOf("file://") === 0) clean = clean.substring(7);
+        let b = buster !== undefined ? buster : cacheBuster;
+        return Paths.cache + "/videothumbs/" + djb2_hash(clean) + ".jpg" + (b ? "?v=" + b : "");
+    }
+
+    function isVideo(path: string): bool {
+        if (!path) return false;
+        const clean = String(path).split(/[?#]/)[0].toLowerCase();
+        const index = clean.lastIndexOf(".");
+        const ext = index >= 0 ? clean.slice(index + 1) : "";
+        return validVideoExtensions.includes(ext);
+    }
 
     readonly property var categories: {
         let dummy = root.list;
@@ -79,18 +135,53 @@ Searcher {
         return category;
     }
 
+    function setWallpaperMode(mode) {
+        wallpaperMode = mode;
+    }
+
+    function captureRollbackState() {
+        if (!isTrackingRollback) {
+            rollbackPath = actualCurrent;
+            rollbackMode = wallpaperMode;
+            isTrackingRollback = true;
+        }
+    }
+
+    onWallpaperModeChanged: {
+        captureRollbackState();
+        
+        const target = wallpaperMode === "animated" ? lastAnimated : lastStatic;
+
+        if (target !== "") {
+            actualCurrent = target;
+            if (showPreview) {
+                previewPath = target;
+                if (String(Colours.scheme).startsWith("dynamic")) {
+                    if (!getPreviewColoursProc.running) {
+                        getPreviewColoursProc.startFor(target);
+                    }
+                }
+            } else {
+                Quickshell.execDetached(["caelestia", "wallpaper", "-f", target, ...smartArg]);
+            }
+        }
+    }
+
+    onEnableAnimationChanged: {
+        Quickshell.execDetached(["sh", "-c", "mkdir -p '" + Paths.state + "/wallpaper' && echo '" + (enableAnimation ? "1" : "0") + "' > '" + Paths.state + "/wallpaper/enable_animation.txt'"]);
+    }
+
     function setRandom(): void {
         Quickshell.execDetached(["caelestia", "wallpaper", "-r", ...smartArg]);
     }
 
     function setWallpaper(path: string): void {
-        let targetPath = path;
-        let isWE = false;
-        let weId = "";
+        let clean = String(path || "").split(/[?#]/)[0];
+        if (clean.indexOf("file://") === 0) clean = clean.substring(7);
+        if (!clean) return;
+
+        let targetPath = clean;
         if (path.endsWith("project.json")) {
-            isWE = true;
-            let parts = path.split("/");
-            weId = parts[parts.length - 2];
             let content = CUtils.readFile(path);
             try {
                 let json = JSON.parse(content);
@@ -101,24 +192,68 @@ Searcher {
                 console.warn("Failed to parse project.json:", e);
             }
         }
+
         actualCurrent = targetPath;
+        isTrackingRollback = false;
+
+        previewColourLock = true;
+        pendingPreviewClear = false;
+
+        if (isVideo(targetPath)) {
+            lastAnimated = targetPath;
+            wallpaperMode = "animated";
+            Quickshell.execDetached(["sh", "-c", "mkdir -p '" + Paths.state + "/wallpaper' && echo '" + targetPath + "' > '" + Paths.state + "/wallpaper/last_animated.txt'"]);
+        } else {
+            lastStatic = targetPath;
+            wallpaperMode = "static";
+            Quickshell.execDetached(["sh", "-c", "mkdir -p '" + Paths.state + "/wallpaper' && echo '" + targetPath + "' > '" + Paths.state + "/wallpaper/last_static.txt'"]);
+        }
+
+        stopPreview();
+
         Quickshell.execDetached(["caelestia", "wallpaper", "-f", targetPath, ...smartArg]);
     }
 
     function preview(path: string): void {
-        previewPath = path;
+        captureRollbackState();
+
+        let clean = String(path || "").split(/[?#]/)[0];
+        if (clean.indexOf("file://") === 0) clean = clean.substring(7);
+        if (!clean) return;
+
+        if (previewPath === clean && showPreview) return;
+
+        previewPath = clean;
         showPreview = true;
 
-        if (Colours.scheme === "dynamic")
-            getPreviewColoursProc.running = true;
+        if (String(Colours.scheme).startsWith("dynamic")) {
+            if (!getPreviewColoursProc.running) {
+                getPreviewColoursProc.startFor(clean);
+            }
+        }
     }
 
     function stopPreview(): void {
         showPreview = false;
-        if (previewColourLock)
+        
+        if (getPreviewColoursProc.running) {
+            getPreviewColoursProc.running = false;
+        }
+
+        if (isTrackingRollback) {
+            wallpaperMode = rollbackMode;
+            actualCurrent = rollbackPath;
+            isTrackingRollback = false;
+            
+            Quickshell.execDetached(["caelestia", "wallpaper", "-f", rollbackPath, ...smartArg]);
+        }
+
+        if (previewColourLock) {
             pendingPreviewClear = true;
-        else
+        } else {
             Colours.showPreview = false;
+            pendingPreviewClear = false;
+        }
     }
 
     function getThumbnailPath(path: string): string {
@@ -134,15 +269,16 @@ Searcher {
             }
             return path;
         }
-        if (Images.isVideo(path)) {
-            return `${Paths.cache}/wallpapers/${CUtils.sha256(path)}/first_frame.png`;
+        if (isVideo(path)) {
+            return getWallpaperThumb(path);
         }
         return path;
     }
 
     onPreviewColourLockChanged: {
-        if (!previewColourLock && pendingPreviewClear)
-            Colours.showPreview = false;
+        if (!previewColourLock && pendingPreviewClear) {
+            colorReleaseTimer.restart();
+        }
     }
 
     list: wallpapers.entries
@@ -169,6 +305,16 @@ Searcher {
     }
 
     FileView {
+        path: `${Paths.state}/wallpaper/enable_animation.txt`
+        printErrors: false
+        onLoaded: {
+            const val = text().trim();
+            if (val === "0") root.enableAnimation = false;
+            else if (val === "1") root.enableAnimation = true;
+        }
+    }
+
+    FileView {
         path: root.currentNamePath
         watchChanges: true
         printErrors: false
@@ -181,11 +327,37 @@ Searcher {
             }
             root.actualCurrent = wall;
             root.previewColourLock = false;
+
+            if (root.isVideo(root.actualCurrent)) {
+                wallpaperMode = "animated";
+                if (!root.lastAnimated) root.lastAnimated = wall;
+            } else {
+                wallpaperMode = "static";
+                if (!root.lastStatic) root.lastStatic = wall;
+            }
         }
         onLoadFailed: {
             root.actualCurrent = root.fallback;
             root.previewColourLock = false;
             Quickshell.execDetached(["caelestia", "wallpaper", "-f", root.fallback, ...root.smartArg]);
+        }
+    }
+
+    FileView {
+        path: `${Paths.state}/wallpaper/last_static.txt`
+        printErrors: false
+        onLoaded: {
+            const val = text().trim();
+            if (val) root.lastStatic = val;
+        }
+    }
+
+    FileView {
+        path: `${Paths.state}/wallpaper/last_animated.txt`
+        printErrors: false
+        onLoaded: {
+            const val = text().trim();
+            if (val) root.lastAnimated = val;
         }
     }
 
@@ -209,7 +381,6 @@ Searcher {
         property bool silent: false
     }
 
-
     FileSystemModel {
         id: wallpapers
         recursive: true
@@ -231,12 +402,85 @@ Searcher {
     Process {
         id: getPreviewColoursProc
 
-        command: ["caelestia", "wallpaper", "-p", root.previewPath, ...root.smartArg]
+        property string currentProcessingPath: ""
+
+        command: ["caelestia", "wallpaper", "-p", currentProcessingPath, ...root.smartArg]
+
+        function startFor(path) {
+            if (!path) return;
+            currentProcessingPath = path;
+            running = true;
+        }
+
         stdout: StdioCollector {
             onStreamFinished: {
-                Colours.load(text, true);
-                Colours.showPreview = true;
+                if (!root.showPreview) return;
+
+                const raw = text ? text.trim() : "";
+                if (raw) {
+                    try {
+                        JSON.parse(raw);
+                        Colours.load(raw, true);
+                        Colours.showPreview = true;
+                    } catch (e) {
+                        // Ignore incomplete or invalid output
+                    }
+                }
+
+                if (root.showPreview && root.previewPath !== "" && root.previewPath !== getPreviewColoursProc.currentProcessingPath) {
+                    getPreviewColoursProc.startFor(root.previewPath);
+                }
             }
+        }
+    }
+
+    property bool _refreshing: false
+    property bool restoreWallpaperMode: false
+    property var itemBusters: ({})
+
+    FileView {
+        path: "/tmp/caelestia_thumb_ready.txt"
+        watchChanges: true
+        printErrors: false
+        onLoaded: {
+            const raw = text().trim();
+            if (!raw) return;
+            
+            const lines = raw.split("\n");
+            let busters = Object.assign({}, root.itemBusters);
+            let changed = false;
+            const now = Date.now().toString();
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (line.indexOf("file://") === 0) line = line.substring(7);
+                if (line && !busters[line]) {
+                    busters[line] = now;
+                    busters["file://" + line] = now;
+                    changed = true;
+                }
+            }
+            if (changed) {
+                root.itemBusters = busters;
+            }
+        }
+    }
+
+    function refreshAnimatedThumbs() {
+        if (_refreshing) return;
+        itemBusters = {};
+        _refreshing = true;
+        _extractThumbsProc.running = true;
+    }
+
+    Process {
+        id: _extractThumbsProc
+
+        command: ["caelestia", "wallpaper", "--extract-thumbs"]
+        onExited: (exitCode, exitStatus) => {
+            root._refreshing = false;
+            root.cacheBuster = Date.now().toString();
+            root.restoreWallpaperMode = true;
         }
     }
 }

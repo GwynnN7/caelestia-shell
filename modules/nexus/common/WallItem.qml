@@ -7,12 +7,11 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
-import Quickshell.Io
 
 Item {
     id: root
 
-    property alias source: img.source
+    property string source: ""
     property alias text: label.text
     property alias radius: imgWrapper.radius
     property alias imgHeight: imgWrapper.implicitHeight
@@ -67,36 +66,30 @@ Item {
                 }
             }
 
-            Process {
-                id: thumbGenerator
-                command: ["bash", "-c", `mkdir -p "$(dirname "${root.source.toString().replace("file://", "")}")" && ffmpeg -i "${root.realPath}" -vframes 1 -q:v 2 "${root.source.toString().replace("file://", "")}" -y`]
-                onExited: {
-                    let oldSource = root.source;
-                    root.source = "";
-                    root.source = oldSource;
-                }
-            }
-
             Image {
                 id: img
 
                 anchors.fill: parent
                 asynchronous: true
                 fillMode: Image.PreserveAspectCrop
+
+                source: {
+                    const target = root.realPath || root.source;
+                    if (!target) return "";
+
+                    if (Wallpapers.isVideo(target)) {
+                        const thumb = Wallpapers.getWallpaperThumb(target, Wallpapers.cacheBuster);
+                        return (typeof thumb === "string" && thumb !== "undefined") ? thumb : "";
+                    }
+                    return root.source || target;
+                }
+
                 sourceSize: {
                     const dpr = (QsWindow.window as QsWindow)?.devicePixelRatio ?? 1;
                     return Qt.size(width * dpr, height * dpr);
                 }
                 retainWhileLoading: true
                 opacity: status === Image.Ready ? 1 : 0
-
-                onStatusChanged: {
-                    if (status === Image.Error && root.realPath !== "" && Images.isVideo(root.realPath)) {
-                        if (!thumbGenerator.running) {
-                            thumbGenerator.running = true;
-                        }
-                    }
-                }
 
                 Behavior on opacity {
                     Anim {
