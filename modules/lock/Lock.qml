@@ -18,7 +18,7 @@ Scope {
 
         onUnlock: {
             Audio.playUnlock();
-            Wallpapers.setRandom();
+            changeWallpaper.running=true
         }
 
         onLockedChanged: {
@@ -113,10 +113,19 @@ Scope {
         }
     }
 
+    Process {
+        id: changeWallpaper
+
+        command: [
+            "sh",
+            "-c",
+            "sleep 1 && caelestia wallpaper -r $HOME/Pictures/Wallpaper/"
+        ]
+    }
+
     Component.onCompleted: {
         if (GlobalConfig.lock.lockOnStartup) {
             startupLockProc.running = true;
         }
     }
 }
-
