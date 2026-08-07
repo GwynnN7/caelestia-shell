@@ -13,7 +13,7 @@ namespace caelestia::services {
 
 namespace {
 
-QList<GpuHwmonFiles> findGpuFiles() {
+QList<GpuHwmonFiles> findBusyFiles() {
     QList<GpuHwmonFiles> files;
     static const QRegularExpression cardRe(QStringLiteral("^card\\d+$"));
 
@@ -157,7 +157,7 @@ constexpr int kFirstGenericSource = 1;
 
 Gpu::Gpu(QObject* parent)
     : TickingService(parent) {
-    m_gpuFiles = findGpuFiles();
+    m_busyFiles = findBusyFiles();
 
     auto* svc = caelestia::config::GlobalConfig::instance()->services();
     m_userType = parseType(svc->gpuType());
@@ -305,7 +305,7 @@ void Gpu::readGenericUsage() {
     qreal sum = 0.0;
     int count = 0;
 
-    for (const GpuHwmonFiles& gpu : std::as_const(m_gpuFiles)) {
+    for (const GpuHwmonFiles& gpu : std::as_const(m_busyFiles)) {
         QFile fUtil(gpu.busyFile);
         if (!fUtil.open(QIODevice::ReadOnly | QIODevice::Text)) {
             continue;
