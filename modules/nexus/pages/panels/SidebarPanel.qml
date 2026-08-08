@@ -28,8 +28,13 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Enabled")
-            checked: Config.sidebar.enabled
-            onToggled: GlobalConfig.sidebar.enabled = checked
+            configNode: root.targetConfig.sidebar
+            propertyName: "enabled"
+            checked: root.targetConfig.sidebar.enabled
+            onToggled: {
+                root.targetConfig.sidebar.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
@@ -38,11 +43,16 @@ PageBase {
             last: true
             label: qsTr("Drag threshold")
             subtext: qsTr("Pixels dragged before the sidebar opens")
-            value: Config.sidebar.dragThreshold
+            configNode: root.targetConfig.sidebar
+            propertyName: "dragThreshold"
+            value: root.targetConfig.sidebar.dragThreshold
             from: 0
             to: 200
             stepSize: 5
-            onMoved: v => GlobalConfig.sidebar.dragThreshold = v
+            onMoved: v => {
+                root.targetConfig.sidebar.dragThreshold = v;
+                root.targetConfig.save();
+            }
         }
 
         // News
@@ -56,8 +66,13 @@ PageBase {
             last: true
             text: qsTr("Show News Tab")
             subtext: qsTr("Show the Arch Linux news tab in the sidebar")
-            checked: Config.sidebar.showNews !== false
-            onToggled: GlobalConfig.sidebar.showNews = checked
+            configNode: root.targetConfig.sidebar
+            propertyName: "showNews"
+            checked: root.targetConfig.sidebar.showNews !== false
+            onToggled: {
+                root.targetConfig.sidebar.showNews = checked;
+                root.targetConfig.save();
+            }
         }
 
         // AI Assistant
@@ -70,8 +85,13 @@ PageBase {
             first: true
             text: qsTr("Enable Assistant")
             subtext: qsTr("Show the AI Assistant in the sidebar")
-            checked: GlobalConfig.ai.enableOllama
-            onToggled: GlobalConfig.ai.enableOllama = checked
+            configNode: root.targetConfig.ai
+            propertyName: "enableOllama"
+            checked: root.targetConfig.ai.enableOllama
+            onToggled: {
+                root.targetConfig.ai.enableOllama = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -80,8 +100,13 @@ PageBase {
             last: true
             text: qsTr("Enable Tool Usage")
             subtext: qsTr("Allow the assistant to search the web, take screenshots, etc.")
-            checked: GlobalConfig.ai.enableCelestialMode
-            onToggled: GlobalConfig.ai.enableCelestialMode = checked
+            configNode: root.targetConfig.ai
+            propertyName: "enableCelestialMode"
+            checked: root.targetConfig.ai.enableCelestialMode
+            onToggled: {
+                root.targetConfig.ai.enableCelestialMode = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

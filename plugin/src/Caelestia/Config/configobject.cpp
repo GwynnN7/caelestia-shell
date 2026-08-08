@@ -251,11 +251,15 @@ void ConfigObject::resyncFromGlobal() {
 }
 
 bool ConfigObject::isPropertyLoaded(const QString& name) const {
-    return m_loadedKeys.contains(name);
+    return isOverlay() && m_loadedKeys.contains(name);
 }
 
 bool ConfigObject::isGlobalOnly(const QString& name) const {
     return isOverlay() && m_globalOnlyKeys.contains(name);
+}
+
+bool ConfigObject::isOptionGlobalOnly(const QString& name) const {
+    return m_globalOnlyKeys.contains(name);
 }
 
 QStringList ConfigObject::globalOnlyKeys() const {
@@ -263,23 +267,29 @@ QStringList ConfigObject::globalOnlyKeys() const {
 }
 
 void ConfigObject::resetOption(const QString& name) {
-    m_loadedKeys.remove(name);
-
     const int idx = metaObject()->indexOfProperty(name.toUtf8().constData());
-    if (idx < 0)
+    if (idx < 0) {
+        m_loadedKeys.remove(name);
         return;
+    }
 
     const auto prop = metaObject()->property(idx);
 
     if (auto* const node = prop.read(this).value<ConfigNode*>()) {
         node->clearLoadedKeys();
         node->resyncFromGlobal();
+        m_loadedKeys.remove(name);
         return;
     }
 
     // If synced from global, re-copy the global value
     if (m_global && prop.isWritable())
         prop.write(this, prop.read(m_global));
+
+    m_loadedKeys.remove(name);
+
+    if (prop.hasNotifySignal())
+        prop.notifySignal().invoke(this);
 }
 
 void ConfigObject::onGlobalPropertiesChanged(const QMap<QString, QVariant>& changed) {

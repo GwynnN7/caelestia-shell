@@ -38,8 +38,13 @@ PageBase {
             last: true
             Layout.fillWidth: true
             text: qsTr("Enable desktop clock")
-            checked: Config.background.desktopClock.enabled
-            onToggled: GlobalConfig.background.desktopClock.enabled = checked
+            configNode: root.targetConfig.background.desktopClock
+            propertyName: "enabled"
+            checked: root.targetConfig.background.desktopClock.enabled
+            onToggled: {
+                root.targetConfig.background.desktopClock.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         SectionHeader {
@@ -50,12 +55,16 @@ PageBase {
             first: true
             Layout.fillWidth: true
             label: qsTr("Position")
+            configNode: root.targetConfig.background.desktopClock
+            propertyName: "position"
             menuItems: root.positionItems
-            active: root.positionItems[root.positionValues.indexOf(Config.background.desktopClock.position)] ?? root.positionItems[4]
+            active: root.positionItems[root.positionValues.indexOf(root.targetConfig.background.desktopClock.position)] ?? root.positionItems[4]
             onSelected: item => {
                 let idx = root.positionItems.indexOf(item);
-                if (idx !== -1)
-                    GlobalConfig.background.desktopClock.position = root.positionValues[idx];
+                if (idx !== -1) {
+                    root.targetConfig.background.desktopClock.position = root.positionValues[idx];
+                    root.targetConfig.save();
+                }
             }
         }
 
@@ -63,9 +72,14 @@ PageBase {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Scale")
-            value: (Config.background.desktopClock.scale - 0.5) / 2.5
+            configNode: root.targetConfig.background.desktopClock
+            propertyName: "scale"
+            value: (root.targetConfig.background.desktopClock.scale - 0.5) / 2.5
             valueLabel: (0.5 + value * 2.5).toFixed(1) + "x"
-            onMoved: v => GlobalConfig.background.desktopClock.scale = 0.5 + v * 2.5
+            onMoved: v => {
+                root.targetConfig.background.desktopClock.scale = 0.5 + v * 2.5;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -74,8 +88,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Invert colors")
             subtext: qsTr("Invert the clock color when using light wallpaper")
-            checked: Config.background.desktopClock.invertColors
-            onToggled: GlobalConfig.background.desktopClock.invertColors = checked
+            configNode: root.targetConfig.background.desktopClock
+            propertyName: "invertColors"
+            checked: root.targetConfig.background.desktopClock.invertColors
+            onToggled: {
+                root.targetConfig.background.desktopClock.invertColors = checked;
+                root.targetConfig.save();
+            }
         }
 
         SectionHeader {
@@ -86,18 +105,28 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable background")
-            checked: Config.background.desktopClock.background.enabled
-            onToggled: GlobalConfig.background.desktopClock.background.enabled = checked
+            configNode: root.targetConfig.background.desktopClock.background
+            propertyName: "enabled"
+            checked: root.targetConfig.background.desktopClock.background.enabled
+            onToggled: {
+                root.targetConfig.background.desktopClock.background.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         SliderRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Opacity")
-            value: Config.background.desktopClock.background.opacity
+            configNode: root.targetConfig.background.desktopClock.background
+            propertyName: "opacity"
+            value: root.targetConfig.background.desktopClock.background.opacity
             valueLabel: Math.round(value * 100) + "%"
-            onMoved: v => GlobalConfig.background.desktopClock.background.opacity = v
-            enabled: Config.background.desktopClock.background.enabled
+            onMoved: v => {
+                root.targetConfig.background.desktopClock.background.opacity = v;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopClock.background.enabled
         }
 
         ToggleRow {
@@ -105,9 +134,14 @@ PageBase {
             last: true
             Layout.fillWidth: true
             text: qsTr("Blur")
-            checked: Config.background.desktopClock.background.blur
-            onToggled: GlobalConfig.background.desktopClock.background.blur = checked
-            enabled: Config.background.desktopClock.background.enabled
+            configNode: root.targetConfig.background.desktopClock.background
+            propertyName: "blur"
+            checked: root.targetConfig.background.desktopClock.background.blur
+            onToggled: {
+                root.targetConfig.background.desktopClock.background.blur = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopClock.background.enabled
         }
 
         SectionHeader {
@@ -118,18 +152,28 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable shadow")
-            checked: Config.background.desktopClock.shadow.enabled
-            onToggled: GlobalConfig.background.desktopClock.shadow.enabled = checked
+            configNode: root.targetConfig.background.desktopClock.shadow
+            propertyName: "enabled"
+            checked: root.targetConfig.background.desktopClock.shadow.enabled
+            onToggled: {
+                root.targetConfig.background.desktopClock.shadow.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         SliderRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Opacity")
-            value: Config.background.desktopClock.shadow.opacity
+            configNode: root.targetConfig.background.desktopClock.shadow
+            propertyName: "opacity"
+            value: root.targetConfig.background.desktopClock.shadow.opacity
             valueLabel: Math.round(value * 100) + "%"
-            onMoved: v => GlobalConfig.background.desktopClock.shadow.opacity = v
-            enabled: Config.background.desktopClock.shadow.enabled
+            onMoved: v => {
+                root.targetConfig.background.desktopClock.shadow.opacity = v;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopClock.shadow.enabled
         }
 
         SliderRow {
@@ -137,10 +181,15 @@ PageBase {
             last: true
             Layout.fillWidth: true
             label: qsTr("Blur strength")
-            value: Config.background.desktopClock.shadow.blur / 2.0
+            configNode: root.targetConfig.background.desktopClock.shadow
+            propertyName: "blur"
+            value: root.targetConfig.background.desktopClock.shadow.blur / 2.0
             valueLabel: (value * 2.0).toFixed(1)
-            onMoved: v => GlobalConfig.background.desktopClock.shadow.blur = v * 2.0
-            enabled: Config.background.desktopClock.shadow.enabled
+            onMoved: v => {
+                root.targetConfig.background.desktopClock.shadow.blur = v * 2.0;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopClock.shadow.enabled
         }
     }
 }

@@ -99,9 +99,10 @@ public:
     // A list element that keeps its identity is updated in place instead of recreated.
     [[nodiscard]] virtual QStringList identityKeys() const;
 
-    [[nodiscard]] bool isPropertyLoaded(const QString& name) const;
+    [[nodiscard]] Q_INVOKABLE bool isPropertyLoaded(const QString& name) const;
     // Returns true only on overlays — global singleton always returns false.
     [[nodiscard]] bool isGlobalOnly(const QString& name) const;
+    [[nodiscard]] Q_INVOKABLE bool isOptionGlobalOnly(const QString& name) const;
     // Names marked global-only, regardless of overlay state
     [[nodiscard]] QStringList globalOnlyKeys() const;
 

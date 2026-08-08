@@ -17,6 +17,9 @@ ConnectedRect {
     property bool showReset: false
     signal reset()
 
+    property var configNode
+    property string propertyName: ""
+
     property alias label: label.text
     property string subtext
     property real value
@@ -67,6 +70,11 @@ ConnectedRect {
                     font: Tokens.font.icon.small
                     visible: root.showReset
                     onClicked: root.reset()
+                }
+
+                PerMonitorStatusChip {
+                    configNode: root.configNode
+                    propertyName: root.propertyName
                 }
 
                 Item {

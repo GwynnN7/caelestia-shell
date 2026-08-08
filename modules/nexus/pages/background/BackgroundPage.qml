@@ -17,21 +17,21 @@ PageBase {
             first: true
             icon: "schedule"
             text: qsTr("Desktop clock")
-            subtext: Config.background.desktopClock.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            subtext: root.targetConfig.background.desktopClock.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(1)
         }
 
         NavRow {
             icon: "lyrics"
             text: qsTr("Desktop lyrics")
-            subtext: Config.background.desktopLyrics.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            subtext: root.targetConfig.background.desktopLyrics.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(2)
         }
 
         NavRow {
             icon: "equalizer"
             text: qsTr("Background visualiser")
-            subtext: Config.background.visualiser.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            subtext: root.targetConfig.background.visualiser.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(3)
         }
 
@@ -39,7 +39,7 @@ PageBase {
             last: true
             icon: "pets"
             text: qsTr("Shimeji characters")
-            subtext: Config.shimeji.enabled ? qsTr("Enabled") : qsTr("Disabled")
+            subtext: root.targetConfig.shimeji.enabled ? qsTr("Enabled") : qsTr("Disabled")
             onClicked: root.nState.openSubPage(4)
         }
     }

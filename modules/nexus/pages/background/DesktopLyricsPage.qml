@@ -37,8 +37,13 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable desktop lyrics")
-            checked: Config.background.desktopLyrics.enabled
-            onToggled: GlobalConfig.background.desktopLyrics.enabled = checked
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "enabled"
+            checked: root.targetConfig.background.desktopLyrics.enabled
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -46,9 +51,14 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Overlay lyrics")
             subtext: qsTr("Render lyrics on top of all windows")
-            checked: Config.background.desktopLyrics.overlay
-            onToggled: GlobalConfig.background.desktopLyrics.overlay = checked
-            enabled: Config.background.desktopLyrics.enabled
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "overlay"
+            checked: root.targetConfig.background.desktopLyrics.overlay
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.overlay = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.enabled
         }
 
         ToggleRow {
@@ -56,9 +66,14 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Auto-hide for fullscreen windows")
             subtext: qsTr("Hide lyrics when a window is fullscreen")
-            checked: Config.background.desktopLyrics.autoHideFullscreen
-            onToggled: GlobalConfig.background.desktopLyrics.autoHideFullscreen = checked
-            enabled: Config.background.desktopLyrics.enabled
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "autoHideFullscreen"
+            checked: root.targetConfig.background.desktopLyrics.autoHideFullscreen
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.autoHideFullscreen = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.enabled
         }
 
         ToggleRow {
@@ -67,9 +82,14 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Auto-hide for tiled windows")
             subtext: qsTr("Hide lyrics when tiled windows are open")
-            checked: Config.background.desktopLyrics.autoHideTiled
-            onToggled: GlobalConfig.background.desktopLyrics.autoHideTiled = checked
-            enabled: Config.background.desktopLyrics.enabled
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "autoHideTiled"
+            checked: root.targetConfig.background.desktopLyrics.autoHideTiled
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.autoHideTiled = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.enabled
         }
 
         SectionHeader {
@@ -80,12 +100,16 @@ PageBase {
             first: true
             Layout.fillWidth: true
             label: qsTr("Position")
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "position"
             menuItems: root.positionItems
-            active: root.positionItems[root.positionValues.indexOf(Config.background.desktopLyrics.position)] ?? root.positionItems[4]
+            active: root.positionItems[root.positionValues.indexOf(root.targetConfig.background.desktopLyrics.position)] ?? root.positionItems[4]
             onSelected: item => {
                 let idx = root.positionItems.indexOf(item);
-                if (idx !== -1)
-                    GlobalConfig.background.desktopLyrics.position = root.positionValues[idx];
+                if (idx !== -1) {
+                    root.targetConfig.background.desktopLyrics.position = root.positionValues[idx];
+                    root.targetConfig.save();
+                }
             }
         }
 
@@ -93,9 +117,14 @@ PageBase {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Scale")
-            value: (Config.background.desktopLyrics.scale - 0.5) / 2.5
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "scale"
+            value: (root.targetConfig.background.desktopLyrics.scale - 0.5) / 2.5
             valueLabel: (0.5 + value * 2.5).toFixed(1) + "x"
-            onMoved: v => GlobalConfig.background.desktopLyrics.scale = 0.5 + v * 2.5
+            onMoved: v => {
+                root.targetConfig.background.desktopLyrics.scale = 0.5 + v * 2.5;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -104,8 +133,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Invert colors")
             subtext: qsTr("Invert the lyrics color when using light wallpaper")
-            checked: Config.background.desktopLyrics.invertColors
-            onToggled: GlobalConfig.background.desktopLyrics.invertColors = checked
+            configNode: root.targetConfig.background.desktopLyrics
+            propertyName: "invertColors"
+            checked: root.targetConfig.background.desktopLyrics.invertColors
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.invertColors = checked;
+                root.targetConfig.save();
+            }
         }
 
         SectionHeader {
@@ -116,18 +150,28 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable background")
-            checked: Config.background.desktopLyrics.background.enabled
-            onToggled: GlobalConfig.background.desktopLyrics.background.enabled = checked
+            configNode: root.targetConfig.background.desktopLyrics.background
+            propertyName: "enabled"
+            checked: root.targetConfig.background.desktopLyrics.background.enabled
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.background.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         SliderRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Opacity")
-            value: Config.background.desktopLyrics.background.opacity
+            configNode: root.targetConfig.background.desktopLyrics.background
+            propertyName: "opacity"
+            value: root.targetConfig.background.desktopLyrics.background.opacity
             valueLabel: Math.round(value * 100) + "%"
-            onMoved: v => GlobalConfig.background.desktopLyrics.background.opacity = v
-            enabled: Config.background.desktopLyrics.background.enabled
+            onMoved: v => {
+                root.targetConfig.background.desktopLyrics.background.opacity = v;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.background.enabled
         }
 
         ToggleRow {
@@ -135,9 +179,14 @@ PageBase {
             last: true
             Layout.fillWidth: true
             text: qsTr("Blur")
-            checked: Config.background.desktopLyrics.background.blur
-            onToggled: GlobalConfig.background.desktopLyrics.background.blur = checked
-            enabled: Config.background.desktopLyrics.background.enabled
+            configNode: root.targetConfig.background.desktopLyrics.background
+            propertyName: "blur"
+            checked: root.targetConfig.background.desktopLyrics.background.blur
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.background.blur = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.background.enabled
         }
 
         SectionHeader {
@@ -148,18 +197,28 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable shadow")
-            checked: Config.background.desktopLyrics.shadow.enabled
-            onToggled: GlobalConfig.background.desktopLyrics.shadow.enabled = checked
+            configNode: root.targetConfig.background.desktopLyrics.shadow
+            propertyName: "enabled"
+            checked: root.targetConfig.background.desktopLyrics.shadow.enabled
+            onToggled: {
+                root.targetConfig.background.desktopLyrics.shadow.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         SliderRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Opacity")
-            value: Config.background.desktopLyrics.shadow.opacity
+            configNode: root.targetConfig.background.desktopLyrics.shadow
+            propertyName: "opacity"
+            value: root.targetConfig.background.desktopLyrics.shadow.opacity
             valueLabel: Math.round(value * 100) + "%"
-            onMoved: v => GlobalConfig.background.desktopLyrics.shadow.opacity = v
-            enabled: Config.background.desktopLyrics.shadow.enabled
+            onMoved: v => {
+                root.targetConfig.background.desktopLyrics.shadow.opacity = v;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.shadow.enabled
         }
 
         SliderRow {
@@ -167,10 +226,15 @@ PageBase {
             last: true
             Layout.fillWidth: true
             label: qsTr("Blur strength")
-            value: Config.background.desktopLyrics.shadow.blur / 2.0
+            configNode: root.targetConfig.background.desktopLyrics.shadow
+            propertyName: "blur"
+            value: root.targetConfig.background.desktopLyrics.shadow.blur / 2.0
             valueLabel: (value * 2.0).toFixed(1)
-            onMoved: v => GlobalConfig.background.desktopLyrics.shadow.blur = v * 2.0
-            enabled: Config.background.desktopLyrics.shadow.enabled
+            onMoved: v => {
+                root.targetConfig.background.desktopLyrics.shadow.blur = v * 2.0;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.desktopLyrics.shadow.enabled
         }
     }
 }

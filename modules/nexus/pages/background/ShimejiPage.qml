@@ -23,8 +23,13 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable Shimeji")
-            checked: Config.shimeji.enabled
-            onToggled: GlobalConfig.shimeji.enabled = checked
+            configNode: root.targetConfig.shimeji
+            propertyName: "enabled"
+            checked: root.targetConfig.shimeji.enabled
+            onToggled: {
+                root.targetConfig.shimeji.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -32,9 +37,14 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Auto-hide Shimeji")
             subtext: qsTr("Hide Shimeji when a window is open")
-            checked: Config.shimeji.autoHide
-            onToggled: GlobalConfig.shimeji.autoHide = checked
-            enabled: Config.shimeji.enabled
+            configNode: root.targetConfig.shimeji
+            propertyName: "autoHide"
+            checked: root.targetConfig.shimeji.autoHide
+            onToggled: {
+                root.targetConfig.shimeji.autoHide = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.shimeji.enabled
         }
 
         StepperRow {
@@ -42,12 +52,17 @@ PageBase {
             last: true
             Layout.fillWidth: true
             label: qsTr("Shimeji count per screen")
+            configNode: root.targetConfig.shimeji
+            propertyName: "count"
             from: 1
             to: 9999
             stepSize: 1
-            value: Config.shimeji.count
-            onMoved: GlobalConfig.shimeji.count = value
-            enabled: Config.shimeji.enabled
+            value: root.targetConfig.shimeji.count
+            onMoved: v => {
+                root.targetConfig.shimeji.count = v;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.shimeji.enabled
         }
     }
 }

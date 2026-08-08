@@ -40,6 +40,11 @@ ColumnLayout {
         }
     }
 
+    MonitorTargetSelector {
+        Layout.fillWidth: true
+        nState: root.nState
+    }
+
     NavLocations {
         Layout.fillWidth: true
         Layout.fillHeight: true

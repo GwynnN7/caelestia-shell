@@ -50,41 +50,61 @@ PageBase {
             first: true
             text: qsTr("Persistent")
             subtext: qsTr("Keep the bar visible at all times")
-            checked: Config.bar.persistent
-            onToggled: GlobalConfig.bar.persistent = checked
+            configNode: root.targetConfig.bar
+            propertyName: "persistent"
+            checked: root.targetConfig.bar.persistent
+            onToggled: {
+                root.targetConfig.bar.persistent = checked;
+                root.targetConfig.save();
+            }
         }
 
         SelectRow {
             Layout.fillWidth: true
             label: qsTr("Position")
             subtext: qsTr("Screen edge to place the bar on")
+            configNode: root.targetConfig.bar
+            propertyName: "position"
             active: {
                 for (let i = 0; i < positionItems.length; i++) {
-                    if (positionItems[i].value === Config.bar.position)
+                    if (positionItems[i].value === root.targetConfig.bar.position)
                         return positionItems[i];
                 }
                 return positionItems[0];
             }
             menuItems: positionItems
-            onSelected: item => GlobalConfig.bar.position = item.value
+            onSelected: item => {
+                root.targetConfig.bar.position = item.value;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Show on hover")
             subtext: qsTr("Reveal the bar when the cursor reaches the screen edge")
-            checked: Config.bar.showOnHover
-            onToggled: GlobalConfig.bar.showOnHover = checked
+            configNode: root.targetConfig.bar
+            propertyName: "showOnHover"
+            checked: root.targetConfig.bar.showOnHover
+            onToggled: {
+                root.targetConfig.bar.showOnHover = checked;
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
             last: true
             label: qsTr("Drag threshold")
             subtext: qsTr("Pixels dragged before the bar reveals")
-            value: Config.bar.dragThreshold
+            configNode: root.targetConfig.bar
+            propertyName: "dragThreshold"
+            value: root.targetConfig.bar.dragThreshold
             from: 0
             to: 200
             stepSize: 5
-            onMoved: v => GlobalConfig.bar.dragThreshold = v
+            onMoved: v => {
+                root.targetConfig.bar.dragThreshold = v;
+                root.targetConfig.save();
+            }
         }
 
         // Components
