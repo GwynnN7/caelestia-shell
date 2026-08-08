@@ -43,7 +43,7 @@ void ConfigList::remove(int index) {
 
     destroyItem(m_items.takeAt(index));
 
-    m_loaded = true;
+    setLoaded(true);
     emit countChanged();
     emit valuesChanged();
     notifyChanged();
@@ -60,7 +60,7 @@ void ConfigList::move(int from, int to) {
 
     m_items.move(from, to);
 
-    m_loaded = true;
+    setLoaded(true);
     emit valuesChanged();
     notifyChanged();
 }
@@ -71,7 +71,7 @@ void ConfigList::clear() {
 
     destroyItems();
 
-    m_loaded = true;
+    setLoaded(true);
     emit countChanged();
     emit valuesChanged();
     notifyChanged();
@@ -86,7 +86,7 @@ void ConfigList::loadFromJson(const QJsonValue& json) {
 
     m_rejectedJson = QJsonValue::Undefined;
     populate(json.toArray());
-    m_loaded = true;
+    setLoaded(true);
 }
 
 QJsonValue ConfigList::toJson() const {
@@ -99,7 +99,7 @@ QJsonValue ConfigList::toJson() const {
 
 void ConfigList::clearLoadedKeys() {
     // Tracking only like ConfigObject, rebuilding here would drop an overlay to defaults
-    m_loaded = false;
+    setLoaded(false);
     m_rejectedJson = QJsonValue::Undefined;
 }
 
@@ -130,7 +130,7 @@ ConfigObject* ConfigList::insertItem(const QVariantMap& props, int index) {
     for (const auto& key : unknown)
         qCWarning(lcConfig) << "Unknown option" << key << "for" << item->metaObject()->className();
 
-    m_loaded = true;
+    setLoaded(true);
     emit countChanged();
     emit valuesChanged();
     notifyChanged();
@@ -151,7 +151,7 @@ QJsonArray ConfigList::elementsToJson() const {
 void ConfigList::resetToDefaults() {
     // Quiet, seeding defaults is not a change and would dirty the config before the file is read
     loadFromJsonQuietly(m_defaults);
-    m_loaded = false;
+    setLoaded(false);
 }
 
 void ConfigList::syncValuesFromGlobal() {
@@ -311,12 +311,19 @@ void ConfigList::destroyItem(ConfigObject* item) {
 }
 
 void ConfigList::onItemChanged() {
-    m_loaded = true;
+    setLoaded(true);
     notifyChanged();
 }
 
 bool ConfigList::isLoaded() const {
     return m_loaded;
+}
+
+void ConfigList::setLoaded(bool loaded) {
+    if (m_loaded == loaded)
+        return;
+    m_loaded = loaded;
+    emit loadedChanged();
 }
 
 void ConfigList::notifyChanged() {
