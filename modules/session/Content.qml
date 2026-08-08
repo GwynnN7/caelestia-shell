@@ -93,8 +93,16 @@ Column {
         required property list<string> command
 
         function exec(): void {
-            if (!SessionManager.exec(command))
-                Quickshell.execDetached(command);
+            if (!SessionManager.exec(command)) {
+                if (command.length > 0) {
+                    let hasShellOp = command.some(arg => arg.includes(" ") || arg === "&&" || arg === "||" || arg === ";" || arg === "|" || arg === ">" || arg === "<");
+                    if (hasShellOp || command.length === 1) {
+                        Quickshell.execDetached(["sh", "-c", command.join(" ")]);
+                    } else {
+                        Quickshell.execDetached(command);
+                    }
+                }
+            }
         }
 
         implicitWidth: Tokens.sizes.session.button
