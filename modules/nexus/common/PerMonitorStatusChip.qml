@@ -15,8 +15,8 @@ IconButton {
     readonly property bool isOverridden: {
         if (!configNode || !propertyName)
             return false;
-        // Access property dynamically to force QML binding dependency on property change signals
-        const _val = configNode[propertyName];
+        const targetObj = configNode[propertyName];
+        const _dummy = (targetObj && targetObj.values !== undefined) ? targetObj.values : targetObj;
         return configNode.isPropertyLoaded(propertyName);
     }
 
