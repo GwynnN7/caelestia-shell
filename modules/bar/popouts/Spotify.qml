@@ -25,16 +25,16 @@ ColumnLayout {
     readonly property bool hasUnknownLength: (player?.length ?? 0) > 2147483647
 
     readonly property PwNode spotifyStream: Audio.streams.find(s => Audio.getStreamName(s).toLowerCase().includes("spotify") || (s.properties["application.process.binary"] && s.properties["application.process.binary"].toLowerCase() === "spotify") || (s.properties["app.name"] && s.properties["app.name"].toLowerCase() === "spotify")) || null
-    readonly property real currentVolume: spotifyStream ? Audio.getStreamVolume(spotifyStream) : (player?.volume ?? Audio.volume)
+    readonly property real currentVolume: (player && typeof player.volume !== "undefined" && player.volume !== null) ? player.volume : (spotifyStream ? Audio.getStreamVolume(spotifyStream) : Audio.volume)
 
     readonly property bool isHorizontalVolume: Config.bar.spotify.horizontalVolume
 
     function setSpotifyVolume(v: real): void {
         const clamped = Math.max(0, Math.min(1, v));
-        if (spotifyStream) {
-            Audio.setStreamVolume(spotifyStream, clamped);
-        } else if (player && typeof player.volume !== "undefined") {
+        if (player && typeof player.volume !== "undefined") {
             player.volume = clamped;
+        } else if (spotifyStream) {
+            Audio.setStreamVolume(spotifyStream, clamped);
         } else {
             Audio.setVolume(clamped);
         }
