@@ -1175,6 +1175,10 @@ For example, to disable the bar on DP-1:
             "shutdown": [
                 "loginctl",
                 "poweroff"
+            ],
+            "lock": [
+                "loginctl",
+                "lock-session"
             ]
         },
         "dragThreshold": 30,
@@ -1183,7 +1187,8 @@ For example, to disable the bar on DP-1:
             "hibernate": "downloading",
             "logout": "logout",
             "reboot": "cached",
-            "shutdown": "power_settings_new"
+            "shutdown": "power_settings_new",
+            "lock": "lock"
         },
         "vimKeybinds": false
     },

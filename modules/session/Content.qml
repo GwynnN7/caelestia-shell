@@ -19,34 +19,38 @@ Column {
     rightPadding: CUtils.clamp(padding - Config.border.thickness, 0, padding)
     spacing: Tokens.spacing.large
 
-    SessionButton {
-        id: logout
+    Repeater {
+        id: topButtonsRepeater
 
-        icon: Config.session.icons.logout
-        command: Config.session.commands.logout
+        model: Config.session.buttons.slice(0, Math.min(2, Config.session.buttons.length))
 
-        KeyNavigation.down: shutdown
+        SessionButton {
+            id: topBtn
+            required property var modelData
+            required property int index
 
-        Component.onCompleted: forceActiveFocus()
+            icon: modelData.icon
+            command: modelData.command
 
-        Connections {
-            function onLauncherChanged(): void {
-                if (!root.screenState.launcher)
-                    logout.forceActiveFocus();
+            Component.onCompleted: {
+                if (index === 0)
+                    topBtn.forceActiveFocus();
             }
 
-            target: root.screenState
+            Connections {
+                function onLauncherChanged(): void {
+                    if (index === 0 && !root.screenState.launcher)
+                        topBtn.forceActiveFocus();
+                }
+
+                target: root.screenState
+            }
+
+            KeyNavigation.up: index > 0 ? topButtonsRepeater.itemAt(index - 1) : null
+            KeyNavigation.down: index < topButtonsRepeater.count - 1
+                ? topButtonsRepeater.itemAt(index + 1)
+                : (bottomButtonsRepeater.count > 0 ? bottomButtonsRepeater.itemAt(0) : null)
         }
-    }
-
-    SessionButton {
-        id: shutdown
-
-        icon: Config.session.icons.shutdown
-        command: Config.session.commands.shutdown
-
-        KeyNavigation.up: logout
-        KeyNavigation.down: hibernate
     }
 
     AnimatedImage {
@@ -62,23 +66,25 @@ Column {
         visible: Config.paths.sessionGif !== ""
     }
 
-    SessionButton {
-        id: hibernate
+    Repeater {
+        id: bottomButtonsRepeater
 
-        icon: Config.session.icons.hibernate
-        command: Config.session.commands.hibernate
+        model: Config.session.buttons.length > 2 ? Config.session.buttons.slice(2) : []
 
-        KeyNavigation.up: shutdown
-        KeyNavigation.down: reboot
-    }
+        SessionButton {
+            required property var modelData
+            required property int index
 
-    SessionButton {
-        id: reboot
+            icon: modelData.icon
+            command: modelData.command
 
-        icon: Config.session.icons.reboot
-        command: Config.session.commands.reboot
-
-        KeyNavigation.up: hibernate
+            KeyNavigation.up: index === 0
+                ? (topButtonsRepeater.count > 0 ? topButtonsRepeater.itemAt(topButtonsRepeater.count - 1) : null)
+                : bottomButtonsRepeater.itemAt(index - 1)
+            KeyNavigation.down: index < bottomButtonsRepeater.count - 1
+                ? bottomButtonsRepeater.itemAt(index + 1)
+                : null
+        }
     }
 
     component SessionButton: IconButton {

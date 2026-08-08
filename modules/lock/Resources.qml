@@ -159,21 +159,15 @@ StyledRect {
                 Anim {}
             }
 
-            SessionButton {
-                icon: Config.session.icons.logout
-                command: Config.session.commands.logout
-            }
-            SessionButton {
-                icon: Config.session.icons.shutdown
-                command: Config.session.commands.shutdown
-            }
-            SessionButton {
-                icon: Config.session.icons.hibernate
-                command: Config.session.commands.hibernate
-            }
-            SessionButton {
-                icon: Config.session.icons.reboot
-                command: Config.session.commands.reboot
+            Repeater {
+                model: Config.session.buttons
+
+                SessionButton {
+                    required property var modelData
+
+                    icon: modelData.icon
+                    command: modelData.command
+                }
             }
         }
     }
