@@ -31,9 +31,25 @@ PageBase {
         spacing: Tokens.spacing.extraSmall / 2
 
         // Visible components
-        SectionHeader {
-            first: true
-            text: qsTr("Visible components")
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: Tokens.padding.small
+
+            StyledText {
+                text: qsTr("Visible components")
+                color: Colours.palette.m3onSurfaceVariant
+                font: Tokens.font.label.medium
+                elide: Text.ElideRight
+            }
+
+            PerMonitorStatusChip {
+                configNode: root.targetConfig.bar
+                propertyName: "entries"
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
         }
 
         ListEditor {
@@ -51,10 +67,19 @@ PageBase {
 
             z: 1
             first: true
-            values: Config.bar.entries.values
-            onItemMoved: (from, to) => GlobalConfig.bar.entries.move(from, to)
-            onItemRemoved: index => GlobalConfig.bar.entries.remove(index)
-            onItemToggled: (index, checked) => GlobalConfig.bar.entries.at(index).enabled = checked
+            values: root.targetConfig.bar.entries.values
+            onItemMoved: (from, to) => {
+                root.targetConfig.bar.entries.move(from, to);
+                root.targetConfig.save();
+            }
+            onItemRemoved: index => {
+                root.targetConfig.bar.entries.remove(index);
+                root.targetConfig.save();
+            }
+            onItemToggled: (index, checked) => {
+                root.targetConfig.bar.entries.at(index).enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         DialogSelectButton {
@@ -78,10 +103,11 @@ PageBase {
                 if (!selectedItem) // Should never happen but just in case
                     return;
 
-                GlobalConfig.bar.entries.insert({
+                root.targetConfig.bar.entries.insert({
                     id: selectedItem,
                     enabled: true
                 });
+                root.targetConfig.save();
             }
         }
     }

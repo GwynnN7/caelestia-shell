@@ -279,6 +279,8 @@ void ConfigObject::resetOption(const QString& name) {
         node->clearLoadedKeys();
         node->resyncFromGlobal();
         m_loadedKeys.remove(name);
+        if (prop.hasNotifySignal())
+            prop.notifySignal().invoke(this);
         return;
     }
 
