@@ -107,6 +107,7 @@ public:
     [[nodiscard]] QStringList globalOnlyKeys() const;
 
     Q_INVOKABLE void resetOption(const QString& name);
+    void markPropertyLoaded(const QString& name);
 
     template <typename T> static bool updateMember(T& member, const T& value) {
         if constexpr (std::is_floating_point_v<T>) {
@@ -125,7 +126,6 @@ protected:
     void onGlobalPropertiesChanged(const QMap<QString, QVariant>& changed) override;
     [[nodiscard]] QString childPath(const ConfigNode* child) const override;
 
-    void markPropertyLoaded(const QString& name);
     void markGlobalOnly(const QString& name);
 
 private:

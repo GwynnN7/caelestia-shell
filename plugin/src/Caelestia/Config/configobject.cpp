@@ -1,4 +1,5 @@
 #include "configobject.hpp"
+#include "configlist.hpp"
 
 #include <qjsonarray.h>
 #include <qmetaobject.h>
@@ -38,6 +39,7 @@ void ConfigObject::loadFromJson(const QJsonValue& json) {
         if (auto* const node = prop.read(this).value<ConfigNode*>()) {
             qCDebug(lcConfig) << "  Recursing into" << key;
             node->loadFromJson(jsonVal);
+            m_loadedKeys.insert(key);
             continue;
         }
 
@@ -251,7 +253,23 @@ void ConfigObject::resyncFromGlobal() {
 }
 
 bool ConfigObject::isPropertyLoaded(const QString& name) const {
-    return isOverlay() && m_loadedKeys.contains(name);
+    if (!isOverlay())
+        return false;
+
+    if (m_loadedKeys.contains(name))
+        return true;
+
+    const int idx = metaObject()->indexOfProperty(name.toUtf8().constData());
+    if (idx >= 0) {
+        const auto prop = metaObject()->property(idx);
+        if (auto* const node = prop.read(this).value<ConfigNode*>()) {
+            if (auto* const listNode = qobject_cast<ConfigList*>(node)) {
+                return listNode->isLoaded();
+            }
+        }
+    }
+
+    return false;
 }
 
 bool ConfigObject::isGlobalOnly(const QString& name) const {

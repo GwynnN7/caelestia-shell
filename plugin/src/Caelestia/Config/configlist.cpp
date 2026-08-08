@@ -315,8 +315,24 @@ void ConfigList::onItemChanged() {
     notifyChanged();
 }
 
+bool ConfigList::isLoaded() const {
+    return m_loaded;
+}
+
 void ConfigList::notifyChanged() {
     notifyPropertyChanged(u"values"_s, count());
+    if (auto* const parentObj = qobject_cast<ConfigObject*>(parent())) {
+        const auto* meta = parentObj->metaObject();
+        for (int i = parentObj->basePropertyOffset(); i < meta->propertyCount(); ++i) {
+            const auto prop = meta->property(i);
+            if (prop.read(parentObj).value<ConfigNode*>() == this) {
+                parentObj->markPropertyLoaded(QString::fromUtf8(prop.name()));
+                if (prop.hasNotifySignal())
+                    prop.notifySignal().invoke(parentObj);
+                break;
+            }
+        }
+    }
 }
 
 } // namespace caelestia::config

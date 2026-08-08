@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE void move(int from, int to);
     Q_INVOKABLE void clear();
 
+    [[nodiscard]] bool isLoaded() const;
     void loadFromJson(const QJsonValue& json) override;
     [[nodiscard]] QJsonValue toJson() const override;
     void clearLoadedKeys() override;
