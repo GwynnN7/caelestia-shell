@@ -131,34 +131,47 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Enabled")
-            checked: Config.dashboard.enabled
-            onToggled: GlobalConfig.dashboard.enabled = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "enabled"
+            checked: root.targetConfig.dashboard.enabled
+            onToggled: {
+                root.targetConfig.dashboard.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Show on hover")
             subtext: qsTr("Reveal when the cursor reaches the screen edge")
-            checked: Config.dashboard.showOnHover
-            onToggled: GlobalConfig.dashboard.showOnHover = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showOnHover"
+            checked: root.targetConfig.dashboard.showOnHover
+            onToggled: {
+                root.targetConfig.dashboard.showOnHover = checked;
+                root.targetConfig.save();
+            }
         }
 
         SelectRow {
             Layout.fillWidth: true
             label: qsTr("Dashboard profile picture shape")
             subtext: qsTr("Choose the shape of the profile picture on the dashboard")
+            configNode: root.targetConfig.dashboard
+            propertyName: "profilePicShape"
             fallbackIcon: "person"
             fallbackText: qsTr("Pill")
             active: {
                 for (let i = 0; i < dashboardShapeItems.length; i++) {
-                    if (dashboardShapeItems[i].value === GlobalConfig.dashboard.profilePicShape)
+                    if (dashboardShapeItems[i].value === root.targetConfig.dashboard.profilePicShape)
                         return dashboardShapeItems[i];
                 }
                 return dashboardShapeItems[0];
             }
             menuItems: dashboardShapeItems
             onSelected: item => {
-                GlobalConfig.dashboard.profilePicShape = item.value
+                root.targetConfig.dashboard.profilePicShape = item.value;
+                root.targetConfig.save();
             }
         }
 
@@ -167,18 +180,21 @@ PageBase {
             last: true
             label: qsTr("Lock screen profile picture shape")
             subtext: qsTr("Choose the shape of the profile picture on the lock screen")
+            configNode: root.targetConfig.lock
+            propertyName: "profilePicShape"
             fallbackIcon: "lock"
             fallbackText: qsTr("Clam Shell")
             active: {
                 for (let i = 0; i < lockShapeItems.length; i++) {
-                    if (lockShapeItems[i].value === GlobalConfig.lock.profilePicShape)
+                    if (lockShapeItems[i].value === root.targetConfig.lock.profilePicShape)
                         return lockShapeItems[i];
                 }
                 return lockShapeItems[0];
             }
             menuItems: lockShapeItems
             onSelected: item => {
-                GlobalConfig.lock.profilePicShape = item.value
+                root.targetConfig.lock.profilePicShape = item.value;
+                root.targetConfig.save();
             }
         }
 
@@ -190,35 +206,60 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Dashboard")
-            checked: Config.dashboard.showDashboard
-            onToggled: GlobalConfig.dashboard.showDashboard = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showDashboard"
+            checked: root.targetConfig.dashboard.showDashboard
+            onToggled: {
+                root.targetConfig.dashboard.showDashboard = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Media")
-            checked: Config.dashboard.showMedia
-            onToggled: GlobalConfig.dashboard.showMedia = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showMedia"
+            checked: root.targetConfig.dashboard.showMedia
+            onToggled: {
+                root.targetConfig.dashboard.showMedia = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Performance")
-            checked: Config.dashboard.showPerformance
-            onToggled: GlobalConfig.dashboard.showPerformance = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showPerformance"
+            checked: root.targetConfig.dashboard.showPerformance
+            onToggled: {
+                root.targetConfig.dashboard.showPerformance = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Weather")
-            checked: Config.dashboard.showWeather
-            onToggled: GlobalConfig.dashboard.showWeather = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showWeather"
+            checked: root.targetConfig.dashboard.showWeather
+            onToggled: {
+                root.targetConfig.dashboard.showWeather = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             Layout.fillWidth: true
             last: true
             text: qsTr("Terminal")
-            checked: Config.dashboard.showTerminal
-            onToggled: GlobalConfig.dashboard.showTerminal = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showTerminal"
+            checked: root.targetConfig.dashboard.showTerminal
+            onToggled: {
+                root.targetConfig.dashboard.showTerminal = checked;
+                root.targetConfig.save();
+            }
         }
 
         // General
@@ -232,8 +273,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Hyprland splash")
             subtext: qsTr("Show the current Hyprland splash text")
-            checked: Config.dashboard.showHyprlandSplash
-            onToggled: GlobalConfig.dashboard.showHyprlandSplash = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showHyprlandSplash"
+            checked: root.targetConfig.dashboard.showHyprlandSplash
+            onToggled: {
+                root.targetConfig.dashboard.showHyprlandSplash = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Media
@@ -246,32 +292,52 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Recolor media GIF")
             subtext: qsTr("Apply system theme colors to the media GIF")
-            checked: Config.dashboard.colorizeMediaGif
-            onToggled: GlobalConfig.dashboard.colorizeMediaGif = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "colorizeMediaGif"
+            checked: root.targetConfig.dashboard.colorizeMediaGif
+            onToggled: {
+                root.targetConfig.dashboard.colorizeMediaGif = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Use material shapes")
             subtext: qsTr("Replace the media GIF with audio-reactive material shapes")
-            checked: Config.dashboard.useMediaShapes
-            onToggled: GlobalConfig.dashboard.useMediaShapes = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "useMediaShapes"
+            checked: root.targetConfig.dashboard.useMediaShapes
+            onToggled: {
+                root.targetConfig.dashboard.useMediaShapes = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Randomize shape colors")
             subtext: qsTr("Randomly shift shape colors while morphing")
-            checked: Config.dashboard.randomizeMediaShapeColors
-            onToggled: GlobalConfig.dashboard.randomizeMediaShapeColors = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "randomizeMediaShapeColors"
+            checked: root.targetConfig.dashboard.randomizeMediaShapeColors
+            onToggled: {
+                root.targetConfig.dashboard.randomizeMediaShapeColors = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             Layout.fillWidth: true
             text: qsTr("Sync with music")
             subtext: qsTr("Randomly pick shapes to the beat instead of bass level")
-            checked: Config.dashboard.syncMediaShapesToBeat
-            onToggled: GlobalConfig.dashboard.syncMediaShapesToBeat = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "syncMediaShapesToBeat"
+            checked: root.targetConfig.dashboard.syncMediaShapesToBeat
+            onToggled: {
+                root.targetConfig.dashboard.syncMediaShapesToBeat = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -279,8 +345,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Replace lyrics with visuals")
             subtext: qsTr("Show the GIF/shapes in the media tab instead of lyrics")
-            checked: Config.dashboard.replaceMediaLyricsWithVisuals
-            onToggled: GlobalConfig.dashboard.replaceMediaLyricsWithVisuals = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "replaceMediaLyricsWithVisuals"
+            checked: root.targetConfig.dashboard.replaceMediaLyricsWithVisuals
+            onToggled: {
+                root.targetConfig.dashboard.replaceMediaLyricsWithVisuals = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Weather
@@ -294,8 +365,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Weather location")
             subtext: qsTr("Show the location in the weather tab")
-            checked: Config.dashboard.showWeatherLocation !== false
-            onToggled: GlobalConfig.dashboard.showWeatherLocation = checked
+            configNode: root.targetConfig.dashboard
+            propertyName: "showWeatherLocation"
+            checked: root.targetConfig.dashboard.showWeatherLocation !== false
+            onToggled: {
+                root.targetConfig.dashboard.showWeatherLocation = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Performance widgets
@@ -306,39 +382,69 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Battery")
-            checked: Config.dashboard.performance.showBattery
-            onToggled: GlobalConfig.dashboard.performance.showBattery = checked
+            configNode: root.targetConfig.dashboard.performance
+            propertyName: "showBattery"
+            checked: root.targetConfig.dashboard.performance.showBattery
+            onToggled: {
+                root.targetConfig.dashboard.performance.showBattery = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("GPU")
-            checked: Config.dashboard.performance.showGpu
-            onToggled: GlobalConfig.dashboard.performance.showGpu = checked
+            configNode: root.targetConfig.dashboard.performance
+            propertyName: "showGpu"
+            checked: root.targetConfig.dashboard.performance.showGpu
+            onToggled: {
+                root.targetConfig.dashboard.performance.showGpu = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("CPU")
-            checked: Config.dashboard.performance.showCpu
-            onToggled: GlobalConfig.dashboard.performance.showCpu = checked
+            configNode: root.targetConfig.dashboard.performance
+            propertyName: "showCpu"
+            checked: root.targetConfig.dashboard.performance.showCpu
+            onToggled: {
+                root.targetConfig.dashboard.performance.showCpu = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Memory")
-            checked: Config.dashboard.performance.showMemory
-            onToggled: GlobalConfig.dashboard.performance.showMemory = checked
+            configNode: root.targetConfig.dashboard.performance
+            propertyName: "showMemory"
+            checked: root.targetConfig.dashboard.performance.showMemory
+            onToggled: {
+                root.targetConfig.dashboard.performance.showMemory = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Storage")
-            checked: Config.dashboard.performance.showStorage
-            onToggled: GlobalConfig.dashboard.performance.showStorage = checked
+            configNode: root.targetConfig.dashboard.performance
+            propertyName: "showStorage"
+            checked: root.targetConfig.dashboard.performance.showStorage
+            onToggled: {
+                root.targetConfig.dashboard.performance.showStorage = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             last: true
             text: qsTr("Network")
-            checked: Config.dashboard.performance.showNetwork
-            onToggled: GlobalConfig.dashboard.performance.showNetwork = checked
+            configNode: root.targetConfig.dashboard.performance
+            propertyName: "showNetwork"
+            checked: root.targetConfig.dashboard.performance.showNetwork
+            onToggled: {
+                root.targetConfig.dashboard.performance.showNetwork = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Behaviour
@@ -351,11 +457,16 @@ PageBase {
             last: true
             label: qsTr("Drag threshold")
             subtext: qsTr("Pixels dragged before the dashboard opens")
-            value: Config.dashboard.dragThreshold
+            configNode: root.targetConfig.dashboard
+            propertyName: "dragThreshold"
+            value: root.targetConfig.dashboard.dragThreshold
             from: 0
             to: 200
             stepSize: 5
-            onMoved: v => GlobalConfig.dashboard.dragThreshold = v
+            onMoved: v => {
+                root.targetConfig.dashboard.dragThreshold = v;
+                root.targetConfig.save();
+            }
         }
     }
 }

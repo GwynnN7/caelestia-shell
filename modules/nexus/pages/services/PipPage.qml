@@ -54,9 +54,14 @@ PageBase {
             first: true
             label: qsTr("Position")
             subtext: qsTr("Anchor quadrant for Picture in Picture windows")
+            configNode: root.targetConfig.services
+            propertyName: "pipPosition"
             menuItems: root.positionItems
             active: root.positionItems[root.getPositionIndex()]
-            onSelected: item => GlobalConfig.services.pipPosition = item.text.toLowerCase()
+            onSelected: item => {
+                root.targetConfig.services.pipPosition = item.text.toLowerCase();
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -64,8 +69,13 @@ PageBase {
             last: true
             text: qsTr("Follow active focus")
             subtext: qsTr("Automatically warp PiP to the active monitor and workspace")
-            checked: GlobalConfig.services.pipFollowFocus
-            onToggled: GlobalConfig.services.pipFollowFocus = checked
+            configNode: root.targetConfig.services
+            propertyName: "pipFollowFocus"
+            checked: root.targetConfig.services.pipFollowFocus
+            onToggled: {
+                root.targetConfig.services.pipFollowFocus = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

@@ -19,21 +19,36 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Background")
-            checked: Config.bar.clock.background
-            onToggled: GlobalConfig.bar.clock.background = checked
+            configNode: root.targetConfig.bar.clock
+            propertyName: "background"
+            checked: root.targetConfig.bar.clock.background
+            onToggled: {
+                root.targetConfig.bar.clock.background = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Show date")
-            checked: Config.bar.clock.showDate
-            onToggled: GlobalConfig.bar.clock.showDate = checked
+            configNode: root.targetConfig.bar.clock
+            propertyName: "showDate"
+            checked: root.targetConfig.bar.clock.showDate
+            onToggled: {
+                root.targetConfig.bar.clock.showDate = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             last: true
             text: qsTr("Show icon")
-            checked: Config.bar.clock.showIcon
-            onToggled: GlobalConfig.bar.clock.showIcon = checked
+            configNode: root.targetConfig.bar.clock
+            propertyName: "showIcon"
+            checked: root.targetConfig.bar.clock.showIcon
+            onToggled: {
+                root.targetConfig.bar.clock.showIcon = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

@@ -47,8 +47,13 @@ PageBase {
             last: true
             text: qsTr("Enabled")
             subtext: qsTr("Show the utilities panel")
-            checked: Config.utilities.enabled
-            onToggled: GlobalConfig.utilities.enabled = checked
+            configNode: root.targetConfig.utilities
+            propertyName: "enabled"
+            checked: root.targetConfig.utilities.enabled
+            onToggled: {
+                root.targetConfig.utilities.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Cards
@@ -60,23 +65,38 @@ PageBase {
             first: true
             text: qsTr("Keep awake")
             subtext: qsTr("Show the idle inhibitor card")
-            checked: Config.utilities.cards.keepAwake
-            onToggled: GlobalConfig.utilities.cards.keepAwake = checked
+            configNode: root.targetConfig.utilities.cards
+            propertyName: "keepAwake"
+            checked: root.targetConfig.utilities.cards.keepAwake
+            onToggled: {
+                root.targetConfig.utilities.cards.keepAwake = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Screen recorder")
             subtext: qsTr("Show the screen recorder card")
-            checked: Config.utilities.cards.recorder
-            onToggled: GlobalConfig.utilities.cards.recorder = checked
+            configNode: root.targetConfig.utilities.cards
+            propertyName: "recorder"
+            checked: root.targetConfig.utilities.cards.recorder
+            onToggled: {
+                root.targetConfig.utilities.cards.recorder = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             last: true
             text: qsTr("Quick toggles")
             subtext: qsTr("Show the quick toggles card")
-            checked: Config.utilities.cards.quickToggles
-            onToggled: GlobalConfig.utilities.cards.quickToggles = checked
+            configNode: root.targetConfig.utilities.cards
+            propertyName: "quickToggles"
+            checked: root.targetConfig.utilities.cards.quickToggles
+            onToggled: {
+                root.targetConfig.utilities.cards.quickToggles = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Quick toggles

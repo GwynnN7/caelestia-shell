@@ -58,8 +58,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Monitor center")
             subtext: qsTr("Center the dock relative to the physical monitor")
-            checked: Config.bar.dock.monitorCenter
-            onToggled: GlobalConfig.bar.dock.monitorCenter = checked
+            configNode: root.targetConfig.bar.dock
+            propertyName: "monitorCenter"
+            checked: root.targetConfig.bar.dock.monitorCenter
+            onToggled: {
+                root.targetConfig.bar.dock.monitorCenter = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -67,8 +72,13 @@ PageBase {
             last: true
             text: qsTr("Recolour icons")
             subtext: qsTr("Recolour application icons using the system theme")
-            checked: Config.bar.dock.recolourIcons
-            onToggled: GlobalConfig.bar.dock.recolourIcons = checked
+            configNode: root.targetConfig.bar.dock
+            propertyName: "recolourIcons"
+            checked: root.targetConfig.bar.dock.recolourIcons
+            onToggled: {
+                root.targetConfig.bar.dock.recolourIcons = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

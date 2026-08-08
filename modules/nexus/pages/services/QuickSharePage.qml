@@ -26,8 +26,13 @@ PageBase {
             last: true
             text: qsTr("Auto-start on launch")
             subtext: qsTr("Enable Quick Share when the shell starts")
-            checked: GlobalConfig.services.quickShareAutoStart
-            onToggled: GlobalConfig.services.quickShareAutoStart = checked
+            configNode: root.targetConfig.services
+            propertyName: "quickShareAutoStart"
+            checked: root.targetConfig.services.quickShareAutoStart
+            onToggled: {
+                root.targetConfig.services.quickShareAutoStart = checked;
+                root.targetConfig.save();
+            }
         }
 
         SectionHeader {

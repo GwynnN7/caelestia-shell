@@ -35,8 +35,13 @@ PageBase {
             first: true
             text: qsTr("Enable automatically")
             subtext: qsTr("Turn on game mode when a target window is focused or running")
-            checked: GlobalConfig.utilities.gameMode.autoEnable
-            onToggled: GlobalConfig.utilities.gameMode.autoEnable = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "autoEnable"
+            checked: root.targetConfig.utilities.gameMode.autoEnable
+            onToggled: {
+                root.targetConfig.utilities.gameMode.autoEnable = checked;
+                root.targetConfig.save();
+            }
         }
 
         NavRow {
@@ -54,29 +59,54 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Disable animations")
-            checked: GlobalConfig.utilities.gameMode.disableHyprlandAnimations
-            onToggled: GlobalConfig.utilities.gameMode.disableHyprlandAnimations = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableHyprlandAnimations"
+            checked: root.targetConfig.utilities.gameMode.disableHyprlandAnimations
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableHyprlandAnimations = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable blur")
-            checked: GlobalConfig.utilities.gameMode.disableHyprlandBlur
-            onToggled: GlobalConfig.utilities.gameMode.disableHyprlandBlur = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableHyprlandBlur"
+            checked: root.targetConfig.utilities.gameMode.disableHyprlandBlur
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableHyprlandBlur = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable gaps and rounding")
-            checked: GlobalConfig.utilities.gameMode.disableHyprlandGaps
-            onToggled: GlobalConfig.utilities.gameMode.disableHyprlandGaps = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableHyprlandGaps"
+            checked: root.targetConfig.utilities.gameMode.disableHyprlandGaps
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableHyprlandGaps = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable shadows")
-            checked: GlobalConfig.utilities.gameMode.disableHyprlandShadows
-            onToggled: GlobalConfig.utilities.gameMode.disableHyprlandShadows = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableHyprlandShadows"
+            checked: root.targetConfig.utilities.gameMode.disableHyprlandShadows
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableHyprlandShadows = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable window transparency")
             last: true
-            checked: GlobalConfig.utilities.gameMode.disableWindowTransparency
-            onToggled: GlobalConfig.utilities.gameMode.disableWindowTransparency = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableWindowTransparency"
+            checked: root.targetConfig.utilities.gameMode.disableWindowTransparency
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableWindowTransparency = checked;
+                root.targetConfig.save();
+            }
         }
 
         SectionHeader {
@@ -86,29 +116,54 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Disable shell transparency")
-            checked: GlobalConfig.utilities.gameMode.disableShellTransparency
-            onToggled: GlobalConfig.utilities.gameMode.disableShellTransparency = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableShellTransparency"
+            checked: root.targetConfig.utilities.gameMode.disableShellTransparency
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableShellTransparency = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable toast notifications transparency")
-            checked: GlobalConfig.utilities.gameMode.disableToastTransparency
-            onToggled: GlobalConfig.utilities.gameMode.disableToastTransparency = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableToastTransparency"
+            checked: root.targetConfig.utilities.gameMode.disableToastTransparency
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableToastTransparency = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable desktop lyrics")
-            checked: GlobalConfig.utilities.gameMode.disableDesktopLyrics
-            onToggled: GlobalConfig.utilities.gameMode.disableDesktopLyrics = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableDesktopLyrics"
+            checked: root.targetConfig.utilities.gameMode.disableDesktopLyrics
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableDesktopLyrics = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable visualizer")
-            checked: GlobalConfig.utilities.gameMode.disableVisualizer
-            onToggled: GlobalConfig.utilities.gameMode.disableVisualizer = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableVisualizer"
+            checked: root.targetConfig.utilities.gameMode.disableVisualizer
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableVisualizer = checked;
+                root.targetConfig.save();
+            }
         }
         ToggleRow {
             text: qsTr("Disable shimeji pets")
             last: true
-            checked: GlobalConfig.utilities.gameMode.disableShimeji
-            onToggled: GlobalConfig.utilities.gameMode.disableShimeji = checked
+            configNode: root.targetConfig.utilities.gameMode
+            propertyName: "disableShimeji"
+            checked: root.targetConfig.utilities.gameMode.disableShimeji
+            onToggled: {
+                root.targetConfig.utilities.gameMode.disableShimeji = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

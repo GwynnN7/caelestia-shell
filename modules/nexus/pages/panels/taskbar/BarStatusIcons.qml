@@ -93,8 +93,13 @@ PageBase {
             last: true
             text: qsTr("Popout on hover")
             subtext: qsTr("Show a details popout when hovering the status icons")
-            checked: Config.bar.popouts.statusIcons
-            onToggled: GlobalConfig.bar.popouts.statusIcons = checked
+            configNode: root.targetConfig.bar.popouts
+            propertyName: "statusIcons"
+            checked: root.targetConfig.bar.popouts.statusIcons
+            onToggled: {
+                root.targetConfig.bar.popouts.statusIcons = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }
