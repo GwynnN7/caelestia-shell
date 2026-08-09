@@ -624,7 +624,7 @@ For example, to disable the bar on DP-1:
         "sessionGifSpeed": 0.7,
         "apps": {
             "terminal": ["foot"],
-            "audio": ["pavucontrol"],
+            "audio": ["pwvucontrol"],
             "playback": ["mpv"],
             "explorer": ["thunar"]
         },
