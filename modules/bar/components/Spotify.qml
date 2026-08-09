@@ -14,12 +14,12 @@ StyledRect {
     required property var popouts
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-    readonly property MprisPlayer spotifyPlayer: Players.list.find(p => p.identity.toLowerCase().includes("spotify") || (p.entry && p.entry.toLowerCase().includes("spotify"))) || (Players.active?.identity.toLowerCase().includes("spotify") ? Players.active : Players.active)
+    readonly property MprisPlayer player: Players.active
 
     readonly property int maxLen: Config.bar.spotify.maxTitleLength
-    readonly property string rawTitle: spotifyPlayer?.trackTitle || qsTr("Spotify")
+    readonly property string rawTitle: player?.trackTitle || qsTr("Spotify")
     readonly property string trackTitle: rawTitle.length > maxLen ? rawTitle.substring(0, maxLen) + "…" : rawTitle
-    readonly property bool isPlaying: spotifyPlayer?.isPlaying ?? false
+    readonly property bool isPlaying: player?.isPlaying ?? false
 
     implicitWidth: isHorizontal ? contentLayout.implicitWidth + Tokens.padding.medium * 2 : Tokens.sizes.bar.innerWidth
     implicitHeight: isHorizontal ? Tokens.sizes.bar.innerWidth : contentLayout.implicitHeight + Tokens.padding.medium * 2

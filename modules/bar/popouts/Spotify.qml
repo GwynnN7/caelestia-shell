@@ -21,20 +21,30 @@ ColumnLayout {
 
     required property PopoutState popouts
 
-    readonly property MprisPlayer player: Players.list.find(p => p.identity.toLowerCase().includes("spotify") || (p.entry && p.entry.toLowerCase().includes("spotify"))) || (Players.active?.identity.toLowerCase().includes("spotify") ? Players.active : Players.active)
+    readonly property MprisPlayer player: Players.active
     readonly property bool hasUnknownLength: (player?.length ?? 0) > 2147483647
 
-    readonly property PwNode spotifyStream: Audio.streams.find(s => Audio.getStreamName(s).toLowerCase().includes("spotify") || (s.properties["application.process.binary"] && s.properties["application.process.binary"].toLowerCase() === "spotify") || (s.properties["app.name"] && s.properties["app.name"].toLowerCase() === "spotify")) || null
-    readonly property real currentVolume: (player && typeof player.volume !== "undefined" && player.volume !== null) ? player.volume : (spotifyStream ? Audio.getStreamVolume(spotifyStream) : Audio.volume)
+    readonly property PwNode playerStream: Audio.streams.find(s => {
+        const identity = root.player?.identity?.toLowerCase() ?? "";
+        const entry = (root.player?.entry ?? "").toString().toLowerCase();
+        if (!identity && !entry) return false;
+        const streamName = Audio.getStreamName(s).toLowerCase();
+        const binary = (s.properties["application.process.binary"] ?? "").toString().toLowerCase();
+        const appName = (s.properties["app.name"] ?? "").toString().toLowerCase();
+        const playerNames = [identity, entry].filter(n => n);
+        const streamNames = [streamName, binary, appName].filter(n => n);
+        return streamNames.some(sn => playerNames.some(pn => sn.includes(pn) || pn.includes(sn)));
+    }) || null
+    readonly property real currentVolume: (Players.supportsAppVolume(root.player) && typeof root.player?.volume !== "undefined" && root.player?.volume !== null) ? root.player.volume : (root.playerStream ? Audio.getStreamVolume(root.playerStream) : Audio.volume)
 
     readonly property bool isHorizontalVolume: Config.bar.spotify.horizontalVolume
 
     function setSpotifyVolume(v: real): void {
         const clamped = Math.max(0, Math.min(1, v));
-        if (player && typeof player.volume !== "undefined") {
-            player.volume = clamped;
-        } else if (spotifyStream) {
-            Audio.setStreamVolume(spotifyStream, clamped);
+        if (Players.supportsAppVolume(root.player) && root.player && typeof root.player.volume !== "undefined") {
+            root.player.volume = clamped;
+        } else if (root.playerStream) {
+            Audio.setStreamVolume(root.playerStream, clamped);
         } else {
             Audio.setVolume(clamped);
         }

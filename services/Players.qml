@@ -15,6 +15,10 @@ Singleton {
     readonly property MprisPlayer active: props.manualActive ?? list.find(p => getIdentity(p) === GlobalConfig.services.defaultPlayer) ?? list[0] ?? null
     property alias manualActive: props.manualActive
 
+    // Apps that expose in-app volume control over MPRIS. Sources not in this list
+    // fall back to per-stream PipeWire volume control. Add new entries here.
+    readonly property list<string> appVolumePlayers: [ "Spotify" ]
+
     // Dedup key for progressive metadata (e.g. mpv-mpris/yt-dlp player fills title then artist later).
     property string lastNowPlayingKey: ""
 
@@ -23,6 +27,13 @@ Singleton {
             return "";
         const alias = GlobalConfig.services.playerAliases.find(a => a.from === player.identity);
         return alias?.to ?? player.identity;
+    }
+
+    function supportsAppVolume(player: MprisPlayer): bool {
+        if (!player)
+            return false;
+        const identity = root.getIdentity(player).toLowerCase();
+        return root.appVolumePlayers.some(id => identity.includes(id.toLowerCase()));
     }
 
     function getArtUrl(player: MprisPlayer): string {
