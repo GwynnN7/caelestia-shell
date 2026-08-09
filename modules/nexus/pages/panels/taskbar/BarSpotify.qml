@@ -74,6 +74,18 @@ PageBase {
         }
 
         ToggleRow {
+            text: qsTr("Auto-hide")
+            subtext: qsTr("Hide the widget when there is no media source available")
+            configNode: root.targetConfig.bar.spotify
+            propertyName: "autoHide"
+            checked: root.targetConfig.bar.spotify.autoHide
+            onToggled: {
+                root.targetConfig.bar.spotify.autoHide = checked;
+                root.targetConfig.save();
+            }
+        }
+
+        ToggleRow {
             last: true
             text: qsTr("Horizontal volume slider")
             subtext: qsTr("Place a horizontal volume slider below the playback controls in the popout")

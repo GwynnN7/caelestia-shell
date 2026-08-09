@@ -140,6 +140,7 @@ class BarSpotify : public ConfigObject {
     CONFIG_PROPERTY(int, maxTitleLength, 25)
     CONFIG_PROPERTY(bool, inverted, false)
     CONFIG_PROPERTY(bool, horizontalVolume, false)
+    CONFIG_PROPERTY(bool, autoHide, false)
 
 public:
     explicit BarSpotify(QObject* parent = nullptr)

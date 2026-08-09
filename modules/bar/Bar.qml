@@ -265,7 +265,7 @@ GridLayout {
             DelegateChoice {
                 roleValue: "spotify"
                 delegate: EntryWrapper {
-                    visible: enabled && !root.fullscreen
+                    visible: enabled && !root.fullscreen && (!Config.bar.spotify.autoHide || Players.list.length > 0)
                     Spotify {
                         objectName: "taskbarSpotify"
                         popouts: root.popouts
