@@ -29,7 +29,7 @@ Item {
         if (content.isDetached)
             return (parent.width - content.nonAnimWidth) / 2;
         if (isHorizontal) {
-            if (content.sidebarOpen && !content.isDockPopout)
+            if (content.sidebarOpen && !content.isDockPopout && content.currentSection === "end")
                 return parent.width - content.nonAnimWidth;
 
             const off = content.currentCenter - parent.leftMargin - content.nonAnimWidth / 2;

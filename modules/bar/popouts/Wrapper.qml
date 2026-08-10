@@ -30,6 +30,7 @@ Item {
 
     property alias currentName: popoutState.currentName
     property alias hasCurrent: popoutState.hasCurrent
+    property alias currentSection: popoutState.currentSection
     property alias dockModel: popoutState.dockModel
     property real currentCenter
 
@@ -95,6 +96,15 @@ Item {
         isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
         onDetachRequested: mode => root.detach(mode)
+    }
+
+    Connections {
+        target: popoutState
+
+        function onHasCurrentChanged() {
+            if (!popoutState.hasCurrent)
+                root.currentSection = "";
+        }
     }
 
     HyprlandFocusGrab {

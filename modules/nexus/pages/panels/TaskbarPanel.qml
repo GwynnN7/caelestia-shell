@@ -115,7 +115,7 @@ PageBase {
         NavRow {
             first: true
             icon: "view_agenda"
-            text: qsTr("Toggle & rearrange")
+            text: qsTr("Taskbar components")
             subtext: qsTr("Add, remove or reorder components")
             onClicked: root.nState.openSubPage(6)
         }
