@@ -29,6 +29,9 @@ MonitorConfigManager* MonitorConfigManager::create(QQmlEngine*, QJSEngine*) {
 }
 
 GlobalConfig* MonitorConfigManager::configForScreen(const QString& screen) {
+    if (screen.isEmpty())
+        return GlobalConfig::instance();
+
     auto& overlay = m_overlays[screen];
     if (!overlay.config) {
         auto dir = monitorConfigDir(screen);
@@ -45,6 +48,9 @@ GlobalConfig* MonitorConfigManager::configForScreen(const QString& screen) {
 }
 
 TokenConfig* MonitorConfigManager::tokensForScreen(const QString& screen) {
+    if (screen.isEmpty())
+        return TokenConfig::instance();
+
     auto& overlay = m_overlays[screen];
     if (!overlay.tokens) {
         auto dir = monitorConfigDir(screen);

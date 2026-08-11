@@ -16,6 +16,7 @@ class ConfigList : public ConfigNode {
 
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QVariantList values READ values NOTIFY valuesChanged)
+    Q_PROPERTY(bool loaded READ isLoaded NOTIFY loadedChanged)
 
 public:
     explicit ConfigList(QObject* parent = nullptr, const QVariantList& defaults = {});
@@ -29,6 +30,8 @@ public:
     Q_INVOKABLE void move(int from, int to);
     Q_INVOKABLE void clear();
 
+    [[nodiscard]] bool isLoaded() const;
+    void setLoaded(bool loaded);
     void loadFromJson(const QJsonValue& json) override;
     [[nodiscard]] QJsonValue toJson() const override;
     void clearLoadedKeys() override;
@@ -38,6 +41,7 @@ public:
 signals:
     void countChanged();
     void valuesChanged();
+    void loadedChanged();
 
 protected:
     // Supplied by CONFIG_LIST_TYPE, not callable from a ConfigList ctor (vtable incomplete)

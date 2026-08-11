@@ -131,6 +131,101 @@ public:
         : ConfigObject(parent) {}
 };
 
+class BarSpotify : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_PROPERTY(bool, background, false)
+    CONFIG_PROPERTY(bool, showVisualiser, true)
+    CONFIG_PROPERTY(int, maxTitleLength, 25)
+    CONFIG_PROPERTY(bool, inverted, false)
+    CONFIG_PROPERTY(bool, horizontalVolume, false)
+    CONFIG_PROPERTY(bool, autoHide, false)
+
+public:
+    explicit BarSpotify(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
+// Bar entries split into three anchored sections. `start` hugs the top/left edge,
+// `center` sits at the monitor centre and `end` hugs the bottom/right edge.
+class BarSections : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_SUBOBJECT(EntryList, start)
+    CONFIG_SUBOBJECT(EntryList, center)
+    CONFIG_SUBOBJECT(EntryList, end)
+
+public:
+    explicit BarSections(QObject* parent = nullptr)
+        : ConfigObject(parent)
+        , m_start(new EntryList(this, defaults({
+              LIST_ENTRY(logo, true),
+              LIST_ENTRY(workspaces, true),
+          })))
+        , m_center(new EntryList(this, defaults({
+              LIST_ENTRY(activeWindow, true),
+          })))
+        , m_end(new EntryList(this, defaults({
+              LIST_ENTRY(tray, true),
+              LIST_ENTRY(clock, true),
+              LIST_ENTRY(statusIcons, true),
+              LIST_ENTRY(power, true),
+          }))) {}
+
+    void loadFromJson(const QJsonValue& json) override;
+
+private:
+    static QVariantList defaults(const QVariantList& entries) { return entries; }
+};
+
+// Migrates the legacy flat `bar.entries` array into the three section lists. Only
+// components part of the new default layout are kept, preserving their enabled state.
+inline void BarSections::loadFromJson(const QJsonValue& json) {
+    if (!json.isArray()) {
+        ConfigObject::loadFromJson(json);
+        return;
+    }
+
+    QMap<QString, bool> enabledById;
+    for (const auto& value : json.toArray()) {
+        const auto obj = value.toObject();
+        enabledById.insert(obj.value(QStringLiteral("id")).toString(),
+            obj.value(QStringLiteral("enabled")).toBool());
+    }
+
+    const auto migrated = [&enabledById](const QVariantList& entries) {
+        QVariantList result;
+        for (const auto& value : entries) {
+            auto props = value.toMap();
+            const auto id = props.value(QStringLiteral("id")).toString();
+            if (enabledById.contains(id))
+                props.insert(QStringLiteral("enabled"), enabledById.value(id));
+            result.append(props);
+        }
+        return result;
+    };
+
+    m_start->loadFromJson(QJsonArray::fromVariantList(migrated(defaults({
+        LIST_ENTRY(logo, true),
+        LIST_ENTRY(workspaces, true),
+    }))));
+    m_center->loadFromJson(QJsonArray::fromVariantList(migrated(defaults({
+        LIST_ENTRY(activeWindow, true),
+    }))));
+    m_end->loadFromJson(QJsonArray::fromVariantList(migrated(defaults({
+        LIST_ENTRY(tray, true),
+        LIST_ENTRY(clock, true),
+        LIST_ENTRY(statusIcons, true),
+        LIST_ENTRY(power, true),
+    }))));
+
+    markPropertyLoaded(QStringLiteral("start"));
+    markPropertyLoaded(QStringLiteral("center"));
+    markPropertyLoaded(QStringLiteral("end"));
+}
+
 class BarConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
@@ -147,6 +242,7 @@ class BarConfig : public ConfigObject {
     CONFIG_SUBOBJECT(BarClock, clock)
     CONFIG_SUBOBJECT(BarDock, dock)
     CONFIG_SUBOBJECT(BarGithub, github)
+    CONFIG_SUBOBJECT(BarSpotify, spotify)
     CONFIG_LIST(EntryList, statusIcons,
         {
             LIST_ENTRY(lockStatus, true),
@@ -159,19 +255,7 @@ class BarConfig : public ConfigObject {
             LIST_ENTRY(peripheralBattery, false),
             LIST_ENTRY(notifications, true),
         })
-    CONFIG_LIST(EntryList, entries,
-        {
-            LIST_ENTRY(logo, true),
-            LIST_ENTRY(workspaces, true),
-            LIST_ENTRY(github, true),
-            LIST_ENTRY(spacer, true),
-            LIST_ENTRY(activeWindow, true),
-            LIST_ENTRY(spacer, true),
-            LIST_ENTRY(tray, true),
-            LIST_ENTRY(clock, true),
-            LIST_ENTRY(statusIcons, true),
-            LIST_ENTRY(power, true),
-        })
+    CONFIG_SUBOBJECT(BarSections, entries)
     CONFIG_PROPERTY(QStringList, excludedScreens)
     CONFIG_PROPERTY(QStringList, peripheralBatteryExcluded)
 
@@ -185,7 +269,9 @@ public:
         , m_tray(new BarTray(this))
         , m_clock(new BarClock(this))
         , m_dock(new BarDock(this))
-        , m_github(new BarGithub(this)) {}
+        , m_github(new BarGithub(this))
+        , m_spotify(new BarSpotify(this))
+        , m_entries(new BarSections(this)) {}
 };
 
 } // namespace caelestia::config

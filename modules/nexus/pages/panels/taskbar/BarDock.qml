@@ -21,36 +21,31 @@ PageBase {
             first: true
             text: qsTr("Enable component")
             checked: {
-                for (let i = 0; i < Config.bar.entries.length; i++) {
-                    if (Config.bar.entries[i].id === "dock")
-                        return Config.bar.entries[i].enabled;
+                const entries = Config.bar.entries;
+                for (const section of [entries.start, entries.center, entries.end]) {
+                    for (let i = 0; i < section.count; i++) {
+                        if (section.at(i).id === "dock")
+                            return section.at(i).enabled;
+                    }
                 }
                 return false;
             }
             onToggled: {
-                let currentEntries = GlobalConfig.bar.entries;
-                let newEntries = [
-                    { "id": "logo", "enabled": true },
-                    { "id": "workspaces", "enabled": true },
-                    { "id": "spacer", "enabled": true },
-                    { "id": "activeWindow", "enabled": true },
-                    { "id": "dock", "enabled": false },
-                    { "id": "spacer", "enabled": true },
-                    { "id": "tray", "enabled": true },
-                    { "id": "github", "enabled": true },
-                    { "id": "clock", "enabled": true },
-                    { "id": "statusIcons", "enabled": true },
-                    { "id": "power", "enabled": true }
-                ];
-                for (let i = 0; i < newEntries.length; i++) {
-                    if (newEntries[i].id === "dock") {
-                        newEntries[i].enabled = checked;
-                    } else if (newEntries[i].id !== "spacer") {
-                        let existing = currentEntries.find(e => e.id === newEntries[i].id);
-                        if (existing !== undefined) newEntries[i].enabled = existing.enabled;
+                const entries = GlobalConfig.bar.entries;
+                for (const section of [entries.start, entries.center, entries.end]) {
+                    for (let i = 0; i < section.count; i++) {
+                        if (section.at(i).id === "dock") {
+                            section.at(i).enabled = checked;
+                            GlobalConfig.save();
+                            return;
+                        }
                     }
                 }
-                GlobalConfig.bar.entries = newEntries;
+                entries.start.insert({
+                    id: "dock",
+                    enabled: checked
+                });
+                GlobalConfig.save();
             }
         }
 
@@ -58,8 +53,13 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Monitor center")
             subtext: qsTr("Center the dock relative to the physical monitor")
-            checked: Config.bar.dock.monitorCenter
-            onToggled: GlobalConfig.bar.dock.monitorCenter = checked
+            configNode: root.targetConfig.bar.dock
+            propertyName: "monitorCenter"
+            checked: root.targetConfig.bar.dock.monitorCenter
+            onToggled: {
+                root.targetConfig.bar.dock.monitorCenter = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -67,8 +67,13 @@ PageBase {
             last: true
             text: qsTr("Recolour icons")
             subtext: qsTr("Recolour application icons using the system theme")
-            checked: Config.bar.dock.recolourIcons
-            onToggled: GlobalConfig.bar.dock.recolourIcons = checked
+            configNode: root.targetConfig.bar.dock
+            propertyName: "recolourIcons"
+            checked: root.targetConfig.bar.dock.recolourIcons
+            onToggled: {
+                root.targetConfig.bar.dock.recolourIcons = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

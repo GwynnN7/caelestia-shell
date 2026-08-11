@@ -2,8 +2,10 @@
 
 #include "configobject.hpp"
 
+#include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qvariant.h>
 
 namespace caelestia::config {
 
@@ -21,8 +23,24 @@ class SessionIcons : public ConfigObject {
     CONFIG_PROPERTY(QString, windows, u"window"_s)
 
 public:
-    explicit SessionIcons(QObject* parent = nullptr)
-        : ConfigObject(parent) {}
+    explicit SessionIcons(QObject* parent = nullptr);
+
+    void loadFromJson(const QJsonValue& json) override;
+    [[nodiscard]] QJsonValue toJson() const override;
+    void clearLoadedKeys() override;
+    [[nodiscard]] QStringList unknownKeys() const override;
+    void resyncFromGlobal() override;
+
+    [[nodiscard]] const QMap<QString, QString>& customIcons() const { return m_customIcons; }
+    [[nodiscard]] const QStringList& customIconKeys() const { return m_customIconKeys; }
+
+protected:
+    void syncValuesFromGlobal() override;
+    void onGlobalPropertiesChanged(const QMap<QString, QVariant>& changed) override;
+
+private:
+    QMap<QString, QString> m_customIcons;
+    QStringList m_customIconKeys;
 };
 
 class SessionCommands : public ConfigObject {
@@ -40,8 +58,24 @@ class SessionCommands : public ConfigObject {
     CONFIG_PROPERTY(QStringList, automode, { u"caelestia"_s, u"shell"_s, u"lock"_s, u"lock"_s })
 
 public:
-    explicit SessionCommands(QObject* parent = nullptr)
-        : ConfigObject(parent) {}
+    explicit SessionCommands(QObject* parent = nullptr);
+
+    void loadFromJson(const QJsonValue& json) override;
+    [[nodiscard]] QJsonValue toJson() const override;
+    void clearLoadedKeys() override;
+    [[nodiscard]] QStringList unknownKeys() const override;
+    void resyncFromGlobal() override;
+
+    [[nodiscard]] const QMap<QString, QStringList>& customCommands() const { return m_customCommands; }
+    [[nodiscard]] const QStringList& customCommandKeys() const { return m_customCommandKeys; }
+
+protected:
+    void syncValuesFromGlobal() override;
+    void onGlobalPropertiesChanged(const QMap<QString, QVariant>& changed) override;
+
+private:
+    QMap<QString, QStringList> m_customCommands;
+    QStringList m_customCommandKeys;
 };
 
 class SessionConfig : public ConfigObject {
@@ -54,11 +88,27 @@ class SessionConfig : public ConfigObject {
     CONFIG_SUBOBJECT(SessionIcons, icons)
     CONFIG_SUBOBJECT(SessionCommands, commands)
 
+    Q_PROPERTY(QVariantList buttons READ buttons NOTIFY buttonsChanged)
+    Q_PROPERTY(QVariantList customButtons READ customButtons NOTIFY customButtonsChanged)
+
 public:
-    explicit SessionConfig(QObject* parent = nullptr)
-        : ConfigObject(parent)
-        , m_icons(new SessionIcons(this))
-        , m_commands(new SessionCommands(this)) {}
+    explicit SessionConfig(QObject* parent = nullptr);
+
+    void loadFromJson(const QJsonValue& json) override;
+    [[nodiscard]] QJsonValue toJson() const override;
+    void clearLoadedKeys() override;
+    [[nodiscard]] QList<ConfigNode*> childNodes() const override;
+    void resyncFromGlobal() override;
+
+    [[nodiscard]] QVariantList buttons() const;
+    [[nodiscard]] QVariantList customButtons() const;
+
+signals:
+    void buttonsChanged();
+    void customButtonsChanged();
+
+protected:
+    void syncValuesFromGlobal() override;
 };
 
 } // namespace caelestia::config

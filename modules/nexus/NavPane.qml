@@ -17,6 +17,7 @@ ColumnLayout {
     SearchBar {
         id: searchField
 
+        z: 3
         Layout.fillWidth: true
 
         placeholderText: qsTr("Search settings")
@@ -40,7 +41,14 @@ ColumnLayout {
         }
     }
 
+    MonitorTargetSelector {
+        z: 2
+        Layout.fillWidth: true
+        nState: root.nState
+    }
+
     NavLocations {
+        z: 1
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.topMargin: -topMargin

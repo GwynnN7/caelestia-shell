@@ -56,44 +56,69 @@ PageBase {
             first: true
             label: qsTr("Show in fullscreen")
             subtext: qsTr("Whether notifications appear over fullscreen apps")
+            configNode: root.targetConfig.notifs
+            propertyName: "fullscreen"
             menuItems: root.notifFullscreenItems
-            active: root.notifFullscreenItems[Math.max(0, root.notifFullscreenValues.indexOf(GlobalConfig.notifs.fullscreen))]
-            onSelected: item => GlobalConfig.notifs.fullscreen = root.notifFullscreenValues[root.notifFullscreenItems.indexOf(item)]
+            active: root.notifFullscreenItems[Math.max(0, root.notifFullscreenValues.indexOf(root.targetConfig.notifs.fullscreen))]
+            onSelected: item => {
+                root.targetConfig.notifs.fullscreen = root.notifFullscreenValues[root.notifFullscreenItems.indexOf(item)];
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Expire automatically")
             subtext: qsTr("Dismiss notifications after their timeout")
-            checked: GlobalConfig.notifs.expire
-            onToggled: GlobalConfig.notifs.expire = checked
+            configNode: root.targetConfig.notifs
+            propertyName: "expire"
+            checked: root.targetConfig.notifs.expire
+            onToggled: {
+                root.targetConfig.notifs.expire = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Open expanded")
             subtext: qsTr("Show notifications expanded by default")
-            checked: GlobalConfig.notifs.openExpanded
-            onToggled: GlobalConfig.notifs.openExpanded = checked
+            configNode: root.targetConfig.notifs
+            propertyName: "openExpanded"
+            checked: root.targetConfig.notifs.openExpanded
+            onToggled: {
+                root.targetConfig.notifs.openExpanded = checked;
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
             label: qsTr("Default timeout")
             subtext: qsTr("Time before a notification dismisses (ms)")
-            value: GlobalConfig.notifs.defaultExpireTimeout
+            configNode: root.targetConfig.notifs
+            propertyName: "defaultExpireTimeout"
+            value: root.targetConfig.notifs.defaultExpireTimeout
             from: 1000
             to: 60000
             stepSize: 500
-            onMoved: v => GlobalConfig.notifs.defaultExpireTimeout = Math.round(v)
+            onMoved: v => {
+                root.targetConfig.notifs.defaultExpireTimeout = Math.round(v);
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
             last: true
             label: qsTr("Group preview count")
             subtext: qsTr("Notifications shown per group before collapsing")
-            value: GlobalConfig.notifs.groupPreviewNum
+            configNode: root.targetConfig.notifs
+            propertyName: "groupPreviewNum"
+            value: root.targetConfig.notifs.groupPreviewNum
             from: 1
             to: 10
             stepSize: 1
-            onMoved: v => GlobalConfig.notifs.groupPreviewNum = Math.round(v)
+            onMoved: v => {
+                root.targetConfig.notifs.groupPreviewNum = Math.round(v);
+                root.targetConfig.save();
+            }
         }
 
         // Toasts
@@ -105,35 +130,55 @@ PageBase {
             first: true
             label: qsTr("Show in fullscreen")
             subtext: qsTr("Whether toasts appear over fullscreen apps")
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "fullscreen"
             menuItems: root.toastFullscreenItems
-            active: root.toastFullscreenItems[Math.max(0, root.toastFullscreenValues.indexOf(GlobalConfig.utilities.toasts.fullscreen))]
-            onSelected: item => GlobalConfig.utilities.toasts.fullscreen = root.toastFullscreenValues[root.toastFullscreenItems.indexOf(item)]
+            active: root.toastFullscreenItems[Math.max(0, root.toastFullscreenValues.indexOf(root.targetConfig.utilities.toasts.fullscreen))]
+            onSelected: item => {
+                root.targetConfig.utilities.toasts.fullscreen = root.toastFullscreenValues[root.toastFullscreenItems.indexOf(item)];
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
             label: qsTr("Visible toasts")
             subtext: qsTr("Maximum number of toasts shown at once")
-            value: GlobalConfig.utilities.maxToasts
+            configNode: root.targetConfig.utilities
+            propertyName: "maxToasts"
+            value: root.targetConfig.utilities.maxToasts
             from: 1
             to: 10
             stepSize: 1
-            onMoved: v => GlobalConfig.utilities.maxToasts = Math.round(v)
+            onMoved: v => {
+                root.targetConfig.utilities.maxToasts = Math.round(v);
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Toast transparency")
             subtext: qsTr("Apply transparency and blur to toast notifications")
-            checked: GlobalConfig.utilities.toasts.transparency
-            onToggled: GlobalConfig.utilities.toasts.transparency = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "transparency"
+            checked: root.targetConfig.utilities.toasts.transparency
+            onToggled: {
+                root.targetConfig.utilities.toasts.transparency = checked;
+                root.targetConfig.save();
+            }
         }
 
         SliderRow {
             last: true
             label: qsTr("Base transparency")
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "transparencyBase"
             valueLabel: Math.round(value * 100) + "%"
-            value: GlobalConfig.utilities.toasts.transparencyBase
-            enabled: GlobalConfig.utilities.toasts.transparency
-            onMoved: v => GlobalConfig.utilities.toasts.transparencyBase = v
+            value: root.targetConfig.utilities.toasts.transparencyBase
+            enabled: root.targetConfig.utilities.toasts.transparency
+            onMoved: v => {
+                root.targetConfig.utilities.toasts.transparencyBase = v;
+                root.targetConfig.save();
+            }
         }
 
         // Toast events
@@ -144,63 +189,113 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Charging changes")
-            checked: GlobalConfig.utilities.toasts.chargingChanged
-            onToggled: GlobalConfig.utilities.toasts.chargingChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "chargingChanged"
+            checked: root.targetConfig.utilities.toasts.chargingChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.chargingChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Game mode changes")
-            checked: GlobalConfig.utilities.toasts.gameModeChanged
-            onToggled: GlobalConfig.utilities.toasts.gameModeChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "gameModeChanged"
+            checked: root.targetConfig.utilities.toasts.gameModeChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.gameModeChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Do not disturb changes")
-            checked: GlobalConfig.utilities.toasts.dndChanged
-            onToggled: GlobalConfig.utilities.toasts.dndChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "dndChanged"
+            checked: root.targetConfig.utilities.toasts.dndChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.dndChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Audio output changes")
-            checked: GlobalConfig.utilities.toasts.audioOutputChanged
-            onToggled: GlobalConfig.utilities.toasts.audioOutputChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "audioOutputChanged"
+            checked: root.targetConfig.utilities.toasts.audioOutputChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.audioOutputChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Audio input changes")
-            checked: GlobalConfig.utilities.toasts.audioInputChanged
-            onToggled: GlobalConfig.utilities.toasts.audioInputChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "audioInputChanged"
+            checked: root.targetConfig.utilities.toasts.audioInputChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.audioInputChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Caps lock changes")
-            checked: GlobalConfig.utilities.toasts.capsLockChanged
-            onToggled: GlobalConfig.utilities.toasts.capsLockChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "capsLockChanged"
+            checked: root.targetConfig.utilities.toasts.capsLockChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.capsLockChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Num lock changes")
-            checked: GlobalConfig.utilities.toasts.numLockChanged
-            onToggled: GlobalConfig.utilities.toasts.numLockChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "numLockChanged"
+            checked: root.targetConfig.utilities.toasts.numLockChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.numLockChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Keyboard layout changes")
-            checked: GlobalConfig.utilities.toasts.kbLayoutChanged
-            onToggled: GlobalConfig.utilities.toasts.kbLayoutChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "kbLayoutChanged"
+            checked: root.targetConfig.utilities.toasts.kbLayoutChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.kbLayoutChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("VPN changes")
-            checked: GlobalConfig.utilities.toasts.vpnChanged
-            onToggled: GlobalConfig.utilities.toasts.vpnChanged = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "vpnChanged"
+            checked: root.targetConfig.utilities.toasts.vpnChanged
+            onToggled: {
+                root.targetConfig.utilities.toasts.vpnChanged = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             last: true
             text: qsTr("Now playing")
-            checked: GlobalConfig.utilities.toasts.nowPlaying
-            onToggled: GlobalConfig.utilities.toasts.nowPlaying = checked
+            configNode: root.targetConfig.utilities.toasts
+            propertyName: "nowPlaying"
+            checked: root.targetConfig.utilities.toasts.nowPlaying
+            onToggled: {
+                root.targetConfig.utilities.toasts.nowPlaying = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

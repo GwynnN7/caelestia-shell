@@ -26,15 +26,25 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Enabled")
-            checked: Config.launcher.enabled
-            onToggled: GlobalConfig.launcher.enabled = checked
+            configNode: root.targetConfig.launcher
+            propertyName: "enabled"
+            checked: root.targetConfig.launcher.enabled
+            onToggled: {
+                root.targetConfig.launcher.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Show on hover")
             subtext: qsTr("Reveal when the cursor reaches the screen edge")
-            checked: Config.launcher.showOnHover
-            onToggled: GlobalConfig.launcher.showOnHover = checked
+            configNode: root.targetConfig.launcher
+            propertyName: "showOnHover"
+            checked: root.targetConfig.launcher.showOnHover
+            onToggled: {
+                root.targetConfig.launcher.showOnHover = checked;
+                root.targetConfig.save();
+            }
         }
 
         TextFieldRow {
@@ -43,8 +53,10 @@ PageBase {
             last: true
             label: qsTr("Action prefix")
             subtext: qsTr("Prefix used to run actions in the launcher")
+            configNode: root.targetConfig.launcher
+            propertyName: "actionPrefix"
             errorText: qsTr("Prefix must not be alphanumeric")
-            value: GlobalConfig.launcher.actionPrefix === ">" ? "" : GlobalConfig.launcher.actionPrefix // TODO: replace with empty only when not loaded once loaded state is exposed
+            value: root.targetConfig.launcher.actionPrefix === ">" ? "" : root.targetConfig.launcher.actionPrefix
             placeholderText: ">"
             maximumLength: 1
             smallField: true
@@ -52,10 +64,10 @@ PageBase {
             onEditingFinished: value => {
                 if (!field.valid)
                     return;
-                /// TODO: replace with GlobalConfig.launcher.resetOption("actionPrefix") on empty commit when reset is fixed
-                GlobalConfig.launcher.actionPrefix = value || ">";
-                if (GlobalConfig.launcher.actionPrefix === ">")
+                root.targetConfig.launcher.actionPrefix = value || ">";
+                if (root.targetConfig.launcher.actionPrefix === ">")
                     clear();
+                root.targetConfig.save();
             }
         }
 
@@ -67,31 +79,46 @@ PageBase {
         StepperRow {
             first: true
             label: qsTr("Max items shown")
-            value: Config.launcher.maxShown
+            configNode: root.targetConfig.launcher
+            propertyName: "maxShown"
+            value: root.targetConfig.launcher.maxShown
             from: 1
             to: 20
             stepSize: 1
-            onMoved: v => GlobalConfig.launcher.maxShown = v
+            onMoved: v => {
+                root.targetConfig.launcher.maxShown = v;
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
             label: qsTr("Max wallpapers")
-            value: Config.launcher.maxWallpapers
+            configNode: root.targetConfig.launcher
+            propertyName: "maxWallpapers"
+            value: root.targetConfig.launcher.maxWallpapers
             from: 1
             to: 30
             stepSize: 1
-            onMoved: v => GlobalConfig.launcher.maxWallpapers = v
+            onMoved: v => {
+                root.targetConfig.launcher.maxWallpapers = v;
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
             last: true
             label: qsTr("Drag threshold")
             subtext: qsTr("Pixels dragged before the launcher opens")
-            value: Config.launcher.dragThreshold
+            configNode: root.targetConfig.launcher
+            propertyName: "dragThreshold"
+            value: root.targetConfig.launcher.dragThreshold
             from: 0
             to: 200
             stepSize: 5
-            onMoved: v => GlobalConfig.launcher.dragThreshold = v
+            onMoved: v => {
+                root.targetConfig.launcher.dragThreshold = v;
+                root.targetConfig.save();
+            }
         }
 
         // AI
@@ -158,16 +185,26 @@ PageBase {
             first: true
             text: qsTr("Vim keybinds")
             subtext: qsTr("Navigate results with Ctrl+hjkl")
-            checked: GlobalConfig.launcher.vimKeybinds
-            onToggled: GlobalConfig.launcher.vimKeybinds = checked
+            configNode: root.targetConfig.launcher
+            propertyName: "vimKeybinds"
+            checked: root.targetConfig.launcher.vimKeybinds
+            onToggled: {
+                root.targetConfig.launcher.vimKeybinds = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             last: true
             text: qsTr("Enable dangerous actions")
             subtext: qsTr("Allow actions that shut down or log out")
-            checked: GlobalConfig.launcher.enableDangerousActions
-            onToggled: GlobalConfig.launcher.enableDangerousActions = checked
+            configNode: root.targetConfig.launcher
+            propertyName: "enableDangerousActions"
+            checked: root.targetConfig.launcher.enableDangerousActions
+            onToggled: {
+                root.targetConfig.launcher.enableDangerousActions = checked;
+                root.targetConfig.save();
+            }
         }
 
         // Fuzzy search
@@ -178,33 +215,58 @@ PageBase {
         ToggleRow {
             first: true
             text: qsTr("Apps")
-            checked: GlobalConfig.launcher.useFuzzy.apps
-            onToggled: GlobalConfig.launcher.useFuzzy.apps = checked
+            configNode: root.targetConfig.launcher.useFuzzy
+            propertyName: "apps"
+            checked: root.targetConfig.launcher.useFuzzy.apps
+            onToggled: {
+                root.targetConfig.launcher.useFuzzy.apps = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Actions")
-            checked: GlobalConfig.launcher.useFuzzy.actions
-            onToggled: GlobalConfig.launcher.useFuzzy.actions = checked
+            configNode: root.targetConfig.launcher.useFuzzy
+            propertyName: "actions"
+            checked: root.targetConfig.launcher.useFuzzy.actions
+            onToggled: {
+                root.targetConfig.launcher.useFuzzy.actions = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Schemes")
-            checked: GlobalConfig.launcher.useFuzzy.schemes
-            onToggled: GlobalConfig.launcher.useFuzzy.schemes = checked
+            configNode: root.targetConfig.launcher.useFuzzy
+            propertyName: "schemes"
+            checked: root.targetConfig.launcher.useFuzzy.schemes
+            onToggled: {
+                root.targetConfig.launcher.useFuzzy.schemes = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             text: qsTr("Variants")
-            checked: GlobalConfig.launcher.useFuzzy.variants
-            onToggled: GlobalConfig.launcher.useFuzzy.variants = checked
+            configNode: root.targetConfig.launcher.useFuzzy
+            propertyName: "variants"
+            checked: root.targetConfig.launcher.useFuzzy.variants
+            onToggled: {
+                root.targetConfig.launcher.useFuzzy.variants = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
             last: true
             text: qsTr("Wallpapers")
-            checked: GlobalConfig.launcher.useFuzzy.wallpapers
-            onToggled: GlobalConfig.launcher.useFuzzy.wallpapers = checked
+            configNode: root.targetConfig.launcher.useFuzzy
+            propertyName: "wallpapers"
+            checked: root.targetConfig.launcher.useFuzzy.wallpapers
+            onToggled: {
+                root.targetConfig.launcher.useFuzzy.wallpapers = checked;
+                root.targetConfig.save();
+            }
         }
     }
 }

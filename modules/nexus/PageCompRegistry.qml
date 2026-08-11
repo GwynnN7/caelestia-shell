@@ -200,6 +200,9 @@ QtObject {
                 Component {
                     BarGithub {}
                 }
+                Component {
+                    BarSpotify {}
+                }
             }
         },
         Component {

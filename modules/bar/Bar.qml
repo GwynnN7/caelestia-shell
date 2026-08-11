@@ -10,7 +10,7 @@ import Caelestia.Config
 import qs.components
 import qs.services
 
-GridLayout {
+Item {
     id: root
 
     required property ShellScreen screen
@@ -22,24 +22,51 @@ GridLayout {
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
-    readonly property real spacing: isHorizontal ? columnSpacing : rowSpacing
+    readonly property real spacing: Tokens.spacing.medium
+
+    readonly property list<EntrySection> sections: [startSection, centerSection, endSection]
+
+    function entryAt(pos: real): EntryWrapper {
+        const x = isHorizontal ? pos : width / 2;
+        const y = isHorizontal ? height / 2 : pos;
+
+        for (const section of root.sections) {
+            const local = section.mapFromItem(root, x, y);
+            const wrapper = section.childAt(local.x, local.y) as EntryWrapper;
+            if (wrapper?.visible)
+                return wrapper;
+        }
+        return null;
+    }
 
     function closeTray(): void {
         if (!Config.bar.tray.compact)
             return;
 
-        for (let i = 0; i < repeater.count; i++) {
-            const wrapper = repeater.itemAt(i) as EntryWrapper;
-            if (!wrapper)
-                continue;
-            const tray = wrapper.item as Tray;
-            if (tray)
-                tray.expanded = false;
+        for (const section of root.sections) {
+            for (let i = 0; i < section.count; i++) {
+                const wrapper = section.itemAt(i) as EntryWrapper;
+                if (!wrapper)
+                    continue;
+                const tray = wrapper.item as Tray;
+                if (tray)
+                    tray.expanded = false;
+            }
         }
     }
 
+    function sectionIdFor(wrapper: EntryWrapper): string {
+        if (wrapper.parent === startSection)
+            return "start";
+        if (wrapper.parent === centerSection)
+            return "center";
+        if (wrapper.parent === endSection)
+            return "end";
+        return "";
+    }
+
     function checkPopout(pos: real): void {
-        const ch = childAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as EntryWrapper;
+        const ch = root.entryAt(pos);
 
         if (ch?.entryId !== "tray")
             closeTray();
@@ -51,7 +78,8 @@ GridLayout {
         }
 
         const id = ch.entryId;
-        const top = isHorizontal ? ch.x : ch.y;
+        const top = isHorizontal ? ch.mapToItem(root, 0, 0).x : ch.mapToItem(root, 0, 0).y;
+        popouts.currentSection = root.sectionIdFor(ch);
 
         if (id === "statusIcons" && Config.bar.popouts.statusIcons) {
             const items = (ch.item as StatusIcons).items;
@@ -84,7 +112,7 @@ GridLayout {
         } else if (id === "activeWindow" && Config.bar.popouts.activeWindow && Config.bar.activeWindow.showOnHover && Hypr.activeToplevel) {
             const item = ch.item as Item;
             if (item) {
-                const relPos = pos - (isHorizontal ? ch.x : ch.y);
+                const relPos = pos - top;
                 const inside = isHorizontal ? (relPos >= 0 && relPos <= item.implicitWidth) : (relPos >= 0 && relPos <= item.implicitHeight);
                 if (inside) {
                     popouts.currentName = id.toLowerCase();
@@ -101,7 +129,7 @@ GridLayout {
             
             const item = ch.item;
             if (item && typeof item.handleHover === "function") {
-                const relPos = pos - (isHorizontal ? ch.x : ch.y);
+                const relPos = pos - top;
                 item.handleHover(relPos, isHorizontal, popouts);
                 return;
             }
@@ -109,10 +137,25 @@ GridLayout {
         } else if (id === "github") {
             const item = ch.item as Item;
             if (item) {
-                const relPos = pos - (isHorizontal ? ch.x : ch.y);
+                const relPos = pos - top;
                 const inside = isHorizontal ? (relPos >= 0 && relPos <= item.implicitWidth) : (relPos >= 0 && relPos <= item.implicitHeight);
                 if (inside) {
                     popouts.currentName = "github";
+                    popouts.currentCenter = isHorizontal ? item.mapToItem(null, item.implicitWidth / 2, 0).x : (item.mapToItem(null, 0, item.implicitHeight / 2).y ?? 0);
+                    popouts.hasCurrent = true;
+                } else {
+                    popouts.hasCurrent = false;
+                }
+            } else {
+                popouts.hasCurrent = false;
+            }
+        } else if (id === "spotify") {
+            const item = ch.item as Item;
+            if (item) {
+                const relPos = pos - top;
+                const inside = isHorizontal ? (relPos >= 0 && relPos <= item.implicitWidth) : (relPos >= 0 && relPos <= item.implicitHeight);
+                if (inside) {
+                    popouts.currentName = "spotify";
                     popouts.currentCenter = isHorizontal ? item.mapToItem(null, item.implicitWidth / 2, 0).x : (item.mapToItem(null, 0, item.implicitHeight / 2).y ?? 0);
                     popouts.hasCurrent = true;
                 } else {
@@ -127,7 +170,7 @@ GridLayout {
     }
 
     function handleWheel(pos: real, angleDelta: point): void {
-        const ch = childAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as EntryWrapper;
+        const ch = root.entryAt(pos);
         if (ch?.entryId === "workspaces" && Config.bar.scrollActions.workspaces) {
             // Workspace scroll
             const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor);
@@ -152,108 +195,213 @@ GridLayout {
         }
     }
 
-    columns: isHorizontal ? -1 : 1
-    rows: isHorizontal ? 1 : -1
-    flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+    EntrySection {
+        id: startSection
 
-    columnSpacing: Tokens.spacing.medium
-    rowSpacing: Tokens.spacing.medium
+        values: root.Config.bar.entries.start.values
+    }
 
-    Repeater {
-        id: repeater
+    EntrySection {
+        id: centerSection
 
-        model: ScriptModel {
-            values: root.Config.bar.entries.values.filter(e => e.enabled)
+        values: root.Config.bar.entries.center.values
+    }
+
+    EntrySection {
+        id: endSection
+
+        values: root.Config.bar.entries.end.values
+    }
+
+    states: [
+        State {
+            name: "horizontal"
+            when: root.isHorizontal
+
+            AnchorChanges {
+                target: startSection
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            AnchorChanges {
+                target: centerSection
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            AnchorChanges {
+                target: endSection
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            PropertyChanges {
+                target: startSection
+                anchors.leftMargin: root.vPadding
+                anchors.topMargin: 0
+            }
+            PropertyChanges {
+                target: endSection
+                anchors.rightMargin: root.vPadding
+                anchors.bottomMargin: 0
+            }
+        },
+        State {
+            name: "vertical"
+            when: !root.isHorizontal
+
+            AnchorChanges {
+                target: startSection
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            AnchorChanges {
+                target: centerSection
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            AnchorChanges {
+                target: endSection
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            PropertyChanges {
+                target: startSection
+                anchors.topMargin: root.vPadding
+                anchors.leftMargin: 0
+            }
+            PropertyChanges {
+                target: endSection
+                anchors.bottomMargin: root.vPadding
+                anchors.rightMargin: 0
+            }
+        }
+    ]
+
+    component EntrySection: GridLayout {
+        id: section
+
+        required property var values
+
+        readonly property int count: repeater.count
+
+        function itemAt(index: int): Item {
+            return repeater.itemAt(index);
         }
 
-        DelegateChooser {
-            role: "id"
+        columns: root.isHorizontal ? -1 : 1
+        rows: root.isHorizontal ? 1 : -1
+        flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
 
-            DelegateChoice {
-                roleValue: "spacer"
-                delegate: EntryWrapper {
-                    Layout.fillHeight: !root.isHorizontal && enabled
-                    Layout.fillWidth: root.isHorizontal && enabled
+        columnSpacing: root.spacing
+        rowSpacing: root.spacing
+
+        Repeater {
+            id: repeater
+
+            model: ScriptModel {
+                values: section.values.filter(e => e.enabled)
+            }
+
+            delegate: EntryChooser {}
+        }
+    }
+
+    component EntryChooser: DelegateChooser {
+        role: "id"
+
+        DelegateChoice {
+            roleValue: "spacer"
+            delegate: EntryWrapper {
+                Layout.fillHeight: !root.isHorizontal && enabled
+                Layout.fillWidth: root.isHorizontal && enabled
+            }
+        }
+        DelegateChoice {
+            roleValue: "logo"
+            delegate: EntryWrapper {
+                OsIcon {
+                    objectName: "taskbarLogo"
                 }
             }
-            DelegateChoice {
-                roleValue: "logo"
-                delegate: EntryWrapper {
-                    OsIcon {
-                        objectName: "taskbarLogo"
-                    }
+        }
+        DelegateChoice {
+            roleValue: "workspaces"
+            delegate: EntryWrapper {
+                Workspaces {
+                    objectName: "taskbarWorkspaces"
+                    screen: root.screen
+                    fullscreen: root.fullscreen
                 }
             }
-            DelegateChoice {
-                roleValue: "workspaces"
-                delegate: EntryWrapper {
-                    Workspaces {
-                        objectName: "taskbarWorkspaces"
-                        screen: root.screen
-                        fullscreen: root.fullscreen
-                    }
+        }
+        DelegateChoice {
+            roleValue: "dock"
+            delegate: EntryWrapper {
+                Layout.fillWidth: true
+                visible: !root.fullscreen
+                Dock {
+                    bar: root
                 }
             }
-            DelegateChoice {
-                roleValue: "dock"
-                delegate: EntryWrapper {
-                    Layout.fillWidth: true
-                    visible: !root.fullscreen
-                    Dock {
-                        bar: root
-                    }
+        }
+        DelegateChoice {
+            roleValue: "activeWindow"
+            delegate: EntryWrapper {
+                ActiveWindow {
+                    objectName: "taskbarActiveWindow"
+                    bar: root
+                    monitor: Brightness.getMonitorForScreen(root.screen)
                 }
             }
-            DelegateChoice {
-                roleValue: "activeWindow"
-                delegate: EntryWrapper {
-                    ActiveWindow {
-                        objectName: "taskbarActiveWindow"
-                        bar: root
-                        monitor: Brightness.getMonitorForScreen(root.screen)
-                    }
+        }
+        DelegateChoice {
+            roleValue: "tray"
+            delegate: EntryWrapper {
+                Tray {
+                    objectName: "taskbarTray"
                 }
             }
-            DelegateChoice {
-                roleValue: "tray"
-                delegate: EntryWrapper {
-                    Tray {
-                        objectName: "taskbarTray"
-                    }
+        }
+        DelegateChoice {
+            roleValue: "clock"
+            delegate: EntryWrapper {
+                Clock {
+                    objectName: "taskbarClock"
                 }
             }
-            DelegateChoice {
-                roleValue: "clock"
-                delegate: EntryWrapper {
-                    Clock {
-                        objectName: "taskbarClock"
-                    }
+        }
+        DelegateChoice {
+            roleValue: "statusIcons"
+            delegate: EntryWrapper {
+                StatusIcons {
+                    objectName: "taskbarStatusIcons"
                 }
             }
-            DelegateChoice {
-                roleValue: "statusIcons"
-                delegate: EntryWrapper {
-                    StatusIcons {
-                        objectName: "taskbarStatusIcons"
-                    }
+        }
+        DelegateChoice {
+            roleValue: "github"
+            delegate: EntryWrapper {
+                visible: enabled && !root.fullscreen && GithubStore.available
+                GithubActivity {
+                    popouts: root.popouts
                 }
             }
-            DelegateChoice {
-                roleValue: "github"
-                delegate: EntryWrapper {
-                    visible: enabled && !root.fullscreen && GithubStore.available
-                    GithubActivity {
-                        popouts: root.popouts
-                    }
+        }
+        DelegateChoice {
+            roleValue: "spotify"
+            delegate: EntryWrapper {
+                visible: enabled && !root.fullscreen && (!Config.bar.spotify.autoHide || Players.list.length > 0)
+                Spotify {
+                    objectName: "taskbarSpotify"
+                    popouts: root.popouts
                 }
             }
-            DelegateChoice {
-                roleValue: "power"
-                delegate: EntryWrapper {
-                    Power {
-                        objectName: "taskbarPowerButton"
-                        screenState: root.screenState
-                    }
+        }
+        DelegateChoice {
+            roleValue: "power"
+            delegate: EntryWrapper {
+                Power {
+                    objectName: "taskbarPowerButton"
+                    screenState: root.screenState
                 }
             }
         }
@@ -265,32 +413,7 @@ GridLayout {
         default property Item item
         readonly property string entryId: modelData.id
 
-        function findFirstEnabled(): Item {
-            const count = repeater.count;
-            for (let i = 0; i < count; i++) {
-                const item = repeater.itemAt(i);
-                if (item?.enabled)
-                    return item;
-            }
-            return null;
-        }
-
-        function findLastEnabled(): Item {
-            for (let i = repeater.count - 1; i >= 0; i--) {
-                const item = repeater.itemAt(i);
-                if (item?.enabled)
-                    return item;
-            }
-            return null;
-        }
-
         Layout.alignment: root.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-
-        // Cursed ahh thing to add padding to first and last enabled components
-        Layout.leftMargin: (root.isHorizontal && findFirstEnabled() === this) ? root.vPadding : 0
-        Layout.rightMargin: (root.isHorizontal && findLastEnabled() === this) ? root.vPadding : 0
-        Layout.topMargin: (!root.isHorizontal && findFirstEnabled() === this) ? root.vPadding : 0
-        Layout.bottomMargin: (!root.isHorizontal && findLastEnabled() === this) ? root.vPadding : 0
 
         implicitWidth: item?.implicitWidth ?? 0
         implicitHeight: item?.implicitHeight ?? 0

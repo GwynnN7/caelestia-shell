@@ -23,8 +23,13 @@ PageBase {
             first: true
             Layout.fillWidth: true
             text: qsTr("Enable background visualiser")
-            checked: Config.background.visualiser.enabled
-            onToggled: GlobalConfig.background.visualiser.enabled = checked
+            configNode: root.targetConfig.background.visualiser
+            propertyName: "enabled"
+            checked: root.targetConfig.background.visualiser.enabled
+            onToggled: {
+                root.targetConfig.background.visualiser.enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         ToggleRow {
@@ -32,9 +37,14 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Auto-hide visualiser")
             subtext: qsTr("Hide visualiser when a window is open")
-            checked: Config.background.visualiser.autoHide
-            onToggled: GlobalConfig.background.visualiser.autoHide = checked
-            enabled: Config.background.visualiser.enabled
+            configNode: root.targetConfig.background.visualiser
+            propertyName: "autoHide"
+            checked: root.targetConfig.background.visualiser.autoHide
+            onToggled: {
+                root.targetConfig.background.visualiser.autoHide = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.visualiser.enabled
         }
 
         ToggleRow {
@@ -43,9 +53,14 @@ PageBase {
             Layout.fillWidth: true
             text: qsTr("Blur background")
             subtext: qsTr("Blur the wallpaper behind the visualiser")
-            checked: Config.background.visualiser.blur
-            onToggled: GlobalConfig.background.visualiser.blur = checked
-            enabled: Config.background.visualiser.enabled
+            configNode: root.targetConfig.background.visualiser
+            propertyName: "blur"
+            checked: root.targetConfig.background.visualiser.blur
+            onToggled: {
+                root.targetConfig.background.visualiser.blur = checked;
+                root.targetConfig.save();
+            }
+            enabled: root.targetConfig.background.visualiser.enabled
         }
 
         SectionHeader {
@@ -56,18 +71,28 @@ PageBase {
             first: true
             Layout.fillWidth: true
             label: qsTr("Rounding")
-            value: Config.background.visualiser.rounding / 10.0
+            configNode: root.targetConfig.background.visualiser
+            propertyName: "rounding"
+            value: root.targetConfig.background.visualiser.rounding / 10.0
             valueLabel: (value * 10.0).toFixed(1)
-            onMoved: v => GlobalConfig.background.visualiser.rounding = v * 10.0
+            onMoved: v => {
+                root.targetConfig.background.visualiser.rounding = v * 10.0;
+                root.targetConfig.save();
+            }
         }
 
         SliderRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             Layout.fillWidth: true
             label: qsTr("Spacing")
-            value: Config.background.visualiser.spacing / 10.0
+            configNode: root.targetConfig.background.visualiser
+            propertyName: "spacing"
+            value: root.targetConfig.background.visualiser.spacing / 10.0
             valueLabel: (value * 10.0).toFixed(1)
-            onMoved: v => GlobalConfig.background.visualiser.spacing = v * 10.0
+            onMoved: v => {
+                root.targetConfig.background.visualiser.spacing = v * 10.0;
+                root.targetConfig.save();
+            }
         }
 
         StepperRow {
@@ -76,11 +101,16 @@ PageBase {
             Layout.fillWidth: true
             label: qsTr("Visualiser bars")
             subtext: qsTr("Number of bars in the audio visualisers")
-            value: GlobalConfig.services.visualiserBars
+            configNode: root.targetConfig.services
+            propertyName: "visualiserBars"
+            value: root.targetConfig.services.visualiserBars
             from: 10
             to: 120
             stepSize: 2
-            onMoved: v => GlobalConfig.services.visualiserBars = v
+            onMoved: v => {
+                root.targetConfig.services.visualiserBars = v;
+                root.targetConfig.save();
+            }
         }
     }
 }

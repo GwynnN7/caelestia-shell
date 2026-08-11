@@ -18,7 +18,7 @@ ColumnLayout {
 
     readonly property bool shouldBeVisible: root.popouts.currentName === "wirelesspassword"
 
-    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal
+    property bool _isSidebarOpen: popouts.sidebarOpen && popouts.isHorizontal && popouts.currentSection === "end"
 
     function checkConnectionStatus(): void {
         if (!root.shouldBeVisible || !connectButton.connecting) {

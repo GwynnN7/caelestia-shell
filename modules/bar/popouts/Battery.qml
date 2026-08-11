@@ -10,7 +10,7 @@ Column {
     id: root
 
     required property var popouts
-    property bool _isSidebarOpen: popouts && popouts.sidebarOpen && popouts.isHorizontal
+    property bool _isSidebarOpen: popouts && popouts.sidebarOpen && popouts.isHorizontal && popouts.currentSection === "end"
 
     spacing: Tokens.spacing.medium
     width: Math.max(Tokens.sizes.bar.batteryWidth, _isSidebarOpen ? Tokens.sizes.sidebar.width - Tokens.padding.extraLargeIncreased : 0)

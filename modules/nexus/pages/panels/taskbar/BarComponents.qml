@@ -1,7 +1,10 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
+import qs.components
+import qs.services
 import qs.modules.nexus.common
 
 PageBase {
@@ -11,6 +14,7 @@ PageBase {
             logo: qsTr("Logo"),
             workspaces: qsTr("Workspaces"),
             github: qsTr("GitHub"),
+            spotify: qsTr("Spotify"),
             spacer: qsTr("Spacer"),
             activeWindow: qsTr("Active window"),
             tray: qsTr("System tray"),
@@ -20,7 +24,11 @@ PageBase {
             power: qsTr("Power menu")
         })
 
-    title: qsTr("Toggle & rearrange")
+    readonly property bool isHorizontal: root.targetConfig.bar.position === "top" || root.targetConfig.bar.position === "bottom"
+    readonly property string startLabel: isHorizontal ? qsTr("Left") : qsTr("Top")
+    readonly property string endLabel: isHorizontal ? qsTr("Right") : qsTr("Bottom")
+
+    title: qsTr("Taskbar components")
     isSubPage: true
 
     ColumnLayout {
@@ -29,10 +37,35 @@ PageBase {
         width: root.cappedWidth
         spacing: Tokens.spacing.extraSmall / 2
 
-        // Visible components
-        SectionHeader {
+        EntrySectionEditor {
+            sectionLabel: root.startLabel
+            targetList: root.targetConfig.bar.entries.start
             first: true
-            text: qsTr("Visible components")
+        }
+
+        EntrySectionEditor {
+            sectionLabel: qsTr("Center")
+            targetList: root.targetConfig.bar.entries.center
+        }
+
+        EntrySectionEditor {
+            sectionLabel: root.endLabel
+            targetList: root.targetConfig.bar.entries.end
+        }
+    }
+
+    component EntrySectionEditor: ColumnLayout {
+        id: sectionEditor
+
+        required property string sectionLabel
+        required property var targetList
+        property bool first
+
+        spacing: Tokens.spacing.extraSmall / 2
+
+        SectionHeader {
+            first: sectionEditor.first
+            text: sectionEditor.sectionLabel
         }
 
         ListEditor {
@@ -50,15 +83,22 @@ PageBase {
 
             z: 1
             first: true
-            values: Config.bar.entries.values
-            onItemMoved: (from, to) => GlobalConfig.bar.entries.move(from, to)
-            onItemRemoved: index => GlobalConfig.bar.entries.remove(index)
-            onItemToggled: (index, checked) => GlobalConfig.bar.entries.at(index).enabled = checked
+            values: sectionEditor.targetList.values
+            onItemMoved: (from, to) => {
+                sectionEditor.targetList.move(from, to);
+                root.targetConfig.save();
+            }
+            onItemRemoved: index => {
+                sectionEditor.targetList.remove(index);
+                root.targetConfig.save();
+            }
+            onItemToggled: (index, checked) => {
+                sectionEditor.targetList.at(index).enabled = checked;
+                root.targetConfig.save();
+            }
         }
 
         DialogSelectButton {
-            id: addItemContainer
-
             rootParent: root.flickable
             icon: "add"
             label: qsTr("Add entry")
@@ -77,12 +117,12 @@ PageBase {
                 if (!selectedItem) // Should never happen but just in case
                     return;
 
-                GlobalConfig.bar.entries.insert({
+                sectionEditor.targetList.insert({
                     id: selectedItem,
                     enabled: true
                 });
+                root.targetConfig.save();
             }
         }
     }
 }
-

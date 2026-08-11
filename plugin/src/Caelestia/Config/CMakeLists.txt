@@ -14,6 +14,7 @@ qml_module(caelestia-config
         tokensattached.cpp
         anim.cpp
         monitorconfigmanager.cpp
+        sessionconfig.cpp
         audioconfig.hpp
         aiconfig.hpp
         backgroundconfig.hpp

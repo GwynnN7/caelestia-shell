@@ -118,6 +118,13 @@ Item {
         }
 
         Popout {
+            name: "spotify"
+            sourceComponent: Spotify {
+                popouts: root.popouts
+            }
+        }
+
+        Popout {
             name: "audio"
             sourceComponent: AudioPopout {
                 popouts: root.popouts

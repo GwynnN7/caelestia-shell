@@ -11,6 +11,9 @@ StyledSwitch {
     property bool showDelete: false
     signal deleted()
 
+    property var configNode
+    property string propertyName: ""
+
     property string subtext
     property alias first: bg.first
     property alias last: bg.last
@@ -79,6 +82,11 @@ StyledSwitch {
                     font: Tokens.font.icon.small
                     visible: root.showDelete
                     onClicked: root.deleted()
+                }
+
+                PerMonitorStatusChip {
+                    configNode: root.configNode
+                    propertyName: root.propertyName
                 }
 
                 Item {

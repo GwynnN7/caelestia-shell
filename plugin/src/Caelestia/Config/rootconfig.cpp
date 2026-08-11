@@ -1,4 +1,5 @@
 #include "rootconfig.hpp"
+#include "sessionconfig.hpp"
 
 #include <qdatetime.h>
 #include <qdir.h>
@@ -6,6 +7,7 @@
 #include <qfileinfo.h>
 #include <qjsondocument.h>
 #include <qmetaobject.h>
+#include <qregularexpression.h>
 #include <qstandardpaths.h>
 
 namespace caelestia::config {
@@ -14,6 +16,169 @@ namespace {
 
 QString watchRoot() {
     return QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
+}
+
+QString reorderJsonBlockKeys(const QString& text, const QString& parentKey, const QString& sectionKey, const QStringList& orderedKeys) {
+    if (orderedKeys.isEmpty())
+        return text;
+
+    int parentPos = text.indexOf(QStringLiteral("\"") + parentKey + QStringLiteral("\""));
+    if (parentPos == -1)
+        parentPos = 0;
+
+    int sectionPos = text.indexOf(QStringLiteral("\"") + sectionKey + QStringLiteral("\""), parentPos);
+    if (sectionPos == -1)
+        return text;
+
+    int bracePos = text.indexOf(QLatin1Char('{'), sectionPos);
+    if (bracePos == -1)
+        return text;
+
+    int depth = 1;
+    int endPos = bracePos + 1;
+    bool inString = false;
+    bool escape = false;
+
+    while (endPos < text.length() && depth > 0) {
+        QChar ch = text.at(endPos);
+        if (escape) {
+            escape = false;
+        } else if (ch == QLatin1Char('\\')) {
+            escape = true;
+        } else if (ch == QLatin1Char('"')) {
+            inString = !inString;
+        } else if (!inString) {
+            if (ch == QLatin1Char('{'))
+                depth++;
+            else if (ch == QLatin1Char('}'))
+                depth--;
+        }
+        endPos++;
+    }
+
+    QString block = text.mid(bracePos + 1, endPos - bracePos - 2);
+
+    struct KeyEntry {
+        QString key;
+        QString text;
+    };
+    QList<KeyEntry> entries;
+
+    int cur = 0;
+    while (cur < block.length()) {
+        int keyStart = block.indexOf(QLatin1Char('"'), cur);
+        if (keyStart == -1)
+            break;
+        int keyEnd = block.indexOf(QLatin1Char('"'), keyStart + 1);
+        if (keyEnd == -1)
+            break;
+        QString keyName = block.mid(keyStart + 1, keyEnd - keyStart - 1);
+
+        int colonPos = block.indexOf(QLatin1Char(':'), keyEnd + 1);
+        if (colonPos == -1)
+            break;
+
+        int valStart = colonPos + 1;
+        while (valStart < block.length() && (block[valStart] == QLatin1Char(' ') || block[valStart] == QLatin1Char('\n') || block[valStart] == QLatin1Char('\r') || block[valStart] == QLatin1Char('\t')))
+            valStart++;
+
+        int entryEnd = valStart;
+        if (valStart < block.length() && (block[valStart] == QLatin1Char('{') || block[valStart] == QLatin1Char('['))) {
+            QChar openChar = block[valStart];
+            QChar closeChar = (openChar == QLatin1Char('{')) ? QLatin1Char('}') : QLatin1Char(']');
+            int valDepth = 1;
+            entryEnd = valStart + 1;
+            bool sInString = false;
+            bool sEscape = false;
+            while (entryEnd < block.length() && valDepth > 0) {
+                QChar c = block[entryEnd];
+                if (sEscape) {
+                    sEscape = false;
+                } else if (c == QLatin1Char('\\')) {
+                    sEscape = true;
+                } else if (c == QLatin1Char('"')) {
+                    sInString = !sInString;
+                } else if (!sInString) {
+                    if (c == openChar)
+                        valDepth++;
+                    else if (c == closeChar)
+                        valDepth--;
+                }
+                entryEnd++;
+            }
+        } else {
+            bool sInString = false;
+            bool sEscape = false;
+            while (entryEnd < block.length()) {
+                QChar c = block[entryEnd];
+                if (sEscape) {
+                    sEscape = false;
+                } else if (c == QLatin1Char('\\')) {
+                    sEscape = true;
+                } else if (c == QLatin1Char('"')) {
+                    sInString = !sInString;
+                } else if (!sInString && (c == QLatin1Char(',') || c == QLatin1Char('\n') || c == QLatin1Char('\r'))) {
+                    break;
+                }
+                entryEnd++;
+            }
+        }
+
+        while (entryEnd < block.length() && (block[entryEnd] == QLatin1Char(',') || block[entryEnd] == QLatin1Char('\r'))) {
+            if (block[entryEnd] == QLatin1Char(',')) {
+                entryEnd++;
+                break;
+            }
+            entryEnd++;
+        }
+
+        entries.append({ keyName, block.mid(keyStart, entryEnd - keyStart) });
+        cur = entryEnd;
+    }
+
+    if (entries.isEmpty())
+        return text;
+
+    QList<KeyEntry> reorderedEntries;
+    QSet<QString> processed;
+
+    for (const auto& key : orderedKeys) {
+        for (const auto& entry : entries) {
+            if (entry.key == key && !processed.contains(key)) {
+                processed.insert(key);
+                reorderedEntries.append(entry);
+                break;
+            }
+        }
+    }
+
+    for (const auto& entry : entries) {
+        if (!processed.contains(entry.key)) {
+            processed.insert(entry.key);
+            reorderedEntries.append(entry);
+        }
+    }
+
+    QString newBlockContent = QStringLiteral("\n");
+    for (int i = 0; i < reorderedEntries.size(); ++i) {
+        QString entryText = reorderedEntries[i].text.trimmed();
+        if (entryText.endsWith(QLatin1Char(',')))
+            entryText.chop(1);
+
+        QStringList lines = entryText.split(QLatin1Char('\n'));
+        newBlockContent += QStringLiteral("            ") + lines[0].trimmed();
+        for (int j = 1; j < lines.size(); ++j) {
+            newBlockContent += QStringLiteral("\n") + lines[j];
+        }
+
+        if (i < reorderedEntries.size() - 1)
+            newBlockContent += QStringLiteral(",");
+        newBlockContent += QStringLiteral("\n");
+    }
+
+    QString resultText = text;
+    resultText.replace(bracePos + 1, endPos - bracePos - 2, newBlockContent + QStringLiteral("        "));
+    return resultText;
 }
 
 } // namespace
@@ -52,7 +217,24 @@ void RootConfig::setupFileBackend(const QString& path, const QString& screen) {
         }
 
         const auto json = toJson().toObject();
-        file.write(QJsonDocument(json).toJson(QJsonDocument::Indented));
+        QString jsonText = QString::fromUtf8(QJsonDocument(json).toJson(QJsonDocument::Indented));
+
+        const auto* meta = metaObject();
+        for (int i = basePropertyOffset(); i < meta->propertyCount(); ++i) {
+            const auto prop = meta->property(i);
+            if (QString::fromUtf8(prop.name()) == QStringLiteral("session")) {
+                if (auto* session = qobject_cast<SessionConfig*>(prop.read(this).value<QObject*>())) {
+                    if (session->icons()) {
+                        jsonText = reorderJsonBlockKeys(jsonText, QStringLiteral("session"), QStringLiteral("icons"), session->icons()->customIconKeys());
+                    }
+                    if (session->commands()) {
+                        jsonText = reorderJsonBlockKeys(jsonText, QStringLiteral("session"), QStringLiteral("commands"), session->commands()->customCommandKeys());
+                    }
+                }
+            }
+        }
+
+        file.write(jsonText.toUtf8());
         file.close();
 
         // Update watches — save may have created directories

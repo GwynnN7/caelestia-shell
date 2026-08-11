@@ -99,13 +99,15 @@ public:
     // A list element that keeps its identity is updated in place instead of recreated.
     [[nodiscard]] virtual QStringList identityKeys() const;
 
-    [[nodiscard]] bool isPropertyLoaded(const QString& name) const;
+    [[nodiscard]] Q_INVOKABLE bool isPropertyLoaded(const QString& name) const;
     // Returns true only on overlays — global singleton always returns false.
     [[nodiscard]] bool isGlobalOnly(const QString& name) const;
+    [[nodiscard]] Q_INVOKABLE bool isOptionGlobalOnly(const QString& name) const;
     // Names marked global-only, regardless of overlay state
     [[nodiscard]] QStringList globalOnlyKeys() const;
 
     Q_INVOKABLE void resetOption(const QString& name);
+    void markPropertyLoaded(const QString& name);
 
     template <typename T> static bool updateMember(T& member, const T& value) {
         if constexpr (std::is_floating_point_v<T>) {
@@ -124,7 +126,6 @@ protected:
     void onGlobalPropertiesChanged(const QMap<QString, QVariant>& changed) override;
     [[nodiscard]] QString childPath(const ConfigNode* child) const override;
 
-    void markPropertyLoaded(const QString& name);
     void markGlobalOnly(const QString& name);
 
 private:

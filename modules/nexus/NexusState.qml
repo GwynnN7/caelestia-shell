@@ -10,6 +10,7 @@ QtObject {
     property list<int> subPageIdxStack
     property bool searchOpen
     property bool justUnlockedDevMode: false
+    property string targetScreen: ""
 
     property string selectedWallpaperCategory
     property string wallpaperFilterType: "all"
