@@ -510,13 +510,6 @@ QVariantList SessionConfig::buttons() const {
     if (!m_icons || !m_commands)
         return result;
 
-    static const QStringList defaultKeys = {
-        QStringLiteral("logout"),
-        QStringLiteral("shutdown"),
-        QStringLiteral("hibernate"),
-        QStringLiteral("reboot")
-    };
-
     QStringList orderedKeys;
     QSet<QString> seen;
 
@@ -534,13 +527,6 @@ QVariantList SessionConfig::buttons() const {
                 seen.insert(key);
                 orderedKeys.append(key);
             }
-        }
-    }
-
-    for (const auto& key : defaultKeys) {
-        if (!seen.contains(key)) {
-            seen.insert(key);
-            orderedKeys.append(key);
         }
     }
 
@@ -579,19 +565,12 @@ QVariantList SessionConfig::customButtons() const {
     if (!m_icons && !m_commands)
         return result;
 
-    static const QSet<QString> defaultKeys = {
-        QStringLiteral("logout"),
-        QStringLiteral("shutdown"),
-        QStringLiteral("hibernate"),
-        QStringLiteral("reboot")
-    };
-
     QStringList orderedKeys;
     QSet<QString> seen;
 
     if (m_icons) {
         for (const auto& key : m_icons->customIconKeys()) {
-            if (!defaultKeys.contains(key) && !seen.contains(key)) {
+            if (!seen.contains(key)) {
                 seen.insert(key);
                 orderedKeys.append(key);
             }
@@ -599,7 +578,7 @@ QVariantList SessionConfig::customButtons() const {
     }
     if (m_commands) {
         for (const auto& key : m_commands->customCommandKeys()) {
-            if (!defaultKeys.contains(key) && !seen.contains(key)) {
+            if (!seen.contains(key)) {
                 seen.insert(key);
                 orderedKeys.append(key);
             }
