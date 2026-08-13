@@ -68,10 +68,19 @@ Item {
 
             anchors.fill: parent
 
-            captureSource: (root.client?.wayland && (root.client.lastIpcObject?.mapped ?? true)) ? root.client.wayland : null // qmllint disable unresolved-type
+            captureSource: {
+                const client = root.client;
+                if (!client || !client.wayland) return null; // qmllint disable unresolved-type
+                const ipc = client.lastIpcObject;
+                if (ipc) {
+                    if (ipc.mapped === false || ipc.hidden) return null;
+                    if (ipc.size && (ipc.size[0] <= 0 || ipc.size[1] <= 0)) return null;
+                }
+                return client.wayland;
+            }
             live: visible
 
-            constraintSize.width: root.client ? parent.height * Math.min(root.screen.width / root.screen.height, root.client?.lastIpcObject.size[0] / root.client?.lastIpcObject.size[1]) : parent.height
+            constraintSize.width: (root.client && root.client.lastIpcObject?.size && root.client.lastIpcObject.size[1] > 0) ? parent.height * Math.min(root.screen.width / root.screen.height, root.client.lastIpcObject.size[0] / root.client.lastIpcObject.size[1]) : parent.height
             constraintSize.height: parent.height
         }
     }

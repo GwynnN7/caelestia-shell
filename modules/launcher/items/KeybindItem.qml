@@ -20,9 +20,7 @@ Item {
     }
 
     implicitHeight: Tokens.sizes.launcher.itemHeight
-
-    anchors.left: parent ? parent.left : undefined
-    anchors.right: parent ? parent.right : undefined
+    width: root.list ? root.list.width : (parent ? parent.width : 0)
 
     StateLayer {
         radius: Tokens.rounding.large
@@ -54,6 +52,7 @@ Item {
             spacing: 0
 
             StyledText {
+                Layout.fillWidth: true
                 text: (modelData && modelData.bind) ? modelData.bind : qsTr("No keybinds")
                 font: Tokens.font.body.medium
                 color: Colours.palette.m3onSurface
@@ -61,6 +60,7 @@ Item {
             }
 
             StyledText {
+                Layout.fillWidth: true
                 text: (modelData && modelData.description) ? modelData.description : ((modelData && modelData.action) ? modelData.action : "")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3outline

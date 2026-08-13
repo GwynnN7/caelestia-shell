@@ -66,7 +66,7 @@ Build dependencies:
 -   [`cmake`](https://cmake.org)
 -   [`ninja`](https://github.com/ninja-build/ninja)
 
-To install the shell, you can either use [pkgit](https://git.symlinx.net/pkgit) or the [AUR (In Testing)](https://aur.archlinux.org/packages/caelestia-shell-git)
+To install the shell, you can either use [pkgit](https://git.symlinx.net/pkgit) or the [AUR (In Testing)](https://aur.archlinux.org/packages/dim-caelestia-shell-git)
 
 Using `pkgit`:
 
@@ -88,14 +88,36 @@ if `yay`:
 yay -S dim-caelestia-shell-git
 ```
 
-If you prefer to clone and install it manually:
+#### Manual installation
+
+To install the shell manually, install all dependencies and clone **this fork** to `$XDG_CONFIG_HOME/quickshell/caelestia`.
+Then simply build and install using `cmake`:
 
 ```sh
 cd $XDG_CONFIG_HOME/quickshell
 git clone https://github.com/dim-ghub/caelestia-shell.git caelestia
+
 cd caelestia
-pkgit -i .
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/
+cmake --build build
+sudo cmake --install build
 ```
+
+> [!TIP]
+> You can customise the installation location via the `cmake` flags `INSTALL_LIBDIR`, `INSTALL_QMLDIR` and
+> `INSTALL_QSCONFDIR` for the libraries (the beat detector), QML plugin and Quickshell config directories
+> respectively. If changing the library directory, remember to set the `CAELESTIA_LIB_DIR` environment
+> variable to the custom directory when launching the shell.
+>
+> e.g. installing to `~/.config/quickshell/caelestia` for easy local changes:
+>
+> ```sh
+> mkdir -p ~/.config/quickshell/caelestia
+> cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/ -DINSTALL_QSCONFDIR=~/.config/quickshell/caelestia
+> cmake --build build
+> sudo cmake --install build
+> sudo chown -R $USER ~/.config/quickshell/caelestia
+> ```
 
 ### Nix
 > [!WARNING]
@@ -104,7 +126,7 @@ pkgit -i .
 You can run the shell directly via `nix run`:
 
 ```sh
-nix run github:caelestia-dots/shell
+nix run github:dim-ghub/caelestia-shell
 ```
 
 Or add it to your system configuration:
@@ -115,7 +137,7 @@ Or add it to your system configuration:
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     caelestia-shell = {
-      url = "github:caelestia-dots/shell";
+      url = "github:dim-ghub/caelestia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -130,7 +152,7 @@ or a devshell. The shell can then be run via `caelestia-shell`.
 > The default package does not have the CLI enabled by default, which is required for full funcionality.
 > To enable the CLI, use the `with-cli` package.
 
-For home-manager, you can also use the Caelestia's home manager module (explained in [configuring](https://github.com/caelestia-dots/shell?tab=readme-ov-file#home-manager-module)) that installs and configures the shell and the CLI.
+For home-manager, you can also use the Caelestia's home manager module (explained in [home manager module](#home-manager-module)) that installs and configures the shell and the CLI.
 
 ## Components
 
@@ -140,7 +162,7 @@ For home-manager, you can also use the Caelestia's home manager module (explaine
 
 ## Global Shortcuts
 
-All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hyprland.org/Configuring/Binds/#dbus-global-shortcuts).
+All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hypr.land/Configuring/Basics/Binds#dbus-global-shortcuts).
 
 ### Available Shortcuts
 
@@ -244,9 +266,9 @@ via an `exec-once` in the hyprland config.
 
 ### Shortcuts/IPC
 
-All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hyprland.org/Configuring/Binds/#dbus-global-shortcuts).
+All keybinds are accessible via Hyprland [global shortcuts](https://wiki.hypr.land/Configuring/Basics/Binds#dbus-global-shortcuts).
 If using the entire caelestia dots, the keybinds are already configured for you.
-Otherwise, [this file](https://github.com/caelestia-dots/caelestia/blob/main/hypr/hyprland/keybinds.conf#L1-L39)
+Otherwise, [this file](https://github.com/caelestia-dots/caelestia/blob/main/hypr/hyprland/keybinds.lua#L52-L67)
 contains an example on how to use global shortcuts.
 
 All IPC commands can be accessed via `caelestia shell ...`. For example
@@ -1362,12 +1384,11 @@ You can add your custom hyprland configs to `~/.config/caelestia/hypr-user.conf`
 
 ### I want to make my own changes to other stuff!
 
-See the [manual installation](https://github.com/caelestia-dots/shell?tab=readme-ov-file#manual-installation) section
-for the corresponding repo.
+See the [manual installation](#manual-installation) section for this fork.
 
 ### I want to disable XXX feature!
 
-Please read the [configuring](https://github.com/caelestia-dots/shell?tab=readme-ov-file#configuring) section in the readme.
+Please read the [configuring](#configuring) section in the readme.
 If there is no corresponding option, make feature request.
 
 ### How do I make my colour scheme change with my wallpaper?
@@ -1403,10 +1424,10 @@ Finally another thank you to all the configs I took inspiration from (only one f
 
 ## Stonks 📈
 
-<a href="https://www.star-history.com/#caelestia-dots/shell&Date">
+<a href="https://www.star-history.com/#dim-ghub/caelestia-shell&Date">
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dim-ghub/caelestia-shell&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=caelestia-dots/shell&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=caelestia-dots/shell&type=Date" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dim-ghub/caelestia-shell&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dim-ghub/caelestia-shell&type=Date" />
  </picture>
 </a>

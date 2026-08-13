@@ -183,7 +183,15 @@ RowLayout {
                             radius: Tokens.rounding.small
 
                             SafeScreencopy {
-                                captureSource: (modelData?.wayland && (modelData.lastIpcObject?.mapped ?? true)) ? modelData.wayland : null // qmllint disable unresolved-type
+                                captureSource: {
+                                    if (!modelData || !modelData.wayland) return null; // qmllint disable unresolved-type
+                                    const ipc = modelData.lastIpcObject;
+                                    if (ipc) {
+                                        if (ipc.mapped === false || ipc.hidden) return null;
+                                        if (ipc.size && (ipc.size[0] <= 0 || ipc.size[1] <= 0)) return null;
+                                    }
+                                    return modelData.wayland;
+                                }
                                 live: visible
                                 constraintSize.width: targetWidth
                                 constraintSize.height: targetHeight
