@@ -190,10 +190,10 @@ Item {
             if (Colours.variant) stateStr += " | Variant: " + Colours.variant;
 
             root.sendActivity({
-                name: "Caelestia Shell" + qsVersion,
+                name: "MiDnight Shell" + qsVersion,
                 details: detailsStr,
                 state: stateStr,
-                large_image: "https://avatars.githubusercontent.com/u/195541893",
+                large_image: "https://raw.githubusercontent.com/dim-ghub/caelestia-shell/main/assets/logo.png",
                 small_image: "",
                 startTimestamp: root.shellStartTime,
                 buttons: [

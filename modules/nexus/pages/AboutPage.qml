@@ -72,7 +72,7 @@ PageBase {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: Tokens.spacing.small
-                    text: "Caelestia"
+                    text: "MiDnight"
                     font: Tokens.font.headline.builders.large.width(110).build()
                 }
 

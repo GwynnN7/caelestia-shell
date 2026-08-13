@@ -202,7 +202,7 @@ PageBase {
             first: true
             icon: "sports_esports"
             text: qsTr("Game mode")
-            subtext: qsTr("Manage how Caelestia behaves while gaming")
+            subtext: qsTr("Manage how MiDnight behaves while gaming")
             onClicked: root.nState.openSubPage(2)
         }
 

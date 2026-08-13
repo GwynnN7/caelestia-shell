@@ -1,12 +1,12 @@
-<h1 align=center>caelestia-shell</h1>
+<h1 align=center>MiDnight Shell</h1>
 
 <!-- test pkgit -->
 
 <div align=center>
 
-![GitHub last commit](https://img.shields.io/github/last-commit/dim-ghub/caelestia-shell?style=for-the-badge&labelColor=101418&color=9ccbfb)
-![GitHub Repo stars](https://img.shields.io/github/stars/dim-ghub/caelestia-shell?style=for-the-badge&labelColor=101418&color=b9c8da)
-![GitHub repo size](https://img.shields.io/github/repo-size/dim-ghub/caelestia-shell?style=for-the-badge&labelColor=101418&color=d3bfe6)
+![GitHub last commit](https://img.shields.io/github/last-commit/dim-ghub/midnight-shell?style=for-the-badge&labelColor=101418&color=9ccbfb)
+![GitHub Repo stars](https://img.shields.io/github/stars/dim-ghub/midnight-shell?style=for-the-badge&labelColor=101418&color=b9c8da)
+![GitHub repo size](https://img.shields.io/github/repo-size/dim-ghub/midnight-shell?style=for-the-badge&labelColor=101418&color=d3bfe6)
 [![Discord invite](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FBGDCFCmMBk%3Fwith_counts%3Dtrue&query=approximate_member_count&style=for-the-badge&logo=discord&logoColor=ffffff&label=discord&labelColor=101418&color=96f1f1&link=https%3A%2F%2Fdiscord.gg%2FBGDCFCmMBk)](https://discord.gg/BGDCFCmMBk)
 
 </div>
@@ -34,13 +34,13 @@ This fork adds the following features on top of the official shell:
 
 > [!NOTE]
 > This repository is a **FORK**, and can be out of date or have missing features from the [main repo](https://github.com/caelestia-dots/caelestia).
-> This fork is available at [dim-ghub/caelestia-shell](https://github.com/dim-ghub/caelestia-shell).
+> This fork is available at [dim-ghub/midnight-shell](https://github.com/dim-ghub/midnight-shell).
 
 ### Arch Linux / Manual (this fork)
 
 Dependencies:
 
--   [`dim-caelestia-cli` (this fork is recommended and required for some features to work)](https://github.com/dim-ghub/caelestia-cli)
+-   [`midnight-cli` (this fork is recommended and required for some features to work)](https://github.com/dim-ghub/midnight-cli)
 -   [`quickshell-git`](https://quickshell.outfoxxed.me) - this has to be the git version, not the latest tagged version
 -   [`ddcutil`](https://github.com/rockowitz/ddcutil)
 -   [`brightnessctl`](https://github.com/Hummer12007/brightnessctl)
@@ -66,7 +66,7 @@ Build dependencies:
 -   [`cmake`](https://cmake.org)
 -   [`ninja`](https://github.com/ninja-build/ninja)
 
-To install the shell, you can either use [pkgit](https://git.symlinx.net/pkgit) or the [AUR (In Testing)](https://aur.archlinux.org/packages/dim-caelestia-shell-git)
+To install the shell, you can either use [pkgit](https://git.symlinx.net/pkgit) or the [AUR (In Testing)](https://aur.archlinux.org/packages/midnight-shell-git)
 
 Using `pkgit`:
 
@@ -75,17 +75,17 @@ Install `[pkgit](https://git.symlinx.net/pkgit)` (also available on the AUR as `
 Then you can simply install the shell directly from GitHub without cloning it:
 
 ```sh
-pkgit -i https://github.com/dim-ghub/caelestia-shell
+pkgit -i https://github.com/dim-ghub/midnight-shell
 ```
 
 Using `AUR`
 if `paru`:
 ```sh
-paru -S dim-caelestia-shell-git
+paru -S midnight-shell-git
 ```
 if `yay`:
 ```
-yay -S dim-caelestia-shell-git
+yay -S midnight-shell-git
 ```
 
 #### Manual installation
@@ -95,7 +95,7 @@ Then simply build and install using `cmake`:
 
 ```sh
 cd $XDG_CONFIG_HOME/quickshell
-git clone https://github.com/dim-ghub/caelestia-shell.git caelestia
+git clone https://github.com/dim-ghub/midnight-shell.git caelestia
 
 cd caelestia
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/
@@ -126,7 +126,7 @@ sudo cmake --install build
 You can run the shell directly via `nix run`:
 
 ```sh
-nix run github:dim-ghub/caelestia-shell
+nix run github:dim-ghub/midnight-shell
 ```
 
 Or add it to your system configuration:
@@ -136,23 +136,23 @@ Or add it to your system configuration:
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    caelestia-shell = {
-      url = "github:dim-ghub/caelestia-shell";
+    midnight-shell = {
+      url = "github:dim-ghub/midnight-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 }
 ```
 
-The package is available as `caelestia-shell.packages.<system>.default`, which can be added to your
+The package is available as `midnight-shell.packages.<system>.default`, which can be added to your
 `environment.systemPackages`, `users.users.<username>.packages`, `home.packages` if using home-manager,
-or a devshell. The shell can then be run via `caelestia-shell`.
+or a devshell. The shell can then be run via `midnight-shell`.
 
 > [!TIP]
 > The default package does not have the CLI enabled by default, which is required for full funcionality.
 > To enable the CLI, use the `with-cli` package.
 
-For home-manager, you can also use the Caelestia's home manager module (explained in [home manager module](#home-manager-module)) that installs and configures the shell and the CLI.
+For home-manager, you can also use the MiDnight's home manager module (explained in [home manager module](#home-manager-module)) that installs and configures the shell and the CLI.
 
 ## Components
 
@@ -1424,10 +1424,10 @@ Finally another thank you to all the configs I took inspiration from (only one f
 
 ## Stonks 📈
 
-<a href="https://www.star-history.com/#dim-ghub/caelestia-shell&Date">
+<a href="https://www.star-history.com/#dim-ghub/midnight-shell&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dim-ghub/caelestia-shell&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dim-ghub/caelestia-shell&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dim-ghub/caelestia-shell&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dim-ghub/midnight-shell&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dim-ghub/midnight-shell&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dim-ghub/midnight-shell&type=Date" />
  </picture>
 </a>
