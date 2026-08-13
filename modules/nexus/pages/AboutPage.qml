@@ -78,6 +78,15 @@ PageBase {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: Tokens.spacing.small
+                    text: qsTr("by DiM • Basically Caelestia+")
+                    color: Colours.palette.m3onSurfaceVariant
+                    font: Tokens.font.label.medium
+                    opacity: 0.8
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
                     text: CUtils.version ? `v${CUtils.version}` : "…"
                     color: Colours.palette.m3onSurfaceVariant
                     font: Tokens.font.body.medium
