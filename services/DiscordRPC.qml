@@ -193,7 +193,7 @@ Item {
                 name: "MiDnight Shell" + qsVersion,
                 details: detailsStr,
                 state: stateStr,
-                large_image: "https://raw.githubusercontent.com/dim-ghub/caelestia-shell/main/assets/logo.png",
+                large_image: "https://raw.githubusercontent.com/dim-ghub/midnight-shell/main/assets/logo.png",
                 small_image: "",
                 startTimestamp: root.shellStartTime,
                 buttons: [

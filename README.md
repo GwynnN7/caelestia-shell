@@ -325,7 +325,7 @@ If installed via the AUR package, simply update your system (e.g. using `yay`).
 
 If you installed via `pkgit`, you can update using `pkgit -u`.
 > [!NOTE]
-> If `pkgit -u` fails to update the shell for any reason, run `pkgit -fi caelestia-shell`. If that command throws an error, simply run it again.
+> If `pkgit -u` fails to update the shell for any reason, run `pkgit -fi midnight-shell`. If that command throws an error, simply run it again.
 
 If installed manually, pull the latest changes and re-run the installation:
 
@@ -340,7 +340,7 @@ pkgit -i .
 To cleanly uninstall the shell and its components, simply run `pkgit`'s uninstall command:
 
 ```sh
-pkgit -r caelestia-shell
+pkgit -r midnight-shell
 ```
 
 or your AUR helper's uninstall command.
