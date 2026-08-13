@@ -1,12 +1,12 @@
 #include "sessionconfig.hpp"
 #include "rootconfig.hpp"
 
+#include <algorithm>
 #include <qfile.h>
 #include <qjsonarray.h>
 #include <qjsonobject.h>
 #include <qmetaobject.h>
 #include <qregularexpression.h>
-#include <algorithm>
 
 namespace caelestia::config {
 
@@ -521,14 +521,14 @@ QVariantList SessionConfig::buttons() const {
             }
         }
     }
-    if (m_commands) {
-        for (const auto& key : m_commands->customCommandKeys()) {
-            if (!seen.contains(key)) {
-                seen.insert(key);
-                orderedKeys.append(key);
-            }
-        }
-    }
+    // if (m_commands) {
+    //     for (const auto& key : m_commands->customCommandKeys()) {
+    //         if (!seen.contains(key)) {
+    //             seen.insert(key);
+    //             orderedKeys.append(key);
+    //         }
+    //     }
+    // }
 
     for (const auto& key : orderedKeys) {
         QVariantMap btn;
@@ -576,14 +576,14 @@ QVariantList SessionConfig::customButtons() const {
             }
         }
     }
-    if (m_commands) {
-        for (const auto& key : m_commands->customCommandKeys()) {
-            if (!seen.contains(key)) {
-                seen.insert(key);
-                orderedKeys.append(key);
-            }
-        }
-    }
+    // if (m_commands) {
+    //     for (const auto& key : m_commands->customCommandKeys()) {
+    //         if (!seen.contains(key)) {
+    //             seen.insert(key);
+    //             orderedKeys.append(key);
+    //         }
+    //     }
+    // }
 
     for (const auto& key : orderedKeys) {
         QVariantMap btn;
