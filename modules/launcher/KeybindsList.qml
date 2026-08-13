@@ -60,7 +60,8 @@ StyledListView {
 
     add: Transition {
         Anim {
-            properties: "opacity,scale"
+            type: Anim.DefaultEffects
+            property: "opacity"
             from: 0
             to: 1
         }
@@ -68,9 +69,44 @@ StyledListView {
 
     remove: Transition {
         Anim {
-            properties: "opacity,scale"
+            type: Anim.DefaultEffects
+            property: "opacity"
             from: 1
             to: 0
+        }
+    }
+
+    move: Transition {
+        Anim {
+            property: "y"
+        }
+        Anim {
+            type: Anim.DefaultEffects
+            property: "opacity"
+            to: 1
+        }
+    }
+
+    addDisplaced: Transition {
+        Anim {
+            property: "y"
+            type: Anim.StandardSmall
+        }
+        Anim {
+            type: Anim.DefaultEffects
+            property: "opacity"
+            to: 1
+        }
+    }
+
+    displaced: Transition {
+        Anim {
+            property: "y"
+        }
+        Anim {
+            type: Anim.DefaultEffects
+            property: "opacity"
+            to: 1
         }
     }
 

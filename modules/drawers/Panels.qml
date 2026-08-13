@@ -85,8 +85,13 @@ Item {
             }
             AnchorChanges {
                 target: toasts
-                anchors.left: sidebar.right
+                anchors.left: parent.left
                 anchors.right: undefined
+            }
+            PropertyChanges {
+                target: toasts
+                anchors.leftMargin: Tokens.padding.medium + (sidebar.visible ? sidebar.width * (1 - sidebar.offsetScale) : 0)
+                anchors.rightMargin: 0
             }
             AnchorChanges {
                 target: sidebar
@@ -117,9 +122,8 @@ Item {
             }
             AnchorChanges {
                 target: toasts
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: undefined
+                anchors.bottom: undefined
+                anchors.top: parent.top
             }
             AnchorChanges {
                 target: sidebar
@@ -243,8 +247,9 @@ Item {
         id: toasts
 
         anchors.bottom: sidebar.visible ? parent.bottom : utilities.top
-        anchors.right: sidebar.left
+        anchors.right: parent.right
         anchors.margins: Tokens.padding.medium
+        anchors.rightMargin: Tokens.padding.medium + (sidebar.visible ? sidebar.width * (1 - sidebar.offsetScale) : 0)
     }
 
     Sidebar.Wrapper {

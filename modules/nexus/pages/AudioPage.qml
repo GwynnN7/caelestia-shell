@@ -125,7 +125,7 @@ PageBase {
             value: GlobalConfig.audio.sounds.sfxVolume
             enabled: GlobalConfig.audio.sounds.enabled
             onMoved: v => GlobalConfig.audio.sounds.sfxVolume = v
-            onInteraction: v => Audio.playEffectTick()
+            onReleased: v => Audio.playEffectTick()
         }
 
         SliderRow {
@@ -136,7 +136,7 @@ PageBase {
             value: GlobalConfig.audio.sounds.notificationVolume
             enabled: GlobalConfig.audio.sounds.enabled
             onMoved: v => GlobalConfig.audio.sounds.notificationVolume = v
-            onInteraction: v => Audio.playNotification()
+            onReleased: v => Audio.playNotification()
         }
 
         ToggleRow {

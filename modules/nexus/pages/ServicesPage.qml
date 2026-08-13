@@ -209,7 +209,7 @@ PageBase {
         NavRow {
             icon: "sports_esports"
             text: qsTr("Game mode")
-            subtext: qsTr("Manage how Caelestia behaves while gaming")
+            subtext: qsTr("Manage how MiDnight behaves while gaming")
             onClicked: root.nState.openSubPage(3)
         }
 
@@ -217,21 +217,21 @@ PageBase {
             icon: "chat" // Using chat since discord icon might not be available in Material icons
             text: qsTr("Discord Rich Presence")
             subtext: qsTr("Broadcast your status to Vesktop")
-            onClicked: root.nState.openSubPage(4)
+            onClicked: root.nState.openSubPage(5)
         }
 
         NavRow {
             icon: "picture_in_picture"
             text: qsTr("Picture in Picture")
             subtext: qsTr("Configure PiP positioning and focus behavior")
-            onClicked: root.nState.openSubPage(5)
+            onClicked: root.nState.openSubPage(6)
         }
 
         NavRow {
             icon: "near_me"
             text: qsTr("Quick Share")
             subtext: qsTr("Auto-start and discoverability settings")
-            onClicked: root.nState.openSubPage(6)
+            onClicked: root.nState.openSubPage(7)
         }
 
 

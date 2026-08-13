@@ -72,8 +72,17 @@ PageBase {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: Tokens.spacing.small
-                    text: "Caelestia"
+                    text: "MiDnight"
                     font: Tokens.font.headline.builders.large.width(110).build()
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: Tokens.spacing.small
+                    text: qsTr("by DiM • Basically Caelestia+")
+                    color: Colours.palette.m3onSurfaceVariant
+                    font: Tokens.font.label.medium
+                    opacity: 0.8
                 }
 
                 StyledText {

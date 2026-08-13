@@ -110,7 +110,7 @@ PageBase {
         }
 
         SectionHeader {
-            text: qsTr("Caelestia feature overrides")
+            text: qsTr("MiDnight feature overrides")
         }
 
         ToggleRow {

@@ -70,7 +70,15 @@ Item {
                     property int activeDrags: 0
                     z: activeDrags > 0 ? 100 : 0
                     
-                    property list<var> windows: Hyprland.toplevels.values.filter(t => t.workspace && t.workspace.id === workspaceId)
+                    property list<var> windows: Hyprland.toplevels.values.filter(t => {
+                        if (!t.workspace || t.workspace.id !== workspaceId) return false;
+                        const ipc = t.lastIpcObject;
+                        if (ipc) {
+                            if (ipc.mapped === false || ipc.hidden) return false;
+                            if (ipc.size && (ipc.size[0] <= 0 || ipc.size[1] <= 0)) return false;
+                        }
+                        return true;
+                    })
                     
                     property var hlMonitor: {
                         let ws = Hyprland.workspaces.values.find(w => w.id === workspaceId);
@@ -335,7 +343,16 @@ Item {
 
                                         SafeScreencopy {
                                             anchors.fill: parent
-                                            captureSource: (windowContainer.modelData?.wayland && (windowContainer.modelData.lastIpcObject?.mapped ?? true)) ? windowContainer.modelData.wayland : null
+                                            captureSource: {
+                                                const win = windowContainer.modelData;
+                                                if (!win || !win.wayland) return null;
+                                                const ipc = win.lastIpcObject;
+                                                if (ipc) {
+                                                    if (ipc.mapped === false || ipc.hidden) return null;
+                                                    if (ipc.size && (ipc.size[0] <= 0 || ipc.size[1] <= 0)) return null;
+                                                }
+                                                return win.wayland;
+                                            }
                                             live: windowBg.visible
                                         }
 

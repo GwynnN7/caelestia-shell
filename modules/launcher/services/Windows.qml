@@ -16,15 +16,19 @@ QtObject {
     function updateItems(): void {
         const windows = [];
         for (const client of Hyprland.toplevels.values) {
+            const ipc = client.lastIpcObject;
             windows.push({
                 address: client.address,
                 title: client.title || "",
-                class: client.lastIpcObject?.class || "",
+                class: ipc?.class || "",
                 workspace: client.workspace?.name || "",
                 monitor: client.monitor?.name || "",
                 wayland: client.wayland,
-                size: client.lastIpcObject?.size || [0, 0],
-                at: client.lastIpcObject?.at || [0, 0]
+                size: ipc?.size || [0, 0],
+                at: ipc?.at || [0, 0],
+                mapped: ipc?.mapped ?? true,
+                hidden: ipc?.hidden ?? false,
+                lastIpcObject: ipc
             });
         }
         items = windows;
