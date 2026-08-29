@@ -221,6 +221,7 @@ Item {
         id: appList
 
         active: false
+        visible: active
 
         anchors.fill: parent
 
@@ -237,6 +238,7 @@ Item {
 
         asynchronous: true
         active: false
+        visible: active
 
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
@@ -379,6 +381,7 @@ Item {
 
         asynchronous: true
         active: false
+        visible: active
 
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -396,6 +399,7 @@ Item {
         id: keybindsList
 
         active: false
+        visible: active
 
         anchors.fill: parent
 
@@ -409,6 +413,7 @@ Item {
         id: animationsList
 
         active: false
+        visible: active
 
         anchors.fill: parent
 
