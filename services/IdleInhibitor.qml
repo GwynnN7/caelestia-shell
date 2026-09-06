@@ -34,6 +34,13 @@ Singleton {
         }
     }
 
+    Process {
+        running: props.enabled
+        command: ["systemd-inhibit", "--what=idle:sleep", "--who=caelestia",
+                  "--why=Idle inhibitor enabled", "--mode=block",
+                  "sleep", "infinity"]
+    }
+
     IpcHandler {
         function isEnabled(): bool {
             return props.enabled;
