@@ -14,7 +14,9 @@
 > [!NOTE]
 > This is a fork of the official [caelestia-shell](https://github.com/caelestia-dots/shell) with additional features. All new features are listed below.
 
-https://github.com/user-attachments/assets/0840f496-575c-4ca6-83a8-87bb01a85c5f
+
+https://github.com/user-attachments/assets/774a8872-4d95-45b9-a4b6-409d8394dadc
+
 
 ## Fork Features
 
@@ -29,6 +31,9 @@ This fork adds the following features on top of the official shell:
 - **Desktop**: Floating lyrics, Shimeji pets, dynamic wallpaper recoloring, and Bezel Mode.
 - **Lock Screen**: Configurable auto-lock on startup (`lockOnStartup`), redesigned profile and clock layout, and improved forecast UI.
 - **Hyprland**: Full support for the new Lua-based window focus and dispatching commands (`hl.dsp`).
+- **QuickShare**: Supports the android feature, allowing file transfers between your devices (w/ avahi daemon)
+- **Polkit**: Supplies its own built-in polkit daemon, with animations.
+  
 
 ## Installation
 
@@ -37,7 +42,7 @@ This fork adds the following features on top of the official shell:
 
 ### Arch Linux / Manual
 
-Dependencies:
+<details><summary id="dependencies">Dependencies</summary>
 
 -   [`caelestia-cli` (my fork)](https://github.com/GwynnN7/caelestia-cli)
 -   [`quickshell-git`](https://quickshell.outfoxxed.me) 
@@ -57,6 +62,7 @@ Dependencies:
 -   [`caskaydia-cove-nerd`](https://www.nerdfonts.com/font-downloads)
 -   [`swappy`](https://github.com/jtheoof/swappy)
 -   [`libqalculate`](https://github.com/Qalculate/libqalculate)
+-   [`protobuf`](https://protobuf.dev/)
 -   [`bash`](https://www.gnu.org/software/bash)
 -   `qt6-base`
 -   `qt6-declarative`
@@ -65,6 +71,7 @@ Build dependencies:
 
 -   [`cmake`](https://cmake.org)
 -   [`ninja`](https://github.com/ninja-build/ninja)
+</details>
 
 ### Arch Linux / Automatic
 
