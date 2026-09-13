@@ -19,8 +19,6 @@ Item {
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
-    // (Removed root-level 'size' property that was causing the 'label is not defined' error)
-
     layer.enabled: true
     layer.effect: Mask {
         maskSource: mask
@@ -63,10 +61,9 @@ Item {
             anchors.top: parent.top
             anchors.bottom: isHorizontal ? parent.bottom : undefined
             anchors.left: parent.left
-            anchors.right: isHorizontal ? undefined : parent.right
+            anchors.right: parent.right
 
             radius: Tokens.rounding.full
-            // Changed undefined to 0 to fix "Unable to assign [undefined] to double"
             implicitWidth: isHorizontal ? parent.width / 2 : 0
             implicitHeight: isHorizontal ? 0 : parent.height / 2
             opacity: isHorizontal ? (view.contentX > 0 ? 0 : 1) : (view.contentY > 0 ? 0 : 1)
@@ -217,8 +214,8 @@ Item {
 
                     x: isHorizontal ? -indicator.x : 0
                     y: isHorizontal ? 0 : -indicator.y
-                    implicitWidth: view.width
-                    implicitHeight: view.height
+                    implicitWidth: isHorizontal ? view.height : view.width
+                    implicitHeight: isHorizontal ? view.width : view.height
                 }
 
                 Behavior on x {
@@ -284,26 +281,21 @@ Item {
         }
     }
 
-    component SpecialWsDelegate: GridLayout {
+    component SpecialWsDelegate: ColumnLayout {
         id: ws
 
         required property HyprlandWorkspace modelData
-        readonly property int size: isHorizontal ? (label.Layout.preferredWidth + (hasWindows ? windows.implicitWidth + Tokens.padding.extraSmall : 0)) : (label.Layout.preferredHeight + (hasWindows ? windows.implicitHeight + Tokens.padding.extraSmall : 0))
+        readonly property int size: label.Layout.preferredHeight + (hasWindows ? windows.implicitHeight + Tokens.padding.extraSmall : 0)
         property int wsId
         property string icon
         property bool hasWindows
-
-        columns: isHorizontal ? -1 : 1
-        rows: isHorizontal ? 1 : -1
-        flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
 
         anchors.left: isHorizontal ? undefined : view.contentItem.left
         anchors.right: isHorizontal ? undefined : view.contentItem.right
         anchors.top: isHorizontal ? view.contentItem.top : undefined
         anchors.bottom: isHorizontal ? view.contentItem.bottom : undefined
 
-        columnSpacing: 0
-        rowSpacing: 0
+        spacing: 0
 
         Component.onCompleted: {
             wsId = modelData.id;
@@ -346,9 +338,8 @@ Item {
 
             asynchronous: true
 
-            Layout.alignment: isHorizontal ? (Qt.AlignVCenter | Qt.AlignLeft) : (Qt.AlignHCenter | Qt.AlignTop)
-            Layout.preferredWidth: isHorizontal ? Tokens.sizes.bar.innerWidth : -1
-            Layout.preferredHeight: isHorizontal ? -1 : Tokens.sizes.bar.innerWidth
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+            Layout.preferredHeight: Tokens.sizes.bar.innerWidth - Tokens.padding.small
 
             sourceComponent: ws.icon.length === 1 ? letterComp : iconComp
 
@@ -356,11 +347,9 @@ Item {
                 id: iconComp
 
                 MaterialIcon {
-                    anchors.fill: parent
                     fill: 1
                     text: ws.icon
                     verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
                 }
             }
 
@@ -368,10 +357,8 @@ Item {
                 id: letterComp
 
                 StyledText {
-                    anchors.fill: parent
                     text: ws.icon
                     verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
                 }
             }
         }
@@ -381,27 +368,14 @@ Item {
 
             asynchronous: true
 
-            Layout.alignment: isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-            Layout.fillWidth: isHorizontal && enabled
-            Layout.fillHeight: !isHorizontal && enabled
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillHeight: true
+            Layout.preferredHeight: implicitHeight
 
             visible: active
             active: ws.hasWindows
 
-            sourceComponent: isHorizontal ? rowComponent : columnComponent
-
-            Behavior on Layout.preferredHeight {
-                enabled: !isHorizontal
-
-                Anim {}
-            }
-        }
-
-        // MOVED COMPONENTS INSIDE DELEGATE: This fixes the "ws is not defined" error
-        Component {
-            id: columnComponent
-
-            Column {
+            sourceComponent: Column {
                 spacing: 0
 
                 add: Transition {
@@ -442,49 +416,9 @@ Item {
                     }
                 }
             }
-        }
 
-        Component {
-            id: rowComponent
-
-            Row {
-                spacing: 0
-                add: Transition {
-                    Anim {
-                        properties: "scale"
-                        from: 0
-                        to: 1
-                        easing: Tokens.anim.standardDecel
-                    }
-                }
-                move: Transition {
-                    Anim {
-                        properties: "scale"
-                        to: 1
-                        easing: Tokens.anim.standardDecel
-                    }
-                    Anim {
-                        properties: "x,y"
-                    }
-                }
-
-                Repeater {
-                    model: ScriptModel {
-                        values: {
-                            const windows = Hypr.toplevels.values.filter(c => c.workspace?.id === ws.wsId);
-                            const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
-                            return maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
-                        }
-                    }
-
-                    MaterialIcon {
-                        required property var modelData
-
-                        grade: 0
-                        text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
-                        color: Colours.palette.m3onSurfaceVariant
-                    }
-                }
+            Behavior on Layout.preferredHeight {
+                Anim {}
             }
         }
     }
