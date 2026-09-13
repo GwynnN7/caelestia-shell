@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
+import Caelestia.I18n
 import M3Shapes
 import qs.components
 import qs.components.controls
@@ -194,6 +195,19 @@ PageBase {
             menuItems: lockShapeItems
             onSelected: item => {
                 root.targetConfig.lock.profilePicShape = item.value;
+                root.targetConfig.save();
+            }
+        }
+
+        ToggleRow {
+            last: true
+            text: qsTr("Show clock seconds")
+            subtext: qsTr("Display seconds for the clock in the main panel")
+            configNode: root.targetConfig.dashboard
+            propertyName: "showClockSeconds"
+            checked: root.targetConfig.dashboard.showClockSeconds
+            onToggled: {
+                root.targetConfig.dashboard.showClockSeconds = checked;
                 root.targetConfig.save();
             }
         }

@@ -372,13 +372,24 @@ Searcher {
         root.list = arr;
     }
 
-    property alias weVolume: weSettings.volume
-    property alias weSilent: weSettings.silent
+    property alias weVolume: weAdapter.volume
+    property alias weSilent: weAdapter.silent
     
-    Settings {
-        id: weSettings
-        property real volume: 0.15
-        property bool silent: false
+    Component.onCompleted: CUtils.mkdirp(Paths.state + "/wallpaper")
+
+    FileView {
+        id: weStore
+
+        path: `${Paths.state}/wallpaper/wallpaper-engine.json`
+        watchChanges: true
+        onFileChanged: reload()
+
+        JsonAdapter {
+            id: weAdapter
+
+            property real volume: 0.15
+            property bool silent: false
+        }
     }
 
     FileSystemModel {

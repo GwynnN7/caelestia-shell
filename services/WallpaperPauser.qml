@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.UPower
 import Quickshell.Io
+import Caelestia
 import Caelestia.Config
 
 import qs.services
@@ -14,23 +15,38 @@ import qs.utils
 Singleton {
     id: root
 
-    property bool manualPause: false
-    property bool pauseOnBattery: false
-    property bool pauseOnWindowOverlap: true
-    property string hwDecoder: "none"
+    // QML Settings is broken here (quickshell app identifiers unset → status 1);
+    // FileView + JsonAdapter persists reliably.
+    FileView {
+        id: pauserStore
 
-    Settings {
-        id: pauserSettings
-        location: `${Paths.state}/wallpaper/pauser.ini`
-        category: "WallpaperPauser"
-        property alias manualPause: root.manualPause
-        property alias pauseOnBattery: root.pauseOnBattery
-        property alias pauseOnWindowOverlap: root.pauseOnWindowOverlap
-        property alias hwDecoder: root.hwDecoder
+        path: `${Paths.state}/wallpaper/pauser.json`
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: root._loaded = true
+
+        JsonAdapter {
+            id: pauserAdapter
+
+            property bool manualPause: false
+            property bool pauseOnBattery: false
+            property bool pauseOnWindowOverlap: true
+            property string hwDecoder: "none"
+        }
     }
+
+    property alias manualPause: pauserAdapter.manualPause
+    property alias pauseOnBattery: pauserAdapter.pauseOnBattery
+    property alias pauseOnWindowOverlap: pauserAdapter.pauseOnWindowOverlap
+    property alias hwDecoder: pauserAdapter.hwDecoder
     property bool paused: false
     property bool _loaded: false
     property string pauseReason: "None"
+
+    // Non-visual singleton: read the global config directly (the screen-bound
+    // attached Config has no screen here and only warns).
+    readonly property bool cfgVideoPaused: GlobalConfig.background.videoWallpaperPaused
+    readonly property bool cfgTransparency: GlobalConfig.utilities.toasts.transparency
 
     Process {
         id: saveHwDecoderProcess
@@ -41,7 +57,7 @@ Singleton {
         let reason = "None";
 
         // Rule #0 — Manual / Config Pause
-        if ((typeof Config !== "undefined" && Config.background && Config.background.videoWallpaperPaused) || manualPause) {
+        if (root.cfgVideoPaused || manualPause) {
             newPaused = true;
             reason = "Manual / Config Pause";
         } else if (pauseOnBattery && UPower.onBattery) {
@@ -153,6 +169,7 @@ Singleton {
     }
 
     Component.onCompleted: {
+        CUtils.mkdirp(Paths.state + "/wallpaper"); // must exist before Settings persists
         root._loaded = true;
         recalculate();
     }

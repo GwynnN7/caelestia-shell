@@ -51,6 +51,10 @@ void CUtils::saveItem(
     }
 
     const auto grabResult = target->grabToImage();
+    if (!grabResult) {
+        qCWarning(lcCUtils) << "saveItem: failed to grab" << target;
+        return;
+    }
 
     QObject::connect(
         grabResult.data(), &QQuickItemGrabResult::ready, this, [grabResult, scaledRect, path, onSaved, onFailed, this] {
@@ -261,6 +265,12 @@ QString CUtils::version() {
 
 QString CUtils::qtVersion() {
     return QStringLiteral(QT_VERSION_STR);
+}
+
+// Creates a directory tree (like QDir::mkpath). Needed because QSettings and
+// friends do not create missing parent directories on their own.
+bool CUtils::mkdirp(const QString& path) {
+    return QDir().mkpath(path);
 }
 
 } // namespace caelestia
