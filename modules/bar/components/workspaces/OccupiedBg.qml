@@ -15,6 +15,9 @@ Item {
     required property bool layoutTransitionRunning
     required property var workspaceIndex
 
+    // Horizontal (top/bottom bar) support
+    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+
     property list<var> pills: []
 
     onOccupiedChanged: {
@@ -63,11 +66,13 @@ Item {
                 return root.workspaces.itemAt(root.workspaceIndex(modelData.end)) as Workspace ?? null;
             }
 
-            anchors.horizontalCenter: root.horizontalCenter
+            anchors.horizontalCenter: isHorizontal ? undefined : root.horizontalCenter
+            anchors.verticalCenter: isHorizontal ? root.verticalCenter : undefined
 
-            y: (start?.y ?? 0) - 1
-            implicitWidth: Tokens.sizes.bar.innerWidth - Tokens.padding.small + 2
-            implicitHeight: start && end ? end.y + end.size - start.y + 2 : 0
+            x: isHorizontal ? ((start?.x ?? 0) - 1) : 0
+            y: isHorizontal ? 0 : ((start?.y ?? 0) - 1)
+            implicitWidth: isHorizontal ? (start && end ? end.x + end.size - start.x + 2 : 0) : (Tokens.sizes.bar.innerWidth - Tokens.padding.small + 2)
+            implicitHeight: isHorizontal ? (Tokens.sizes.bar.innerWidth - Tokens.padding.small + 2) : (start && end ? end.y + end.size - start.y + 2 : 0)
 
             color: Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
             radius: Tokens.rounding.full
@@ -81,8 +86,26 @@ Item {
                 }
             }
 
+            Behavior on x {
+                enabled: isHorizontal && !root.layoutTransitionRunning
+
+                Anim {}
+            }
+
             Behavior on y {
-                enabled: !root.layoutTransitionRunning
+                enabled: !isHorizontal && !root.layoutTransitionRunning
+
+                Anim {}
+            }
+
+            Behavior on implicitWidth {
+                enabled: isHorizontal && !root.layoutTransitionRunning
+
+                Anim {}
+            }
+
+            Behavior on implicitHeight {
+                enabled: !isHorizontal && !root.layoutTransitionRunning
 
                 Anim {}
             }

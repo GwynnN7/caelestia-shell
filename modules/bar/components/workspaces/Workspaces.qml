@@ -27,6 +27,9 @@ StyledClippingRect {
     }
     readonly property int groupOffset: Math.floor((activeWsId - 1) / Config.bar.workspaces.shown) * Config.bar.workspaces.shown
     readonly property real workspaceSpacing: Math.floor(Tokens.spacing.extraSmall)
+
+    // Horizontal (top/bottom bar) support
+    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property bool revealTransitionRunning: {
         for (let i = 0; i < workspaces.count; ++i) {
             const workspace = workspaces.itemAt(i) as Workspace;
@@ -46,8 +49,8 @@ StyledClippingRect {
         return index % Config.bar.workspaces.shown;
     }
 
-    implicitWidth: Tokens.sizes.bar.innerWidth
-    implicitHeight: layout.implicitHeight + Tokens.padding.small
+    implicitWidth: isHorizontal ? (layout.implicitWidth + Tokens.padding.small) : Tokens.sizes.bar.innerWidth
+    implicitHeight: isHorizontal ? Tokens.sizes.bar.innerWidth : (layout.implicitHeight + Tokens.padding.small)
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
@@ -81,11 +84,15 @@ StyledClippingRect {
             }
         }
 
-        ColumnLayout {
+        GridLayout {
             id: layout
 
             anchors.centerIn: parent
-            spacing: 0
+            columns: root.isHorizontal ? -1 : 1
+            rows: root.isHorizontal ? 1 : -1
+            flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+            columnSpacing: 0
+            rowSpacing: 0
 
             Repeater {
                 id: workspaces
@@ -97,6 +104,7 @@ StyledClippingRect {
                     occupied: root.occupied
                     groupOffset: root.groupOffset
                     shouldShow: Config.bar.workspaces.showUnoccupied || isOccupied || ws === root.activeWsId
+                    isHorizontal: root.isHorizontal
 
                     workspaceRepeater: workspaces
                     layoutSpacing: root.workspaceSpacing
