@@ -17,13 +17,14 @@ ColumnLayout {
     required property var occupied
     required property int groupOffset
     required property bool shouldShow
+    required property bool isHorizontal
 
     required property Repeater workspaceRepeater
     required property real layoutSpacing
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
     // Unanimated prop for others to use as reference
-    readonly property int size: implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0)
+    readonly property int size: isHorizontal ? (implicitWidth + (hasWindows ? Tokens.padding.extraSmall : 0)) : (implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0))
 
     readonly property int ws: groupOffset + index + 1
     readonly property bool isOccupied: occupied[ws] ?? false
@@ -55,6 +56,9 @@ ColumnLayout {
 
         return offset;
     }
+    // Horizontal equivalent of targetY, used by the active indicator
+    readonly property real targetX: targetY
+
 
     property real reveal: shouldShow ? 1 : 0
     property real animatedSize: size
@@ -70,9 +74,11 @@ ColumnLayout {
             shape.shape = Qt.binding(() => isOccupied ? MaterialShape.Square : MaterialShape.Circle);
     }
 
-    Layout.alignment: Qt.AlignHCenter
-    Layout.preferredHeight: animatedSize * revealProgress
-    Layout.topMargin: layoutSpacing * Math.min(revealProgress, precedingRevealProgress)
+    Layout.alignment: isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
+    Layout.preferredWidth: isHorizontal ? animatedSize * revealProgress : -1
+    Layout.preferredHeight: isHorizontal ? -1 : animatedSize * revealProgress
+    Layout.topMargin: isHorizontal ? 0 : layoutSpacing * Math.min(revealProgress, precedingRevealProgress)
+    Layout.leftMargin: isHorizontal ? layoutSpacing * Math.min(revealProgress, precedingRevealProgress) : 0
 
     visible: shouldShow || revealProgress > 0
     opacity: revealProgress
