@@ -16,9 +16,6 @@ StyledRect {
     required property bool layoutTransitionRunning
     required property var workspaceIndex
 
-    // Horizontal (top/bottom bar) support
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-
     property int currentWsId: -1
     readonly property int currentWsIdx: currentWsId < 0 ? -1 : workspaceIndex(currentWsId)
     property int switchWsIdx: -1
@@ -42,7 +39,7 @@ StyledRect {
     readonly property real trailEnd: {
         workspaces.count;
         const ws = workspaces.itemAt(trailWsIdx) as Workspace;
-        return ws ? (isHorizontal ? ws.x + ws.width : ws.y + ws.height) : 0;
+        return ws ? ws.y + ws.height : 0;
     }
     property bool clampTrailEnd: false
 
@@ -57,9 +54,7 @@ StyledRect {
             return 0;
 
         const ws = workspaces.itemAt(index) as Workspace;
-        if (!ws)
-            return 0;
-        return root.isHorizontal ? (switchWsIdx >= 0 ? ws.targetX : ws.x) : (switchWsIdx >= 0 ? ws.targetY : ws.y);
+        return ws ? (switchWsIdx >= 0 ? ws.targetY : ws.y) : 0;
     }
 
     function updateCurrentWorkspace(withAnimation: bool): void {
@@ -71,7 +66,7 @@ StyledRect {
 
         if (withAnimation) {
             trailWsIdx = currentWsIdx;
-            clampTrailEnd = !!nextWorkspace && (isHorizontal ? nextWorkspace.targetX : nextWorkspace.targetY) <= offset;
+            clampTrailEnd = !!nextWorkspace && nextWorkspace.targetY <= offset;
             workspaceSwitchRunning = true;
             switchWsIdx = nextIndex;
             currentWsId = activeWsId;
@@ -103,10 +98,9 @@ StyledRect {
     }
 
     clip: true
-    x: isHorizontal ? offset + mask.x : 0
-    y: isHorizontal ? 0 : offset + mask.y
-    implicitWidth: isHorizontal ? size : Tokens.sizes.bar.innerWidth - Tokens.padding.small
-    implicitHeight: isHorizontal ? Tokens.sizes.bar.innerWidth - Tokens.padding.small : size
+    y: offset + mask.y
+    implicitWidth: Tokens.sizes.bar.innerWidth - Tokens.padding.small
+    implicitHeight: size
     radius: Tokens.rounding.full
     color: Colours.palette.m3primary
 
@@ -120,15 +114,12 @@ StyledRect {
         sourceColor: Colours.palette.m3onSurface
         colorizationColor: Colours.palette.m3onPrimary
 
-        x: isHorizontal ? -parent.offset : 0
-        y: isHorizontal ? 0 : -parent.offset
-        // The mask is sampled in its native orientation in both cases: the swap
-        // only applies to the horizontal bar (mask laid out as a row).
-        implicitWidth: isHorizontal ? root.mask.implicitHeight : root.mask.implicitWidth
-        implicitHeight: isHorizontal ? root.mask.implicitWidth : root.mask.implicitHeight
+        x: 0
+        y: -parent.offset
+        implicitWidth: root.mask.implicitWidth
+        implicitHeight: root.mask.implicitHeight
 
-        anchors.horizontalCenter: isHorizontal ? undefined : parent.horizontalCenter
-        anchors.verticalCenter: isHorizontal ? parent.verticalCenter : undefined
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     Behavior on leading {

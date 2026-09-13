@@ -37,9 +37,6 @@ StyledClippingRect {
         return false;
     }
 
-    // Horizontal (top/bottom bar) support
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-
     property real blur: onSpecial ? 1 : 0
 
     function workspaceIndex(id: int): int {
@@ -49,8 +46,8 @@ StyledClippingRect {
         return index % Config.bar.workspaces.shown;
     }
 
-    implicitWidth: isHorizontal ? (layout.implicitWidth + Tokens.padding.small) : Tokens.sizes.bar.innerWidth
-    implicitHeight: isHorizontal ? Tokens.sizes.bar.innerWidth : (layout.implicitHeight + Tokens.padding.small)
+    implicitWidth: Tokens.sizes.bar.innerWidth
+    implicitHeight: layout.implicitHeight + Tokens.padding.small
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
@@ -84,15 +81,11 @@ StyledClippingRect {
             }
         }
 
-        GridLayout {
+        ColumnLayout {
             id: layout
 
             anchors.centerIn: parent
-            columns: root.isHorizontal ? -1 : 1
-            rows: root.isHorizontal ? 1 : -1
-            flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
-            columnSpacing: 0
-            rowSpacing: 0
+            spacing: 0
 
             Repeater {
                 id: workspaces
@@ -104,7 +97,6 @@ StyledClippingRect {
                     occupied: root.occupied
                     groupOffset: root.groupOffset
                     shouldShow: Config.bar.workspaces.showUnoccupied || isOccupied || ws === root.activeWsId
-                    isHorizontal: root.isHorizontal
 
                     workspaceRepeater: workspaces
                     layoutSpacing: root.workspaceSpacing
@@ -114,8 +106,7 @@ StyledClippingRect {
 
         Loader {
             asynchronous: true
-            anchors.horizontalCenter: root.isHorizontal ? undefined : parent.horizontalCenter
-            anchors.verticalCenter: root.isHorizontal ? parent.verticalCenter : undefined
+            anchors.horizontalCenter: parent.horizontalCenter
             active: Config.bar.workspaces.activeIndicator
 
             sourceComponent: ActiveIndicator {
