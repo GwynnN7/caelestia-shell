@@ -18,36 +18,16 @@ StyledClippingRect {
     readonly property int activeWsId: Hypr.monitorFor(screen).activeWorkspace?.id ?? 1
 
     readonly property var occupied: {
-        // Other monitors' workspaces count as unoccupied when hiding unoccupied
-        const mon = !Config.bar.workspaces.showUnoccupied ? Hypr.monitorFor(screen) : null;
         const occ = {};
         for (const ws of Hypr.workspaces.values)
-            occ[ws.id] = ws.lastIpcObject.windows > 0 && (!mon || ws.monitor === mon);
+            occ[ws.id] = ws.lastIpcObject.windows > 0;
         return occ;
     }
     readonly property int groupOffset: Math.floor((activeWsId - 1) / Config.bar.workspaces.shown) * Config.bar.workspaces.shown
-    readonly property real workspaceSpacing: Math.floor(Tokens.spacing.extraSmall)
-
-    // Horizontal (top/bottom bar) support
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-    readonly property bool revealTransitionRunning: {
-        for (let i = 0; i < workspaces.count; ++i) {
-            const workspace = workspaces.itemAt(i) as Workspace;
-            if (workspace?.revealTransitionRunning)
-                return true;
-        }
-
-        return false;
-    }
 
     property real blur: onSpecial ? 1 : 0
 
-    function workspaceIndex(id: int): int {
-        let index = id - 1;
-        while (index < 0)
-            index += Config.bar.workspaces.shown;
-        return index % Config.bar.workspaces.shown;
-    }
+    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
     implicitWidth: isHorizontal ? (layout.implicitWidth + Tokens.padding.small) : Tokens.sizes.bar.innerWidth
     implicitHeight: isHorizontal ? Tokens.sizes.bar.innerWidth : (layout.implicitHeight + Tokens.padding.small)
@@ -79,8 +59,6 @@ StyledClippingRect {
                 workspaces: workspaces
                 occupied: root.occupied
                 groupOffset: root.groupOffset
-                layoutTransitionRunning: root.revealTransitionRunning
-                workspaceIndex: root.workspaceIndex
             }
         }
 
@@ -88,11 +66,11 @@ StyledClippingRect {
             id: layout
 
             anchors.centerIn: parent
-            columns: root.isHorizontal ? -1 : 1
-            rows: root.isHorizontal ? 1 : -1
-            flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
-            columnSpacing: 0
-            rowSpacing: 0
+            columns: isHorizontal ? -1 : 1
+            rows: isHorizontal ? 1 : -1
+            flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+            columnSpacing: Math.floor(Tokens.spacing.small)
+            rowSpacing: Math.floor(Tokens.spacing.small)
 
             Repeater {
                 id: workspaces
@@ -103,17 +81,14 @@ StyledClippingRect {
                     activeWsId: root.activeWsId
                     occupied: root.occupied
                     groupOffset: root.groupOffset
-                    shouldShow: Config.bar.workspaces.showUnoccupied || isOccupied || ws === root.activeWsId
-
-                    workspaceRepeater: workspaces
-                    layoutSpacing: root.workspaceSpacing
                 }
             }
         }
 
         Loader {
             asynchronous: true
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenter: isHorizontal ? undefined : parent.horizontalCenter
+            anchors.verticalCenter: isHorizontal ? parent.verticalCenter : undefined
             active: Config.bar.workspaces.activeIndicator
 
             sourceComponent: ActiveIndicator {
@@ -121,8 +96,6 @@ StyledClippingRect {
                 workspaces: workspaces
                 mask: layout
                 fullscreen: root.fullscreen
-                layoutTransitionRunning: root.revealTransitionRunning
-                workspaceIndex: root.workspaceIndex
             }
         }
 
