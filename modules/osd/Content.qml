@@ -111,7 +111,7 @@ Item {
                     value: root.brightness
                     onMoved: root.monitor?.setBrightness(value)
                     enableIconTap: true
-                    onIconTapped: HyprSunset.toggle(5000)
+                    onIconTapped: HyprSunset.toggle()
                 }
             }
         }

@@ -141,6 +141,14 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "sunset"
+                    delegate: Toggle {
+                        icon: "bedtime"
+                        checked: HyprSunset.active
+                        onClicked: HyprSunset.toggle()
+                    }
+                }
+                DelegateChoice {
                     roleValue: "vpn"
                     delegate: Toggle {
                         icon: "vpn_key"
