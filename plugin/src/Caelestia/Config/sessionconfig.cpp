@@ -158,20 +158,7 @@ QVariantList SessionConfig::buttons() const {
     QStringList orderedKeys;
     QSet<QString> seen;
 
-    // Custom keys first (in captured order), then the standard four.
     for (const auto& key : iconsNode->customIconKeys()) {
-        if (!seen.contains(key)) {
-            seen.insert(key);
-            orderedKeys.append(key);
-        }
-    }
-    for (const auto& key : commandsNode->customCommandKeys()) {
-        if (!seen.contains(key)) {
-            seen.insert(key);
-            orderedKeys.append(key);
-        }
-    }
-    for (const auto& key : defaultKeys) {
         if (!seen.contains(key)) {
             seen.insert(key);
             orderedKeys.append(key);
@@ -200,7 +187,7 @@ QVariantList SessionConfig::buttons() const {
             if (cmdProp.isValid() && cmdProp.userType() == QMetaType::QStringList)
                 command = cmdProp.toStringList();
             else
-                command = QStringList { key };
+                command = QStringList{ key };
         }
         btn.insert(u"command"_s, QVariant::fromValue(command));
 
@@ -227,12 +214,6 @@ QVariantList SessionConfig::customButtons() const {
             orderedKeys.append(key);
         }
     }
-    for (const auto& key : commandsNode->customCommandKeys()) {
-        if (!knownSessionKeys().contains(key) && !seen.contains(key)) {
-            seen.insert(key);
-            orderedKeys.append(key);
-        }
-    }
 
     for (const auto& key : orderedKeys) {
         QVariantMap btn;
@@ -247,7 +228,7 @@ QVariantList SessionConfig::customButtons() const {
         if (commandsNode->customCommands().contains(key)) {
             command = commandsNode->customCommands().value(key);
         } else {
-            command = QStringList { key };
+            command = QStringList{ key };
         }
         btn.insert(u"command"_s, QVariant::fromValue(command));
 
