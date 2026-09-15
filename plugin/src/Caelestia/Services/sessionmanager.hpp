@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE void hibernate();
     Q_INVOKABLE void poweroff();
     Q_INVOKABLE void reboot();
+    Q_INVOKABLE void bios();
 
     Q_INVOKABLE bool exec(const QStringList& command);
 
