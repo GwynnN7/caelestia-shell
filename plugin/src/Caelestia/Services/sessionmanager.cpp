@@ -72,6 +72,7 @@ bool SessionManager::exec(const QStringList& command) {
         { u"hibernate"_s, &SessionManager::hibernate },
         { u"poweroff"_s, &SessionManager::poweroff },
         { u"reboot"_s, &SessionManager::reboot },
+        { u"bios"_s, &SessionManager::bios },
     };
 
     auto cmd = command.first();
@@ -91,6 +92,12 @@ bool SessionManager::exec(const QStringList& command) {
     }
 
     return false;
+}
+
+void SessionManager::bios() {
+    call(LOGIN_PATH, LOGIN_IFACE, "SetRebootToFirmwareSetup", { true });
+
+    callManager("Reboot");
 }
 
 void SessionManager::logout() {
