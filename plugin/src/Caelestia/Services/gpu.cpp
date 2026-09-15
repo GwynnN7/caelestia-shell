@@ -3,6 +3,7 @@
 #include <qdir.h>
 #include <qdiriterator.h>
 #include <qfile.h>
+#include <qhash.h>
 #include <qregularexpression.h>
 
 #include "config/rootnodes.hpp"
@@ -33,9 +34,20 @@ QStringList gpuBusyFiles() {
     return files;
 }
 
-std::pair<QString, QString> gpuPowerFiles(const QString& busyPath) {
-    const QFileInfo busyInfo(busyPath);
-    const QString devicePath = busyInfo.dir().absolutePath();
+QPair<QString, QString> gpuPowerFiles(const QString& busyPath) {
+    static QHash<QString, QPair<QString, QString>> cache;
+
+    const auto cached = cache.constFind(busyPath);
+    if (cached != cache.constEnd()) {
+        return cached.value();
+    }
+
+    const qsizetype deviceEnd = busyPath.lastIndexOf(u'/');
+    if (deviceEnd < 0) {
+        return {};
+    }
+
+    const QString devicePath = busyPath.left(deviceEnd);
 
     QDirIterator it(devicePath + u"/hwmon"_s, QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -48,7 +60,6 @@ std::pair<QString, QString> gpuPowerFiles(const QString& busyPath) {
         }
 
         const QString name = QString::fromUtf8(nameFile.readAll()).trimmed();
-
         if (name != u"amdgpu"_s) {
             continue;
         }
@@ -57,7 +68,9 @@ std::pair<QString, QString> gpuPowerFiles(const QString& busyPath) {
         const QString cap = hwmonPath + u"/power1_cap"_s;
 
         if (QFile::exists(average) && QFile::exists(cap)) {
-            return { average, cap };
+            const QPair<QString, QString> result = { average, cap };
+            cache.insert(busyPath, result);
+            return result;
         }
     }
 
@@ -338,17 +351,14 @@ void Gpu::runProcess(const QString& program, const QStringList& args, std::funct
 void Gpu::readGenericUsage() {
     qreal sum = 0.0;
     int count = 0;
-
     for (const QString& busyPath : std::as_const(m_busyFiles)) {
         QFile busyFile(busyPath);
-
         if (!busyFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             continue;
         }
 
         bool busyOk = false;
         const qreal busy = busyFile.readAll().trimmed().toDouble(&busyOk);
-
         busyFile.close();
 
         if (!busyOk) {
@@ -356,14 +366,12 @@ void Gpu::readGenericUsage() {
         }
 
         const auto [powerPath, powerCapPath] = gpuPowerFiles(busyPath);
-
         if (powerPath.isEmpty() || powerCapPath.isEmpty()) {
             continue;
         }
 
         QFile powerFile(powerPath);
         QFile powerCapFile(powerCapPath);
-
         if (!powerFile.open(QIODevice::ReadOnly | QIODevice::Text) ||
             !powerCapFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             continue;
@@ -371,10 +379,8 @@ void Gpu::readGenericUsage() {
 
         bool powerOk = false;
         bool powerCapOk = false;
-
         const qreal power = powerFile.readAll().trimmed().toDouble(&powerOk);
         const qreal powerCap = powerCapFile.readAll().trimmed().toDouble(&powerCapOk);
-
         powerFile.close();
         powerCapFile.close();
 
@@ -382,12 +388,14 @@ void Gpu::readGenericUsage() {
             continue;
         }
 
-        const qreal effective = (busy / 100.0) * (power / powerCap);
+        const qreal powerFactor = power / powerCap;
+        const qreal effective = (busy / 100.0) * powerFactor;
 
-        sum += effective;
+        sum += std::min(effective, 1.0);
         ++count;
     }
-    const qreal newPerc = count > 0 ? sum / static_cast<qreal>(count) : 0.0;
+
+    const qreal newPerc = count > 0 ? sum / count : 0.0;
     if (std::abs(newPerc - m_percentage) > 0.0001) {
         m_percentage = newPerc;
         emit percentageChanged();
