@@ -88,10 +88,12 @@ Singleton {
     onEnabledChanged: {
         if (enabled) {
             setDynamicConfs();
+            IdleInhibitor.enabled = true;
             if (GlobalConfig.utilities.toasts.gameModeChanged)
                 Toaster.toast(Tr.tr("Game mode enabled"), Tr.tr("Disabled Hyprland animations, blur, gaps and shadows"), "gamepad");
         } else {
             Hypr.extras.message("reload");
+            IdleInhibitor.enabled = false;
             if (GlobalConfig.utilities.toasts.gameModeChanged)
                 Toaster.toast(Tr.tr("Game mode disabled"), Tr.tr("Hyprland settings restored"), "gamepad");
         }
