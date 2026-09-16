@@ -95,7 +95,7 @@ bool SessionManager::exec(const QStringList& command) {
 }
 
 void SessionManager::bios() {
-    call(LOGIN_PATH, LOGIN_IFACE, "SetRebootToFirmwareSetup", { true });
+    call(k_loginPath, k_loginIface, "SetRebootToFirmwareSetup", { true });
 
     callManager("Reboot");
 }
