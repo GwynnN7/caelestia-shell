@@ -20,13 +20,16 @@ using Qt::StringLiterals::operator""_s;
 class SessionIcons : public settings::ObjectNode {
     CONFIG_NODE(SessionIcons, settings::ObjectNode)
 
-    CONFIG_PROPERTY(QString, logout, u"logout"_s)
     CONFIG_PROPERTY(QString, shutdown, u"power_settings_new"_s)
-    CONFIG_PROPERTY(QString, hibernate, u"downloading"_s)
+    CONFIG_PROPERTY(QString, suspend, u"bedtime"_s)
     CONFIG_PROPERTY(QString, reboot, u"cached"_s)
+    CONFIG_PROPERTY(QString, logout, u"exit_to_app"_s)
+    CONFIG_PROPERTY(QString, steam, u"stadia_controller"_s)
+    CONFIG_PROPERTY(QString, windows, u"window"_s)
 
 public:
     [[nodiscard]] const QMap<QString, QString>& customIcons() const { return m_customIcons; }
+
     [[nodiscard]] const QStringList& customIconKeys() const { return m_customIconKeys; }
 
     void setCustomIcon(const QString& key, const QString& icon);
@@ -46,13 +49,16 @@ private:
 class SessionCommands : public settings::ObjectNode {
     CONFIG_NODE(SessionCommands, settings::ObjectNode)
 
-    CONFIG_PROPERTY(QStringList, logout, { u"logout"_s })
     CONFIG_PROPERTY(QStringList, shutdown, { u"poweroff"_s })
-    CONFIG_PROPERTY(QStringList, hibernate, { u"hibernate"_s })
+    CONFIG_PROPERTY(QStringList, suspend, { u"suspend"_s })
     CONFIG_PROPERTY(QStringList, reboot, { u"reboot"_s })
+    CONFIG_PROPERTY(QStringList, logout, { u"logout"_s })
+    CONFIG_PROPERTY(QStringList, steam, { u"logout"_s })
+    CONFIG_PROPERTY(QStringList, windows, { u"reboot"_s })
 
 public:
     [[nodiscard]] const QMap<QString, QStringList>& customCommands() const { return m_customCommands; }
+
     [[nodiscard]] const QStringList& customCommandKeys() const { return m_customCommandKeys; }
 
     void setCustomCommand(const QString& key, const QStringList& command);

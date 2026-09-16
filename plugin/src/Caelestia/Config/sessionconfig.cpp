@@ -9,10 +9,12 @@ namespace {
 
 const QSet<QString>& knownSessionKeys() {
     static const QSet<QString> keys = {
-        u"logout"_s,
         u"shutdown"_s,
-        u"hibernate"_s,
+        u"suspend"_s,
         u"reboot"_s,
+        u"logout"_s,
+        u"steam"_s,
+        u"windows"_s,
     };
     return keys;
 }
@@ -149,16 +151,31 @@ QVariantList SessionConfig::buttons() const {
         return result;
 
     static const QStringList defaultKeys = {
-        u"logout"_s,
         u"shutdown"_s,
-        u"hibernate"_s,
+        u"suspend"_s,
         u"reboot"_s,
+        u"logout"_s,
+        u"steam"_s,
+        u"windows"_s,
     };
 
     QStringList orderedKeys;
     QSet<QString> seen;
 
+    // Custom keys first (in captured order), then the standard four.
     for (const auto& key : iconsNode->customIconKeys()) {
+        if (!seen.contains(key)) {
+            seen.insert(key);
+            orderedKeys.append(key);
+        }
+    }
+    for (const auto& key : commandsNode->customCommandKeys()) {
+        if (!seen.contains(key)) {
+            seen.insert(key);
+            orderedKeys.append(key);
+        }
+    }
+    for (const auto& key : defaultKeys) {
         if (!seen.contains(key)) {
             seen.insert(key);
             orderedKeys.append(key);
@@ -209,6 +226,12 @@ QVariantList SessionConfig::customButtons() const {
     QSet<QString> seen;
 
     for (const auto& key : iconsNode->customIconKeys()) {
+        if (!knownSessionKeys().contains(key) && !seen.contains(key)) {
+            seen.insert(key);
+            orderedKeys.append(key);
+        }
+    }
+    for (const auto& key : commandsNode->customCommandKeys()) {
         if (!knownSessionKeys().contains(key) && !seen.contains(key)) {
             seen.insert(key);
             orderedKeys.append(key);
