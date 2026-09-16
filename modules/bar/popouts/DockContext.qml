@@ -119,7 +119,7 @@ ColumnLayout {
                                 ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...model.entry.command]
                                 : model.entry.command;
                             Quickshell.execDetached({
-                                command: subCmd,
+                                command: ["app2unit", "--", ...subCmd],
                                 workingDirectory: model.entry.workingDirectory
                             });
                         }

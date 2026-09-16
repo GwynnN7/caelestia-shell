@@ -33,6 +33,7 @@ Searcher {
         readonly property string desc: modelData.description ? Tr.trMarked(modelData.description) : Tr.trCtx("No description", "launcher action with no description")
         readonly property string icon: modelData.icon ?? "help_outline"
         readonly property list<string> command: modelData.command ?? []
+        readonly property string workingDirectory: modelData.workingDirectory ?? ""
         readonly property bool enabled: modelData.enabled ?? true
         readonly property bool dangerous: modelData.dangerous ?? false
 
@@ -48,7 +49,10 @@ Searcher {
             } else {
                 list.screenState.launcher = false;
                 if (!SessionManager.exec(command))
-                    Quickshell.execDetached(command);
+                    Quickshell.execDetached({
+                        command: command,
+                        workingDirectory: workingDirectory,
+                    });
             }
         }
     }

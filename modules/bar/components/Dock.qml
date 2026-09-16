@@ -239,7 +239,7 @@ Item {
                                         ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData?.entry.command]
                                         : modelData?.entry.command;
                                     Quickshell.execDetached({
-                                        command: subCmd,
+                                        command: ["app2unit", "--", ...subCmd],
                                         workingDirectory: modelData?.entry.workingDirectory
                                     });
                                 }
