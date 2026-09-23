@@ -56,11 +56,31 @@ StyledWindow {
         return path.replace(/\/?$/, "/");
     }
 
+    // The window's input mask covers only the sprites — everything outside
+    // their rects passes input through to windows, panels and the desktop.
+    property list<Region> spriteMasks: []
+
+    mask: Region {
+        regions: root.spriteMasks
+    }
+
+    function registerSpriteMask(region: Region): void {
+        if (!root.spriteMasks.includes(region))
+            root.spriteMasks = [...root.spriteMasks, region];
+    }
+
+    function unregisterSpriteMask(region: Region): void {
+        root.spriteMasks = root.spriteMasks.filter(m => m !== region);
+    }
+
     screen: modelData
     visible: shouldBeVisible
 
     name: "shimeji"
-    WlrLayershell.layer: WlrLayer.Bottom
+    // Top layer: the shimeji walks above windows (like the real Shimeji pet).
+    // Bottom-layer input routing made grabbing unreliable (clicks competed
+    // with regular windows and the fullscreen wallpaper surface).
+    WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     surfaceFormat.opaque: false
@@ -85,6 +105,7 @@ StyledWindow {
             model: root.shimejiCount > 0 ? root.shimejiCount : 1
 
             ShimejiSprite {
+                maskHost: root
                 screenSize: Qt.size(shimejiScreen.width, shimejiScreen.height)
                 borderThickness: root.borderThickness
                 floorOffset: root.floorOffset
