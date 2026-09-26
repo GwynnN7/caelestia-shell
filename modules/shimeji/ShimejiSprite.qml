@@ -1,7 +1,5 @@
 import QtQuick
 import Quickshell
-import Caelestia.Config
-import qs.services
 
 Item {
     id: root
@@ -9,12 +7,28 @@ Item {
     required property var screenSize
     required property var borderThickness
     required property string imgPath
+    // Size multiplier from config (1.0 = native 128px pack), clamped so the
+    // geometry can never degenerate; artScale is the effective multiplier
+    property real sizeScale: 1
     property real floorOffset: 0
+    property real ceilingOffset: 0
+    property real leftOffset: 0
+    property real rightOffset: 0
 
-    readonly property real floorY: screenSize.height - 128 - borderThickness - floorOffset
-    readonly property real minX: 0
-    readonly property real maxX: screenSize.width - 128
-    readonly property real maxY: screenSize.height - 128 - floorOffset
+    readonly property real artScale: Math.max(0.25, Math.min(4, sizeScale))
+    readonly property real size: 128 * artScale
+
+    readonly property real floorY: screenSize.height - size - borderThickness - floorOffset
+    readonly property real minX: leftOffset
+    readonly property real maxX: screenSize.width - size - rightOffset
+    readonly property real ceilingY: ceilingOffset + borderThickness
+    // Standard-layout ceiling frames (23-25) draw the pet ~47px down the
+    // canvas; lift the canvas so its visible body touches the ceiling line
+    readonly property real ceilingLift: 47
+    // Climb frames (12-14) draw the pet ~55px into the canvas (on the wall
+    // side); the canvas is shifted by this so the body — not the canvas edge —
+    // touches the wall while the pet keeps facing it
+    readonly property real climbArtOffset: 55
 
     property real vx: 0
     property real vy: 0
@@ -25,6 +39,7 @@ Item {
     property int dragPose: 0
     property bool climbing: false
     property bool ceilingWalk: false
+    property int climbDir: 1
     property point dragOffset
     property real lastX: 0
     property real lastY: 0
@@ -138,19 +153,30 @@ Item {
 
     function walkRandom() {
         const margin = 100;
-        walkTarget = margin + Math.random() * (screenSize.width - 128 - margin * 2);
+        const lo = Math.max(minX + margin, minX);
+        const hi = Math.min(maxX - margin, maxX);
+        if (hi <= lo) {
+            walkTarget = (minX + maxX) / 2;
+        } else {
+            walkTarget = lo + Math.random() * (hi - lo);
+        }
         currentAnim = "walk";
         facingRight = walkTarget > root.x;
         frameIndex = 0;
     }
 
-    // Walk to the nearest screen edge, climb the wall, then walk the ceiling
+    // Walk to the nearest reserved wall, climb it, then walk the ceiling.
+    // The target is the wall itself (minX/maxX already account for side bars)
+    // and climbDir pins the ascend phase to that exact edge — a fixed-offset
+    // target can be unreachable once a bar reserves the edge (the pet would
+    // walk at the wall forever without climbing).
     function startClimb() {
         const nearLeft = root.x + 64 < screenSize.width / 2;
-        walkTarget = nearLeft ? 10 : maxX - 10;
-        facingRight = !nearLeft;
+        climbDir = nearLeft ? -1 : 1;
+        facingRight = climbDir > 0;
         climbing = true;
         ceilingWalk = false;
+        walkTarget = climbDir < 0 ? minX : maxX;
         currentAnim = "walk";
         frameIndex = 0;
     }
@@ -169,16 +195,20 @@ Item {
 
         const timeScale = dt / 0.030;
 
-        // Ascending the wall (12-14): pinned to the edge, constant climb speed
+        // Ascending the wall (12-14): pinned near the edge, constant climb
+        // speed. The canvas is shifted by the art offset so the mirrored
+        // (wall-facing) pet's body hugs the wall itself
         if (climbing && walkTarget < 0) {
             root.y += vy * timeScale;
-            root.x = facingRight ? maxX : minX;
+            root.x = climbDir < 0 ? minX - climbArtOffset * artScale : maxX + climbArtOffset * artScale;
 
-            if (root.y <= 8) {
-                root.y = 8;
+            if (root.y <= ceilingY) {
+                // Lift onto the ceiling so the visible body (not the canvas
+                // edge) meets the reserved line
+                root.y = ceilingY - ceilingLift * artScale;
                 climbing = false;
                 ceilingWalk = true;
-                walkTarget = 60 + Math.random() * (screenSize.width - 240);
+                walkTarget = Math.max(minX, Math.min(maxX, minX + 60 + Math.random() * Math.max(1, maxX - minX - 120)));
                 currentAnim = "ceiling";
                 frameIndex = 0;
             }
@@ -227,16 +257,22 @@ Item {
 
         if (walkTarget >= 0) {
             const dx = walkTarget - root.x;
-            if (Math.abs(dx) < 8) {
+            // Reaching the reserved wall also counts as arrival (the clamp can
+            // leave the pet a tick short of the exact target)
+            const atWall = climbing && ((climbDir < 0 && root.x <= minX + 2) || (climbDir > 0 && root.x >= maxX - 2));
+            if (Math.abs(dx) < 8 || atWall) {
                 walkTarget = -1;
                 vx = 0;
 
                 if (climbing) {
-                    // Reached the edge: start ascending (12-14)
+                    // Reached the edge: start ascending (12-14). The pet faces
+                    // the wall it climbs; the canvas shift in the ascend phase
+                    // keeps its body flush with the wall
                     currentAnim = "climb";
                     frameIndex = 0;
                     vy = -2.5;
                     onGround = false;
+                    facingRight = climbDir > 0;
                 } else {
                     pickIdle();
                 }
@@ -278,23 +314,25 @@ Item {
                         walkRandom();
                 }
             }
-        } else if (root.y < 0) {
-            root.y = 0;
+        } else if (vy < 0 && root.y < ceilingY) {
+            // Only rising pets bounce off the ceiling; a pet dropping off it
+            // (canvas lifted by ceilingLift) must fall through this line
+            root.y = ceilingY;
             vy = Math.abs(vy) * 0.5;
         }
     }
 
     x: 0
     y: floorY
-    width: 128
-    height: 128
+    width: root.size
+    height: root.size
 
     Component.onCompleted: {
         if (maskHost)
             maskHost.registerSpriteMask(inputMask);
 
         const margin = 50;
-        x = margin + Math.random() * (screenSize.width - 128 - margin * 2);
+        x = Math.max(minX + margin, Math.min(maxX - margin, minX + Math.random() * Math.max(1, maxX - minX)));
         y = floorY;
         onGround = true;
         vx = 0;
@@ -332,7 +370,7 @@ Item {
     MouseArea {
         id: grabArea
 
-        // The grab area is the shimeji's full image (the whole 128px canvas)
+        // The grab area is the shimeji's full image (the whole scaled canvas)
         anchors.fill: parent
         hoverEnabled: false
         cursorShape: dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
@@ -358,7 +396,7 @@ Item {
                 return;
 
             const newX = Math.max(minX, Math.min(maxX, root.x + mouse.x - dragOffset.x));
-            const newY = Math.max(0, Math.min(maxY, root.y + mouse.y - dragOffset.y));
+            const newY = Math.max(ceilingY, Math.min(floorY, root.y + mouse.y - dragOffset.y));
             dragVx = newX - lastX;
             dragVy = newY - lastY;
             lastX = newX;
