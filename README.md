@@ -360,7 +360,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
 >
 > - `appearance` (`anim`, `transparency`)
 > - `general` (`logo`, `apps`, `idle`, `battery`)
-> - `bar.workspaces` (`perMonitorWorkspaces`, `specialWorkspaceIcons`, `windowIcons`, `wsIcons`)
+> - `bar.workspaces` (`perMonitor`, `specialWorkspaceIcons`, `windowIcons`, `wsIcons`)
 > - `bar.tray` (`iconSubs`, `hiddenIcons`)
 > - `dashboard` (`mediaUpdateInterval`, `resourceUpdateInterval`)
 > - `launcher` (`specialPrefix`, `actionPrefix`, `enableDangerousActions`, `vimKeybinds`,
@@ -765,7 +765,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "showWindowsOnSpecialWorkspaces": true,
             "maxWindowIcons": 5,
             "activeTrail": false,
-            "perMonitorWorkspaces": true,
+            "perMonitor": true,
             "displayType": "shapes",
             "label": "  ",
             "occupiedLabel": "󰮯",
@@ -858,7 +858,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "maxWindowIcons": 5,
             "occupiedBg": false,
             "occupiedLabel": " \udb82\udfaf",
-            "perMonitorWorkspaces": true,
+            "perMonitor": true,
             "showWindows": true,
             "showWindowsOnSpecialWorkspaces": true,
             "shown": 5,
