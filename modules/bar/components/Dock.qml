@@ -280,7 +280,8 @@ Item {
                         if (!activeTop) return false;
 
                         const currentMonitorId = bar && bar.screen ? Hypr.monitorFor(bar.screen)?.lastIpcObject?.id : undefined;
-                        if (activeTop.lastIpcObject && currentMonitorId !== undefined && activeTop.lastIpcObject.monitor !== currentMonitorId) return false;
+                        const isSpecial = activeTop.lastIpcObject && activeTop.lastIpcObject.workspace && activeTop.lastIpcObject.workspace.name && activeTop.lastIpcObject.workspace.name.startsWith("special:");
+                        if (!isSpecial && activeTop.lastIpcObject && currentMonitorId !== undefined && activeTop.lastIpcObject.monitor !== currentMonitorId) return false;
                         
                         if (activeTop.lastIpcObject && modelData?.appClass) {
                             const activeClass = (activeTop.lastIpcObject.class || activeTop.lastIpcObject.initialClass || "").toLowerCase();
@@ -373,13 +374,16 @@ Item {
                         delegate: Rectangle {
                             required property int index
 
+                            property var toplevelIpc: modelData?.toplevels[index]?.lastIpcObject
+                            property bool isSpecial: toplevelIpc && toplevelIpc.workspace && toplevelIpc.workspace.name && toplevelIpc.workspace.name.startsWith("special:")
+
                             width: (index === 0 && delegateItem.isActive) ? 16 : 2
     
                                 height: 2
     
                                 radius: 1
     
-                                color: delegateItem.isActive ? Colours.palette.m3primary : Colours.palette.m3onSurface
+                                color: delegateItem.isActive ? Colours.palette.m3primary : (isSpecial ? Colours.palette.m3tertiary : Colours.palette.m3onSurface)
     
                                 scale: 0
                                 y: -15
@@ -462,7 +466,9 @@ Item {
         for (const toplevel of Hyprland.toplevels.values) {
             const ipc = toplevel.lastIpcObject;
             if (!ipc) continue;
-            if (currentMonitorId !== undefined && ipc.monitor !== currentMonitorId) continue;
+            
+            const isSpecial = ipc.workspace && ipc.workspace.name && ipc.workspace.name.startsWith("special:");
+            if (!isSpecial && currentMonitorId !== undefined && ipc.monitor !== currentMonitorId) continue;
             const appClass = ipc.class || ipc.initialClass;
             if (!appClass) continue;
             
