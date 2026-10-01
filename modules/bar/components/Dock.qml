@@ -278,6 +278,9 @@ Item {
                     property bool isActive: {
                         const activeTop = Hyprland.activeToplevel;
                         if (!activeTop) return false;
+
+                        const currentMonitorId = bar && bar.screen ? Hypr.monitorFor(bar.screen)?.lastIpcObject?.id : undefined;
+                        if (activeTop.lastIpcObject && currentMonitorId !== undefined && activeTop.lastIpcObject.monitor !== currentMonitorId) return false;
                         
                         if (activeTop.lastIpcObject && modelData?.appClass) {
                             const activeClass = (activeTop.lastIpcObject.class || activeTop.lastIpcObject.initialClass || "").toLowerCase();
@@ -454,9 +457,12 @@ Item {
             }
         }
         
+        const currentMonitorId = bar && bar.screen ? Hypr.monitorFor(bar.screen)?.lastIpcObject?.id : undefined;
+
         for (const toplevel of Hyprland.toplevels.values) {
             const ipc = toplevel.lastIpcObject;
             if (!ipc) continue;
+            if (currentMonitorId !== undefined && ipc.monitor !== currentMonitorId) continue;
             const appClass = ipc.class || ipc.initialClass;
             if (!appClass) continue;
             
