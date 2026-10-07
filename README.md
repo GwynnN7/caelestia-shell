@@ -11,6 +11,9 @@
 
 </div>
 
+> [!WARNING]
+> This project is no longer being maintained by me. I have started work on my own rust based shell. As soon as it is publicly available, you may find it [here](https://github.com/Kiite-Org/KiiteShell).
+
 > [!NOTE]
 > This is a fork of the official [caelestia-shell](https://github.com/caelestia-dots/shell) with additional features. All new features are listed below.
 
